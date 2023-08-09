@@ -7,6 +7,9 @@ dependencies:
   '@rbxts/flipper':
     specifier: ^2.0.1
     version: 2.0.1
+  '@rbxts/fusion':
+    specifier: 0.1.1-ts.beta.1
+    version: 0.1.1-ts.beta.1
   '@rbxts/log':
     specifier: ^0.6.3
     version: 0.6.3
@@ -70,6 +73,9 @@ dependencies:
   '@rbxts/t':
     specifier: ^3.1.0
     version: 3.1.0
+  '@rbxts/testez':
+    specifier: 0.4.2-ts.0
+    version: 0.4.2-ts.0
   '@rbxts/validate-tree':
     specifier: ^2.0.2
     version: 2.0.2
@@ -228,6 +234,10 @@ packages:
     resolution: {integrity: sha512-kxb5AZizP05XSmo3waS/QkcfNMD5b6HX4gGwyHOyBow260R5MIT4L/ZUPLvleXXyb9b67X4NVmHoac1tPXOLNA==}
     dev: false
 
+  /@rbxts/fusion@0.1.1-ts.beta.1:
+    resolution: {integrity: sha512-saDiH0sChLr0KFoFUyN0/aVS3rJ2fY5JQ0NegmxGz5CLLS+cwTb8P5DnT3SEPUzfqSjQ3+isPxtkIsZwmf3hdg==}
+    dev: false
+
   /@rbxts/log@0.5.0-beta.1:
     resolution: {integrity: sha512-MUVwRNTWU6bWMgehihaeTHF58s93AEHt1X+s8jF8+MdZc4hefZ6rT4b5OmskEoWw2r8niVKBCqjPXOGmnDj8xA==}
     dependencies:
@@ -373,6 +383,10 @@ packages:
 
   /@rbxts/t@3.1.0:
     resolution: {integrity: sha512-ba/wfKYtAL6JWVhZNbhMnBZtzgGaTxttvfzxxpEcHDy0Qeaq0DF2Odo/zJ32Ajw961EMYkAMTnPXLLrLB/r+mw==}
+    dev: false
+
+  /@rbxts/testez@0.4.2-ts.0:
+    resolution: {integrity: sha512-8Q+OG9ddTD2P3aARCuRKpPqUBvuifgSnHvQMZ6jBMqUzxhIysnb0l4c3vnnaQnvdyZ1OW9tKxcdEHMGTb67uOw==}
     dev: false
 
   /@rbxts/types@1.0.708:

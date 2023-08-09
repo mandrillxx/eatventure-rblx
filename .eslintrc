@@ -23,6 +23,7 @@
 	],
 	"rules": {
 		"prettier/prettier": "warn",
-		"roblox-ts/no-private-identifier": "off"
+		"roblox-ts/no-private-identifier": "off",
+		"roblox-ts/lua-truthiness": "off"
 	}
 }

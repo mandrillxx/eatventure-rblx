@@ -1,4 +1,5 @@
 import { component } from "@rbxts/matter";
+import { CharacterRigR15 } from "@rbxts/promise-character";
 
 export const Activated = component<{}>("Activated");
 export type Activated = ReturnType<typeof Activated>;
@@ -12,6 +13,23 @@ export const Client = component<{
 	};
 }>("Client");
 export type Client = ReturnType<typeof Client>;
+
+export const Body = component<{ model: CharacterRigR15 }>();
+export type Body = ReturnType<typeof Body>;
+
+export const DebugAdornment = component<{
+	label: BillboardGui & { TextLabel: TextLabel };
+	highlight: Highlight;
+	lineBox: ScreenGui & { topLeft: Frame; topRight: Frame; bottomLeft: Frame; bottomRight: Frame };
+	lineSight: Part;
+}>("DebugAdornment");
+export type DebugAdornment = ReturnType<typeof DebugAdornment>;
+
+export const Interactable = component<{}>("Interactable");
+export type Interactable = ReturnType<typeof Interactable>;
+
+export const Prompt = component<{ prompt: ProximityPrompt }>("Prompt");
+export type Prompt = ReturnType<typeof Prompt>;
 
 export const Renderable = component<{ model: Model; doNotDestroy?: boolean }>("Renderable");
 export type Renderable = ReturnType<typeof Renderable>;

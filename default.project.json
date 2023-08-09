@@ -23,6 +23,12 @@
 					}
 				}
 			},
+			"Shared": {
+				"$path": "out/shared"
+			},
+			"Client": {
+				"$path": "out/client"
+			},
 			"TS": {
 				"$path": "out/shared"
 			}

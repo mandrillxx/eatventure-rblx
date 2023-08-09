@@ -9,7 +9,6 @@ import { start } from "shared/start";
 import { receiveReplication } from "./receiveReplication";
 
 Log.SetLogger(Logger.configure().WriteTo(Log.RobloxOutput()).Create());
-Proton.awaitStart();
 
 const player = Players.LocalPlayer;
 const character = (player.Character || player.CharacterAdded.Wait()[0]) as CharacterRigR15;

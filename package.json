@@ -25,6 +25,7 @@
   "dependencies": {
     "@rbxts/beacon": "^2.1.1",
     "@rbxts/flipper": "^2.0.1",
+    "@rbxts/fusion": "0.1.1-ts.beta.1",
     "@rbxts/log": "^0.6.3",
     "@rbxts/maid": "^1.1.0",
     "@rbxts/matter": "^0.6.4",
@@ -46,6 +47,7 @@
     "@rbxts/snapdragon": "2.0.0-beta.1",
     "@rbxts/string-utils": "^1.0.3",
     "@rbxts/t": "^3.1.0",
+    "@rbxts/testez": "0.4.2-ts.0",
     "@rbxts/validate-tree": "^2.0.2",
     "@rbxts/variant": "^1.0.2",
     "@rbxts/zircon": "^1.0.9",

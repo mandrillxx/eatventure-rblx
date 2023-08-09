@@ -9,6 +9,24 @@
 		"editor.defaultFormatter": "dbaeumer.vscode-eslint",
 		"editor.formatOnSave": true
 	},
+	"cSpell.words": [
+		"Adornee",
+		"bahmutov",
+		"beizer",
+		"deref",
+		"Interactables",
+		"ipairs",
+		"Lambo",
+		"Netto",
+		"Raycast",
+		"rbxts",
+		"Roact",
+		"Scriptable",
+		"Skybox",
+		"Stringable",
+		"Topo",
+		"traceback"
+	],
 	"editor.detectIndentation": true,
 	"eslint.run": "onType",
 	"eslint.format.enable": true
