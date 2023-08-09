@@ -1,5 +1,5 @@
-import { NetEvent, NetEventType } from "@rbxts/proton";
+import { NetEvent, NetEventType, NetFunction } from "@rbxts/proton";
 
 export namespace Network {
-	export const test = new NetEvent<[message: string], NetEventType.ServerToClient>();
+	export const handleKeybind = new NetFunction<[callback: Callback], [handled: boolean]>();
 }

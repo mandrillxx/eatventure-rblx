@@ -1,9 +1,87 @@
 lockfileVersion: '6.0'
 
 dependencies:
+  '@rbxts/beacon':
+    specifier: ^2.1.1
+    version: 2.1.1
+  '@rbxts/flipper':
+    specifier: ^2.0.1
+    version: 2.0.1
+  '@rbxts/log':
+    specifier: ^0.6.3
+    version: 0.6.3
+  '@rbxts/maid':
+    specifier: ^1.1.0
+    version: 1.1.0
+  '@rbxts/matter':
+    specifier: ^0.6.4
+    version: 0.6.4
+  '@rbxts/message-templates':
+    specifier: ^0.3.2
+    version: 0.3.2
+  '@rbxts/net':
+    specifier: ^3.0.7
+    version: 3.0.7
+  '@rbxts/objecat':
+    specifier: ^1.1.1
+    version: 1.1.1
+  '@rbxts/plasma':
+    specifier: 0.4.1-ts.1
+    version: 0.4.1-ts.1
+  '@rbxts/promise-character':
+    specifier: ^1.0.3
+    version: 1.0.3
   '@rbxts/proton':
     specifier: ^0.7.0
     version: 0.7.0
+  '@rbxts/rewire':
+    specifier: ^0.3.0
+    version: 0.3.0
+  '@rbxts/roact':
+    specifier: 1.4.4-ts.0
+    version: 1.4.4-ts.0
+  '@rbxts/roact-hooked':
+    specifier: ^2.6.0
+    version: 2.6.0(@rbxts/roact@1.4.4-ts.0)
+  '@rbxts/roact-hooks':
+    specifier: 0.4.1-ts.3
+    version: 0.4.1-ts.3
+  '@rbxts/roact-rodux':
+    specifier: 0.2.2-ts.8
+    version: 0.2.2-ts.8(@rbxts/roact@1.4.4-ts.0)(@rbxts/rodux@3.0.0-ts.3)(@rbxts/types@1.0.708)
+  '@rbxts/rodux':
+    specifier: 3.0.0-ts.3
+    version: 3.0.0-ts.3
+  '@rbxts/rust-classes':
+    specifier: ^0.12.0
+    version: 0.12.0
+  '@rbxts/services':
+    specifier: ^1.5.1
+    version: 1.5.1
+  '@rbxts/signal':
+    specifier: ^1.1.1
+    version: 1.1.1
+  '@rbxts/snapdragon':
+    specifier: 2.0.0-beta.1
+    version: 2.0.0-beta.1
+  '@rbxts/string-utils':
+    specifier: ^1.0.3
+    version: 1.0.3
+  '@rbxts/t':
+    specifier: ^3.1.0
+    version: 3.1.0
+  '@rbxts/validate-tree':
+    specifier: ^2.0.2
+    version: 2.0.2
+  '@rbxts/variant':
+    specifier: ^1.0.2
+    version: 1.0.2
+  '@rbxts/zircon':
+    specifier: ^1.0.9
+    version: 1.0.9(@rbxts/types@1.0.708)
+  '@rbxts/zirconium':
+    specifier: ^1.1.0
+    version: 1.1.0
 
 devDependencies:
   '@rbxts/compiler-types':
@@ -138,9 +216,61 @@ packages:
     resolution: {integrity: sha512-QeFMSGj+Iijp+tHcV9eyqVyeKZ/9zp7GqRJ/hecKiHmoTu4yFcyGnUQAaX7OdQKBCgLvWMJ9wK/FXMECjFA2Kg==}
     dev: false
 
+  /@rbxts/compiler-types@1.2.3-types.1:
+    resolution: {integrity: sha512-SXXIBazyJ7N6d2xcy471/kqZZpCv7EDOWrRJ45jcv3g00VQaZwYl4Elr10woqRloIblQanwJ7yUqGXAsWv7iuQ==}
+    dev: false
+
   /@rbxts/compiler-types@2.1.0-types.1:
     resolution: {integrity: sha512-+ztwutzuNivWsgsERiC7n5il4C5gfJUuGJUmXYRq8FwY4ye3aupRi9RocmyAHq6255sO7z+RM61AVbqx3llsLQ==}
     dev: true
+
+  /@rbxts/flipper@2.0.1:
+    resolution: {integrity: sha512-kxb5AZizP05XSmo3waS/QkcfNMD5b6HX4gGwyHOyBow260R5MIT4L/ZUPLvleXXyb9b67X4NVmHoac1tPXOLNA==}
+    dev: false
+
+  /@rbxts/log@0.5.0-beta.1:
+    resolution: {integrity: sha512-MUVwRNTWU6bWMgehihaeTHF58s93AEHt1X+s8jF8+MdZc4hefZ6rT4b5OmskEoWw2r8niVKBCqjPXOGmnDj8xA==}
+    dependencies:
+      '@rbxts/message-templates': 0.3.2
+    dev: false
+
+  /@rbxts/log@0.6.3:
+    resolution: {integrity: sha512-YZpDvjL7yif9aYuNAkuM9vnegcwQmOwX0CfvGfWvrzCpmARY4Ey2pTMhoEgxKo36HcdPPi3aLxmcuvn0NHrPPg==}
+    dependencies:
+      '@rbxts/message-templates': 0.3.2
+    dev: false
+
+  /@rbxts/maid@1.1.0:
+    resolution: {integrity: sha512-bVWXZ0p2M3OJzPzvN5fY0T4s37ezUMY7EX31Xspp7Ds4C/K9yE4MHMRXjtlNvsYVPmoc5tdhAbpZY02Veix5lg==}
+    dev: false
+
+  /@rbxts/matter@0.6.4:
+    resolution: {integrity: sha512-84naXqNpUfb5aCEcKf99wdqNnNAuwXh4B73GMQBzrUGiF70m0EWTdmm0qHihdlghGPrCRBSFeYK5esMJvKs/SQ==}
+    dev: false
+
+  /@rbxts/message-templates@0.3.2:
+    resolution: {integrity: sha512-79onYskH3pgrBT73Zs+biQ31vAVvupKQaxGNWGjyGsxwNhO2YaN/qkut0bvOshaGa+ZzqAXApRVrN8ifIMPiMQ==}
+    dev: false
+
+  /@rbxts/net@3.0.7:
+    resolution: {integrity: sha512-IJ1XQFkNF81xCP2YxWtDJbORyiWBnNEneQ26DbHFpx4cIXYPdOgCO3VVCQDNjeEp1rjbkK6YtHoqiXxwEVacZQ==}
+    dev: false
+
+  /@rbxts/objecat@1.1.1:
+    resolution: {integrity: sha512-3Ho/MPKsdGj4AofIjl3z2c/RmIRIgwmOytpU3GXb6wlVNlHu/8RhxHrAFT5KaLX2lG++SRotMpOzPamEZNPs2g==}
+    dev: false
+
+  /@rbxts/plasma@0.4.1-ts.1:
+    resolution: {integrity: sha512-RhLkC3GQW0KeyqjFwvOUbHhsIJOHmXg+BhcKLp0IgUDVgC5GktShi3zmW6GQ319yod+RlUDG1XHjOnP3Omo4bA==}
+    dev: false
+
+  /@rbxts/promise-character@1.0.3:
+    resolution: {integrity: sha512-2OaN4JIoCfRetBcgEFCwlj1lmipLoyj9zCrp+kDSEjD66+vNY+3XUd9XYXlJIue4/yhc9ObHuYIdvegROTmjHg==}
+    dependencies:
+      '@rbxts/compiler-types': 1.2.3-types.1
+      '@rbxts/types': 1.0.708
+      '@rbxts/validate-tree': 2.0.2
+    dev: false
 
   /@rbxts/proton@0.7.0:
     resolution: {integrity: sha512-7x9hrFpWZybbutgfV3g0se3MkyjjIrE1ev4AWtTido1ZdVzPExKdO6KzMZ49QjOHihlzsXqUVPi+AYZl5ljddg==}
@@ -149,13 +279,141 @@ packages:
       '@rbxts/services': 1.5.1
     dev: false
 
+  /@rbxts/rewire@0.3.0:
+    resolution: {integrity: sha512-wChhGZ3kEkEsMK9ZuwKpwRsC7OGVZlvxrYMR3beFgCIPXE58JKLziBLkDACmd709XCCEmsMAqv9HMCMhSTD08Q==}
+    dev: false
+
+  /@rbxts/roact-hooked@2.6.0(@rbxts/roact@1.4.4-ts.0):
+    resolution: {integrity: sha512-2lVbmKVregnXjshCDWuU05mv7XphxBPzeqSXDZmGh9cLqR+9DihEzsGGQrorU5VbsoL//4cOhYEAt3lTyo3dAw==}
+    peerDependencies:
+      '@rbxts/roact': '*'
+    dependencies:
+      '@rbxts/roact': 1.4.4-ts.0
+    dev: false
+
+  /@rbxts/roact-hooks@0.3.0-ts.2:
+    resolution: {integrity: sha512-k8rbqVAp9ZCIJ5EG/dY/UoQsN66o8s/Yc8GvDRqXkacGbf8u0In0ktyatXE3QZUljFf5IUyiBZuaSbbqGdnDfg==}
+    dev: false
+
+  /@rbxts/roact-hooks@0.4.1-ts.3:
+    resolution: {integrity: sha512-+8A42hDsSwZNnXDe1XIRpJhjSpxFvkBa8nB5QM1zuL2q5G6h6SGp7augY6vp6euze/gH4/Laho07PUM8bz0RKQ==}
+    dev: false
+
+  /@rbxts/roact-rodux@0.2.2-ts.5(@rbxts/roact@1.4.2-ts.3)(@rbxts/rodux@3.0.0-ts.3)(@rbxts/types@1.0.708):
+    resolution: {integrity: sha512-WzWpKuZLeUEKJG7dR8Zog1MKQlvz6zA2/GhF0N0wkzvZll2CU8CfhKFRHkMwkLjBLSe69sKDveYo+hBjN3Zl+Q==}
+    peerDependencies:
+      '@rbxts/roact': 1.4.0-ts.0
+      '@rbxts/rodux': 3.0.0-ts.3
+      '@rbxts/types': ^1.0.503
+    dependencies:
+      '@rbxts/roact': 1.4.2-ts.3
+      '@rbxts/rodux': 3.0.0-ts.3
+      '@rbxts/types': 1.0.708
+    dev: false
+
+  /@rbxts/roact-rodux@0.2.2-ts.8(@rbxts/roact@1.4.4-ts.0)(@rbxts/rodux@3.0.0-ts.3)(@rbxts/types@1.0.708):
+    resolution: {integrity: sha512-qeVAOtIYvU3HhCqILZHDn1VAcat6XMJ/CdAEq/2jqNd15lxtuqSso07BapVfmP8qmRnznwWlGJ9eDOhOpr9xPA==}
+    peerDependencies:
+      '@rbxts/roact': ^1.4.4-ts.0
+      '@rbxts/rodux': ^3.0.0-ts.3
+      '@rbxts/types': ^1.0.627
+    dependencies:
+      '@rbxts/roact': 1.4.4-ts.0
+      '@rbxts/rodux': 3.0.0-ts.3
+      '@rbxts/types': 1.0.708
+    dev: false
+
+  /@rbxts/roact@1.4.2-ts.3:
+    resolution: {integrity: sha512-ViS9Tu0gzRdAnOc64CplMKKOG/ISdS7AwgOd+4ld+O3f4N0fPOuxY/sIZ/67fMxH9Isu1r4A6wyg5F5YkK2csA==}
+    dev: false
+
+  /@rbxts/roact@1.4.4-ts.0:
+    resolution: {integrity: sha512-gn9mBoGG/Clzgv2kyOvLNVd9dh5t6z+jukC3ITv2HnfPqvf/sMbz/VMaBoiB7t5umuiIe0LjW0ctZrkrS+uTOA==}
+    dev: false
+
+  /@rbxts/rodux@3.0.0-ts.3:
+    resolution: {integrity: sha512-LrLowiF1YL5U+lQheCNMo8sbrSEoZAIlVFOGB7Edjein5TtZAeNgyJrhY5yFH5gAfJQzFRnZWVOxWFaMlD0GRg==}
+    dev: false
+
+  /@rbxts/rust-classes@0.10.0:
+    resolution: {integrity: sha512-U2YhOLG9dDwVOmMTgjzGcoM2yk0mcJ/Y6Fmu6RUVM2y9XHGly6bWsjK7o3uaI4CDMfYZNKF2MkELIBeyFyEJ2Q==}
+    dev: false
+
+  /@rbxts/rust-classes@0.11.0-beta.1:
+    resolution: {integrity: sha512-lZiXBIohK3fg3ImqQ0P+lRNp9EKeSXK4kA3yVf5Tc5bwQVyS6/O5XvlUeh4s7wRYcure+fd8s0qISQ7DP5Gw0Q==}
+    dev: false
+
+  /@rbxts/rust-classes@0.12.0:
+    resolution: {integrity: sha512-Ibk532/9tHswqU9AdJlLGDjb3fD+tisI0WzTvzsbFcndcdRfEmpBqXC0JZ+4+lIfSERJmL4zRXZQNN//nJ4rmw==}
+    dev: false
+
   /@rbxts/services@1.5.1:
     resolution: {integrity: sha512-SRtfIjga0K4YYSXRpK+eH3kcTq7ZXo9OHOt0jszaOOoEOIJloMGlyuRPqesPHyhveh2AMXAZr3TYbRMSD+u+kQ==}
     dev: false
 
+  /@rbxts/signal@1.1.1:
+    resolution: {integrity: sha512-WX+ONE+ld4pG9PvRkR8OgDld9NpaV1RfXyUIw+Q2oXP/5rehkYzvt20NWtrLAP3NhMc5inYInLd+hnufey6nFw==}
+    dev: false
+
+  /@rbxts/snapdragon@2.0.0-beta.1:
+    resolution: {integrity: sha512-cN2Qgg2Z+Tj5FZGXLFOrBz/QYq92du1al/vnLGtv7WDOb4SmhfQ8tNVCC4Jh/OBdmZuRYp/t07QSjKgYmolnlA==}
+    dev: false
+
+  /@rbxts/string-utils@1.0.3:
+    resolution: {integrity: sha512-nsZsPdGsrsBdwLg7qQ5RGHoVhfvK+U3GvZ/6S+7KufqaFrbHWk2lufESob/C3xYf5sAeXgTJKWUnDJknYBGTIQ==}
+    dev: false
+
+  /@rbxts/t@1.3.5(@rbxts/types@1.0.708):
+    resolution: {integrity: sha512-Z1Lt7DhxQ/FwNgGhKSibHqT5FxgR+QwOF/v9DZN8bP8mJbqtlXwjd8gunL06DKO5xPMWlpbs9fMIgpMI4cl7zQ==}
+    peerDependencies:
+      '@rbxts/types': ^1.0.232
+    dependencies:
+      '@rbxts/types': 1.0.708
+    dev: false
+
+  /@rbxts/t@3.1.0:
+    resolution: {integrity: sha512-ba/wfKYtAL6JWVhZNbhMnBZtzgGaTxttvfzxxpEcHDy0Qeaq0DF2Odo/zJ32Ajw961EMYkAMTnPXLLrLB/r+mw==}
+    dev: false
+
   /@rbxts/types@1.0.708:
     resolution: {integrity: sha512-h6fpdlP6xVvSvJQ+8u081XbdONW4sX46uKu3PBtSvkNnxDlDNMaXKyuCLSq3bpjCvGM5FwaOFxy2hmIUw4tSqQ==}
-    dev: true
+
+  /@rbxts/validate-tree@2.0.2:
+    resolution: {integrity: sha512-OA0E9ZjEeOpPa3XeV5/oC51aro2QFcL5dItufbagYZW8TOsX8C+FDXLx+A/ulMwcF42WcFNcQybxzcWSS/QSrA==}
+    dev: false
+
+  /@rbxts/variant@1.0.2:
+    resolution: {integrity: sha512-cLfjIheMFmII0YMlLbChjD+jj3jcmLhcli2xXdGXCE1WIt6txOYqehaLZcUxyK6D6tFL727txhaseKu+3Hiazg==}
+    dev: false
+
+  /@rbxts/zircon@1.0.9(@rbxts/types@1.0.708):
+    resolution: {integrity: sha512-+1Ls5UmKRzD/9/Ms3EmTetHKoMg4gv8GfqWSfETmxheppKAB0CQ/hlwjge3eIXCVfhMURcHZbQtS2n3GzE9TuQ==}
+    dependencies:
+      '@rbxts/flipper': 2.0.1
+      '@rbxts/log': 0.5.0-beta.1
+      '@rbxts/maid': 1.1.0
+      '@rbxts/message-templates': 0.3.2
+      '@rbxts/net': 3.0.7
+      '@rbxts/roact': 1.4.2-ts.3
+      '@rbxts/roact-hooks': 0.3.0-ts.2
+      '@rbxts/roact-rodux': 0.2.2-ts.5(@rbxts/roact@1.4.2-ts.3)(@rbxts/rodux@3.0.0-ts.3)(@rbxts/types@1.0.708)
+      '@rbxts/rodux': 3.0.0-ts.3
+      '@rbxts/rust-classes': 0.11.0-beta.1
+      '@rbxts/services': 1.5.1
+      '@rbxts/signal': 1.1.1
+      '@rbxts/snapdragon': 2.0.0-beta.1
+      '@rbxts/string-utils': 1.0.3
+      '@rbxts/t': 1.3.5(@rbxts/types@1.0.708)
+      '@rbxts/zirconium': 1.1.0
+    transitivePeerDependencies:
+      - '@rbxts/types'
+    dev: false
+
+  /@rbxts/zirconium@1.1.0:
+    resolution: {integrity: sha512-Yvs4H1JaQyUogrmp5mbKnkyhUsOxquyEXKPq9E3bovo17sQbgcsfmO9sfXvan3H5OObVziPjuoX3/nrmUML/Ww==}
+    dependencies:
+      '@rbxts/rust-classes': 0.10.0
+    dev: false
 
   /@types/json-schema@7.0.12:
     resolution: {integrity: sha512-Hr5Jfhc9eYOQNPYO5WLDq/n4jqijdHNlDXjuAQkkt+mWdQR+XJToOHrsD4cPaMXpn6KO7y2+wM8AZEs8VpBLVA==}

@@ -23,6 +23,32 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@rbxts/proton": "^0.7.0"
+    "@rbxts/beacon": "^2.1.1",
+    "@rbxts/flipper": "^2.0.1",
+    "@rbxts/log": "^0.6.3",
+    "@rbxts/maid": "^1.1.0",
+    "@rbxts/matter": "^0.6.4",
+    "@rbxts/message-templates": "^0.3.2",
+    "@rbxts/net": "^3.0.7",
+    "@rbxts/objecat": "^1.1.1",
+    "@rbxts/plasma": "0.4.1-ts.1",
+    "@rbxts/promise-character": "^1.0.3",
+    "@rbxts/proton": "^0.7.0",
+    "@rbxts/rewire": "^0.3.0",
+    "@rbxts/roact": "1.4.4-ts.0",
+    "@rbxts/roact-hooked": "^2.6.0",
+    "@rbxts/roact-hooks": "0.4.1-ts.3",
+    "@rbxts/roact-rodux": "0.2.2-ts.8",
+    "@rbxts/rodux": "3.0.0-ts.3",
+    "@rbxts/rust-classes": "^0.12.0",
+    "@rbxts/services": "^1.5.1",
+    "@rbxts/signal": "^1.1.1",
+    "@rbxts/snapdragon": "2.0.0-beta.1",
+    "@rbxts/string-utils": "^1.0.3",
+    "@rbxts/t": "^3.1.0",
+    "@rbxts/validate-tree": "^2.0.2",
+    "@rbxts/variant": "^1.0.2",
+    "@rbxts/zircon": "^1.0.9",
+    "@rbxts/zirconium": "^1.1.0"
   }
 }

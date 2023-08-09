@@ -9,6 +9,7 @@
 		"editor.defaultFormatter": "dbaeumer.vscode-eslint",
 		"editor.formatOnSave": true
 	},
+	"editor.detectIndentation": true,
 	"eslint.run": "onType",
 	"eslint.format.enable": true
 }
