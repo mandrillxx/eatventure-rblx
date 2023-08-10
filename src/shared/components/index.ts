@@ -1,5 +1,6 @@
 import { component } from "@rbxts/matter";
 import { CharacterRigR15 } from "@rbxts/promise-character";
+import { EmployeeType, CustomerType } from "shared/Types";
 
 export const Activated = component<{}>("Activated");
 export type Activated = ReturnType<typeof Activated>;
@@ -13,6 +14,18 @@ export const Client = component<{
 	};
 }>("Client");
 export type Client = ReturnType<typeof Client>;
+
+export const Employee = component<{
+	employeeId: number;
+	employeeType: EmployeeType;
+}>("Employee");
+export type Employee = ReturnType<typeof Employee>;
+
+export const Customer = component<{
+	customerId: number;
+	customerType: CustomerType;
+}>("Customer");
+export type Customer = ReturnType<typeof Customer>;
 
 export const Body = component<{ model: CharacterRigR15 }>();
 export type Body = ReturnType<typeof Body>;

@@ -9,19 +9,4 @@ export class GameProvider {
 	private maid = new Maid();
 
 	constructor() {}
-
-	registerClientKeybind(player: Player, callback: Callback) {
-		callback();
-	}
-
-	registerNPC(npcType: NPCType, npc: BaseNPC) {
-		this.maid.GiveTask(() => {
-			this.NPCRegistry.set(npcType, [npc]);
-		});
-	}
-
-	clearNpcs() {
-		this.maid.DoCleaning();
-		this.NPCRegistry.clear();
-	}
 }

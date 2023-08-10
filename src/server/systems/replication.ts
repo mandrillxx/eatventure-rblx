@@ -1,12 +1,14 @@
+import { New } from "@rbxts/fusion";
 import { World, useEvent } from "@rbxts/matter";
 import { AnyComponent, ComponentCtor } from "@rbxts/matter/lib/component";
 import { Players, ReplicatedStorage } from "@rbxts/services";
 import { Client, Renderable } from "shared/components";
-import { ComponentNames } from "shared/serde";
+import { ComponentNames } from "shared/Types";
 
-const remoteEvent = new Instance("RemoteEvent");
-remoteEvent.Name = "Replication";
-remoteEvent.Parent = ReplicatedStorage;
+const remoteEvent = New("RemoteEvent")({
+	Name: "Replication",
+	Parent: ReplicatedStorage,
+});
 
 const REPLICATED_COMPONENTS = new Set<ComponentCtor>([Client, Renderable]);
 

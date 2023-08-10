@@ -1,12 +1,14 @@
+import { New } from "@rbxts/fusion";
 import { World } from "@rbxts/matter";
 import create from "@rbxts/objecat";
 import { ReplicatedStorage } from "@rbxts/services";
 import { t } from "@rbxts/t";
 import { Client } from "shared/components";
 
-const remoteEvent = new Instance("RemoteEvent");
-remoteEvent.Name = "TrackLineOfSight";
-remoteEvent.Parent = ReplicatedStorage;
+const remoteEvent = New("RemoteEvent")({
+	Name: "TrackLineOfSight",
+	Parent: ReplicatedStorage,
+});
 
 function trackLineSight(world: World) {
 	remoteEvent.OnServerEvent.Connect((player, lineSight) => {

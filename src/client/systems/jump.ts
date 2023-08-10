@@ -4,7 +4,8 @@ import { UserInputService } from "@rbxts/services";
 import { ClientState } from "shared/clientState";
 
 function jump(_: World, client: ClientState, ui: Widgets) {
-	const transparency = ui.slider(1);
+	const jump = ui.button("Jump");
+	client.character.Humanoid.Jump = true;
 
 	if (UserInputService.TouchEnabled) {
 		client.character.Humanoid.Jump = client.isJumping;
