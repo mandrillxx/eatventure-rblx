@@ -1,4 +1,8 @@
-interface Workspace extends Instance {}
+interface Workspace extends Instance {
+	Levels: Folder & {
+		[key: string]: Level;
+	};
+}
 
 interface ReplicatedStorage extends Instance {
 	Shared: Folder & {
@@ -12,13 +16,15 @@ interface ReplicatedStorage extends Instance {
 }
 
 type Assets = Folder & {
-	Employees: Folder & {
-		Kenny: NPCEmployee;
-	};
-	Customers: Folder & Customers;
+	NPCs: Folder & Employees & Customers;
+	Levels: Folder & Levels;
 	Products: Folder & {
 		Coffee: Product;
 	};
+};
+
+type Levels = {
+	Level1: Level;
 };
 
 type Customers = {
@@ -27,7 +33,13 @@ type Customers = {
 	Sophia: NPCCustomer;
 };
 
-type NPCNames = keyof Customers;
+type Employees = {
+	Kenny: NPCEmployee;
+};
+
+type CustomerNames = keyof Customers;
+type EmployeeNames = keyof Employees;
+type NPCNames = CustomerNames | EmployeeNames;
 
 type NPCType = "employee" | "customer";
 

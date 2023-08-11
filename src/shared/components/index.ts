@@ -4,6 +4,7 @@ import { EmployeeType, CustomerType } from "shared/Types";
 
 export const Client = component<{
 	player: Player;
+	currentLevel: Level | undefined;
 	document: {
 		rewardsMultiplier: number;
 		bonusMultiplier?: number;
@@ -18,7 +19,7 @@ export type Animate = ReturnType<typeof Animate>;
 
 export const Pathfind = component<{
 	destination: Vector3 | undefined;
-	started: boolean;
+	running: boolean;
 }>("Pathfind");
 export type Pathfind = ReturnType<typeof Pathfind>;
 
@@ -26,6 +27,11 @@ export const NPC = component<{
 	name: NPCNames;
 }>("NPC");
 export type NPC = ReturnType<typeof NPC>;
+
+export const Product = component<{
+	name: string;
+}>("Product");
+export type Product = ReturnType<typeof Product>;
 
 export const Employee = component<{
 	type: EmployeeType;

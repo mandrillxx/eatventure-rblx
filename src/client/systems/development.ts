@@ -9,17 +9,10 @@ import { Network } from "shared/network";
 const player = Players.LocalPlayer;
 
 function development(world: World, _: ClientState, ui: Widgets) {
-	ui.heading("Employees");
-	const employeeCount = ui.slider(10);
-	ui.label(string.format("%.0f", employeeCount));
-	const hireEmployee = ui.button("Set Employees").clicked();
-	ui.space(2);
-	ui.heading("Customers");
-	const customerCount = ui.slider(25);
-	ui.label(string.format("%.0f", customerCount));
-	const setCustomers = ui.button("Set Customers").clicked();
-	ui.space(5);
 	ui.heading("Menu");
+	const hireEmployee = ui.button("Hire Employee").clicked();
+	const spawnCustomer = ui.button("Spawn Customer").clicked();
+	const spawnLevel = ui.button("Spawn Level").clicked();
 	const teleportHome = ui.button("Teleport").clicked();
 	const open = ui.checkbox("Shop Open");
 
@@ -27,13 +20,19 @@ function development(world: World, _: ClientState, ui: Widgets) {
 		Log.Debug("Shop is {@Open}", open.checked());
 	}
 
-	if (setCustomers) {
-		Network.summonCustomer.client.fire("Kendra");
-		Log.Debug("Set customer amount to {@Customers}", customerCount);
+	if (spawnCustomer) {
+		Network.summonCustomer.client.fire("Sophia");
+		Log.Debug("Spawned customer");
+	}
+
+	if (spawnLevel) {
+		Network.spawnLevel.client.fire("Level1");
+		Log.Debug("Spawned level");
 	}
 
 	if (hireEmployee) {
-		Log.Debug("Set employee amount to {@Employees}", employeeCount);
+		Network.hireEmployee.client.fire("Kenny");
+		Log.Debug("Hired employee");
 	}
 
 	if (teleportHome) {

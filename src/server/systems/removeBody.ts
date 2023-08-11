@@ -10,3 +10,5 @@ function removeBody(world: World) {
 		}
 	}
 }
+
+export = removeBody;
