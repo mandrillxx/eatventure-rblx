@@ -4,64 +4,59 @@ import Simplepath from "@rbxts/simplepath";
 import { ServerState } from "server/index.server";
 import { Widgets } from "@rbxts/plasma";
 import Log from "@rbxts/log";
+import Maid from "@rbxts/maid";
 
 function CanPathfind(world: World, _: ServerState, ui: Widgets) {
 	for (const [id, pathfind] of world.queryChanged(Pathfind)) {
-		Log.Debug("Pathfind {@id} has changed {@Old} {@New}", id, pathfind.old, pathfind.new);
-		if (!pathfind.new) {
-			Log.Debug("Pathfind {@id} has no new state", id);
-			return;
-		}
-		const proceed =
-			!pathfind.new.running &&
-			pathfind.old !== undefined &&
-			!pathfind.old.running &&
-			pathfind.new.destination !== undefined;
-		Log.Debug(
-			"{@NewNotRunning} && {@OldIsDefined} && {@OldNotRunning} && {@OldDestinationNotSet} && {@NewDestinationSet}",
-			!pathfind.new.running,
-			pathfind.old !== undefined,
-			!pathfind.old?.running,
-			!pathfind.old?.destination,
-			pathfind.new.destination !== undefined,
-		);
-		Log.Debug("Pathfind {@id} should proceed: {@proceed}", id, proceed);
-		if (proceed) {
-			Log.Info("NPC {@id} has a new destination", id);
+		if (!pathfind.old && pathfind.new && pathfind.new.destination && !pathfind.new.running) {
+			Log.Debug("Pathfind {@id} is moving to {@Destination}", id, pathfind.new.destination);
+			world.insert(id, pathfind.new.patch({ running: true }));
 			const body = world.get(id, Body);
 			if (!body) {
 				Log.Warn("NPC {@id} has no body", id);
-				return;
+				continue;
 			}
 			const destination = pathfind.new.destination;
-			const newState = pathfind.new.patch({ running: true });
-			const finishedState = pathfind.new.patch({ destination: undefined, running: false });
-			task.spawn(() => {
-				const path = new Simplepath(body.model);
-				world.insert(id, newState);
-				path.Run(destination!);
-				path.Reached.Connect(() => {
-					Log.Info("NPC {@id} reached destination", id);
-					world.insert(id, finishedState);
-				});
-			});
+			const watchdogAmount = 10;
+			const maid = new Maid();
+
+			maid.GiveTask(
+				task.spawn(() => {
+					const path = new Simplepath(body.model);
+					path.Visualize = true;
+					const isPathfinding = path.Run(destination);
+					if (!isPathfinding) {
+						Log.Debug("Pathfind {@id} failed to pathfind", id);
+						return;
+					}
+
+					maid.GiveTask(
+						path.Blocked.Connect(() => {
+							Log.Debug("Pathfind {@id} is blocked", id);
+							maid.DoCleaning();
+							world.remove(id, Pathfind);
+						}),
+					);
+
+					maid.GiveTask(
+						path.Reached.Connect(() => {
+							Log.Debug("Pathfind {@id} has reached its destination", id);
+							maid.DoCleaning();
+							world.remove(id, Pathfind);
+						}),
+					);
+
+					maid.GiveTask(
+						task.delay(watchdogAmount, () => {
+							Log.Debug("Pathfind {@id} has timed out after {@Seconds}s", id, watchdogAmount);
+							maid.DoCleaning();
+							world.remove(id, Pathfind);
+						}),
+					);
+				}),
+			);
 		}
 	}
-
-	// for (const [id, npc, body, pathfind] of world.query(NPC, Body, Pathfind)) {
-	// 	if (pathfind.destination && !pathfind.running) {
-	// 		const destination = pathfind.destination;
-	// 		task.spawn(() => {
-	// 			const path = new Simplepath(body.model);
-	// 			world.insert(id, pathfind.patch({ running: true }));
-	// 			path.Run(destination);
-	// 			path.Reached.Connect(() => {
-	// 				Log.Info("NPC {@id} reached destination", id);
-	// 				world.insert(id, pathfind.patch({ destination: undefined, running: false }));
-	// 			});
-	// 		});
-	// 	}
-	// }
 }
 
 export = CanPathfind;

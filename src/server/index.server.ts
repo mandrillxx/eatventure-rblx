@@ -69,11 +69,12 @@ Network.hireEmployee.server.connect((player, name) => {
 });
 
 Network.moveEmployee.server.connect((player, employee) => {
-	for (const [id, npc, transform] of world.query(NPC, Transform)) {
+	for (const [id, _npc, _transform] of world.query(NPC, Transform)) {
+		const level = Workspace.Levels.FindFirstChild("Level1")! as Level;
 		world.insert(
 			id,
 			Pathfind({
-				destination: transform.cf.Position.add(new Vector3(math.random(-16, 16), 0, math.random(-16, 16))),
+				destination: level.EmployeeAnchors.Spawn.Position,
 				running: false,
 			}),
 		);

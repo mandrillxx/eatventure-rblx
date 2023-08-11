@@ -1,4 +1,4 @@
-import { World } from "@rbxts/matter";
+import { Entity, World } from "@rbxts/matter";
 import { Provider } from "@rbxts/proton";
 import { ReplicatedStorage } from "@rbxts/services";
 import { NPC } from "shared/components";
@@ -7,6 +7,7 @@ import { Level } from "shared/components/level";
 @Provider()
 export default class Debug {
 	private world: World | undefined;
+	level: Level | undefined;
 
 	constructor() {}
 
