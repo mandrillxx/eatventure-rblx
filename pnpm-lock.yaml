@@ -64,6 +64,9 @@ dependencies:
   '@rbxts/signal':
     specifier: ^1.1.1
     version: 1.1.1
+  '@rbxts/simplepath':
+    specifier: 2.2.1-ts.2
+    version: 2.2.1-ts.2
   '@rbxts/snapdragon':
     specifier: 2.0.0-beta.1
     version: 2.0.0-beta.1
@@ -363,6 +366,10 @@ packages:
 
   /@rbxts/signal@1.1.1:
     resolution: {integrity: sha512-WX+ONE+ld4pG9PvRkR8OgDld9NpaV1RfXyUIw+Q2oXP/5rehkYzvt20NWtrLAP3NhMc5inYInLd+hnufey6nFw==}
+    dev: false
+
+  /@rbxts/simplepath@2.2.1-ts.2:
+    resolution: {integrity: sha512-53GTFIMeIkq/q4A5vSdG96agKm+EtabtsZ0r8LxXNjkLxLUiqzNnRc3rA11D2OqXNLHLwvweqhePg7s2Ol6+RA==}
     dev: false
 
   /@rbxts/snapdragon@2.0.0-beta.1:

@@ -2,12 +2,8 @@ import { component } from "@rbxts/matter";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { EmployeeType, CustomerType } from "shared/Types";
 
-export const Activated = component<{}>("Activated");
-export type Activated = ReturnType<typeof Activated>;
-
 export const Client = component<{
 	player: Player;
-	lineSight: Vector3;
 	document: {
 		rewardsMultiplier: number;
 		bonusMultiplier?: number;
@@ -15,28 +11,34 @@ export const Client = component<{
 }>("Client");
 export type Client = ReturnType<typeof Client>;
 
+export const Animate = component<{
+	animationScale: number;
+}>("Animate");
+export type Animate = ReturnType<typeof Animate>;
+
+export const Pathfind = component<{
+	destination: Vector3 | undefined;
+	started: boolean;
+}>("Pathfind");
+export type Pathfind = ReturnType<typeof Pathfind>;
+
+export const NPC = component<{
+	name: NPCNames;
+}>("NPC");
+export type NPC = ReturnType<typeof NPC>;
+
 export const Employee = component<{
-	employeeId: number;
-	employeeType: EmployeeType;
+	type: EmployeeType;
 }>("Employee");
 export type Employee = ReturnType<typeof Employee>;
 
 export const Customer = component<{
-	customerId: number;
-	customerType: CustomerType;
+	type: CustomerType;
 }>("Customer");
 export type Customer = ReturnType<typeof Customer>;
 
 export const Body = component<{ model: CharacterRigR15 }>();
 export type Body = ReturnType<typeof Body>;
-
-export const DebugAdornment = component<{
-	label: BillboardGui & { TextLabel: TextLabel };
-	highlight: Highlight;
-	lineBox: ScreenGui & { topLeft: Frame; topRight: Frame; bottomLeft: Frame; bottomRight: Frame };
-	lineSight: Part;
-}>("DebugAdornment");
-export type DebugAdornment = ReturnType<typeof DebugAdornment>;
 
 export const Interactable = component<{}>("Interactable");
 export type Interactable = ReturnType<typeof Interactable>;

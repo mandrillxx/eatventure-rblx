@@ -1,5 +1,4 @@
 import { Proton } from "@rbxts/proton";
-import { ControlProvider } from "./providers/control";
 import Log, { Logger } from "@rbxts/log";
 import { Players, ReplicatedStorage } from "@rbxts/services";
 import { CharacterRigR15 } from "@rbxts/promise-character";
@@ -33,9 +32,3 @@ const state: ClientState = {
 };
 
 start([ReplicatedStorage.Client.systems, ReplicatedStorage.Shared.systems], state)(receiveReplication);
-
-const controlProvider = Proton.get(ControlProvider);
-
-controlProvider.registerClientKeybind("SpawnCustomer", Enum.KeyCode.G, () => {
-	Log.Info("Hello from {@Context} {@Message}", "client", "spawning customer NPC");
-});

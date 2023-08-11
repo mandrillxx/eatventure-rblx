@@ -44,6 +44,7 @@
     "@rbxts/rust-classes": "^0.12.0",
     "@rbxts/services": "^1.5.1",
     "@rbxts/signal": "^1.1.1",
+    "@rbxts/simplepath": "2.2.1-ts.2",
     "@rbxts/snapdragon": "2.0.0-beta.1",
     "@rbxts/string-utils": "^1.0.3",
     "@rbxts/t": "^3.1.0",

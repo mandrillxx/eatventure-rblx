@@ -4,6 +4,7 @@ import { Widgets } from "@rbxts/plasma";
 import { Players } from "@rbxts/services";
 import { ClientState } from "shared/clientState";
 import { Client } from "shared/components";
+import { Network } from "shared/network";
 
 const player = Players.LocalPlayer;
 
@@ -27,6 +28,7 @@ function development(world: World, _: ClientState, ui: Widgets) {
 	}
 
 	if (setCustomers) {
+		Network.summonCustomer.client.fire("Kendra");
 		Log.Debug("Set customer amount to {@Customers}", customerCount);
 	}
 

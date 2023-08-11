@@ -1,5 +1,4 @@
 import { CharacterRigR15 } from "@rbxts/promise-character";
-import { InputKind } from "./inputMapperMessage";
 import { AnyEntity } from "@rbxts/matter";
 
 export enum PlayerState {
@@ -11,7 +10,6 @@ export interface ClientState {
 	character: CharacterRigR15;
 	isJumping: boolean;
 	isRunning: boolean;
-	lastProcessedCommand?: InputKind;
 	entityIdMap: Map<string, AnyEntity>;
 	overlapParams: OverlapParams;
 	raycastParams: RaycastParams;
