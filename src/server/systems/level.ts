@@ -8,7 +8,6 @@ import { Level as LevelComp } from "shared/components/level";
 
 function level(world: World, _: ServerState, ui: Widgets) {
 	for (const [id, level] of world.query(LevelComp).without(Renderable)) {
-		// Log.Info("Found {@id}, {@Level} without renderable", id, level.name);
 		const model = ReplicatedStorage.Assets.Levels.FindFirstChild(level.name)!.Clone() as Level;
 		model.Parent = Workspace.Levels;
 

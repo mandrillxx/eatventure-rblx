@@ -3,7 +3,7 @@ import { Proton } from "@rbxts/proton";
 import { Players, ReplicatedStorage, Workspace } from "@rbxts/services";
 import { setupTags } from "shared/setupTags";
 import { start } from "shared/start";
-import { Client, NPC, Pathfind, Renderable, Zone } from "shared/components";
+import { Client, NPC, Pathfind, Renderable, Transform, Zone } from "shared/components";
 import promiseR15 from "@rbxts/promise-character";
 import Debug from "./providers/debug";
 import { Network } from "shared/network";
@@ -68,4 +68,14 @@ Network.hireEmployee.server.connect((player, name) => {
 	});
 });
 
-Network.spawnLevel.server.connect((player, levelName) => {});
+Network.moveEmployee.server.connect((player, employee) => {
+	for (const [id, npc, transform] of world.query(NPC, Transform)) {
+		world.insert(
+			id,
+			Pathfind({
+				destination: transform.cf.Position.add(new Vector3(math.random(-16, 16), 0, math.random(-16, 16))),
+				running: false,
+			}),
+		);
+	}
+});

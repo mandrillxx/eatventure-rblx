@@ -11,6 +11,7 @@ const player = Players.LocalPlayer;
 function development(world: World, _: ClientState, ui: Widgets) {
 	ui.heading("Menu");
 	const hireEmployee = ui.button("Hire Employee").clicked();
+	const makeEmployeeMove = ui.button("Move Employee").clicked();
 	const spawnCustomer = ui.button("Spawn Customer").clicked();
 	const spawnLevel = ui.button("Spawn Level").clicked();
 	const teleportHome = ui.button("Teleport").clicked();
@@ -23,6 +24,11 @@ function development(world: World, _: ClientState, ui: Widgets) {
 	if (spawnCustomer) {
 		Network.summonCustomer.client.fire("Sophia");
 		Log.Debug("Spawned customer");
+	}
+
+	if (makeEmployeeMove) {
+		Network.moveEmployee.client.fire("Kenny");
+		Log.Debug("Made employee move");
 	}
 
 	if (spawnLevel) {

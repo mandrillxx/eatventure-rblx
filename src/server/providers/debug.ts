@@ -28,9 +28,11 @@ export default class Debug {
 				name,
 			}),
 		);
-		for (const [id, level] of this.world.query(Level)) {
-			this.world.insert(id, level.patch({ npcs: [...level.npcs, name] }));
-		}
+		// const npc_ = this.world.get(npc);
+
+		// for (const [id, level] of this.world.query(Level)) {
+		// 	this.world.insert(id, level.patch({ npcs: [...level.npcs, name] }));
+		// }
 		return npc;
 	}
 
