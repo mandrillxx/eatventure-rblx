@@ -3,7 +3,7 @@ import { Proton } from "@rbxts/proton";
 import { Players, ReplicatedStorage, Workspace } from "@rbxts/services";
 import { setupTags } from "shared/setupTags";
 import { start } from "shared/start";
-import { Client, NPC, Pathfind, Renderable, Transform, Zone } from "shared/components";
+import { Animate, Body, Client, NPC, Pathfind, Renderable, Transform, Zone } from "shared/components";
 import promiseR15 from "@rbxts/promise-character";
 import Debug from "./providers/debug";
 import { Network } from "shared/network";
@@ -76,6 +76,17 @@ Network.moveEmployee.server.connect((player, employee) => {
 			Pathfind({
 				destination: level.EmployeeAnchors.Spawn.Position,
 				running: false,
+			}),
+		);
+	}
+});
+
+Network.emoteEmployee.server.connect((player, name, emote) => {
+	for (const [id, _npc, body] of world.query(NPC, Body)) {
+		world.insert(
+			id,
+			Animate({
+				animationType: emote,
 			}),
 		);
 	}

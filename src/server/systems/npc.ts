@@ -10,6 +10,7 @@ function npc(world: World, _: ServerState, ui: Widgets) {
 		Log.Info("Found {@id}, {@NPC} without body", id, npc.name);
 		const body = ReplicatedStorage.Assets.NPCs.FindFirstChild(npc.name)!.Clone() as BaseNPC;
 		body.Parent = Workspace;
+		body.ID.Value = id;
 
 		world.insert(
 			id,

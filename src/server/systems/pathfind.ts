@@ -6,7 +6,7 @@ import { Widgets } from "@rbxts/plasma";
 import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
 
-function CanPathfind(world: World, _: ServerState, ui: Widgets) {
+function pathfind(world: World, _: ServerState, ui: Widgets) {
 	for (const [id, pathfind] of world.queryChanged(Pathfind)) {
 		if (!pathfind.old && pathfind.new && pathfind.new.destination && !pathfind.new.running) {
 			Log.Debug("Pathfind {@id} is moving to {@Destination}", id, pathfind.new.destination);
@@ -24,33 +24,44 @@ function CanPathfind(world: World, _: ServerState, ui: Widgets) {
 				task.spawn(() => {
 					const path = new Simplepath(body.model);
 					path.Visualize = true;
+
 					const isPathfinding = path.Run(destination);
 					if (!isPathfinding) {
 						Log.Debug("Pathfind {@id} failed to pathfind", id);
 						return;
 					}
 
+					function endPath() {
+						maid.DoCleaning();
+						world.remove(id, Pathfind);
+						path.Destroy();
+					}
+
+					maid.GiveTask(
+						path.Error.Connect((errorType) => {
+							Log.Debug("Pathfind {@id} has errored: {@Error}", id, errorType);
+							endPath();
+						}),
+					);
+
 					maid.GiveTask(
 						path.Blocked.Connect(() => {
 							Log.Debug("Pathfind {@id} is blocked", id);
-							maid.DoCleaning();
-							world.remove(id, Pathfind);
+							endPath();
 						}),
 					);
 
 					maid.GiveTask(
 						path.Reached.Connect(() => {
 							Log.Debug("Pathfind {@id} has reached its destination", id);
-							maid.DoCleaning();
-							world.remove(id, Pathfind);
+							endPath();
 						}),
 					);
 
 					maid.GiveTask(
 						task.delay(watchdogAmount, () => {
 							Log.Debug("Pathfind {@id} has timed out after {@Seconds}s", id, watchdogAmount);
-							maid.DoCleaning();
-							world.remove(id, Pathfind);
+							endPath();
 						}),
 					);
 				}),
@@ -59,4 +70,4 @@ function CanPathfind(world: World, _: ServerState, ui: Widgets) {
 	}
 }
 
-export = CanPathfind;
+export = pathfind;

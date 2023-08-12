@@ -13,7 +13,8 @@ export const Client = component<{
 export type Client = ReturnType<typeof Client>;
 
 export const Animate = component<{
-	animationScale: number;
+	playFor?: number;
+	animationType: AnimationType;
 }>("Animate");
 export type Animate = ReturnType<typeof Animate>;
 
@@ -43,7 +44,7 @@ export const Customer = component<{
 }>("Customer");
 export type Customer = ReturnType<typeof Customer>;
 
-export const Body = component<{ model: CharacterRigR15 }>();
+export const Body = component<{ model: CharacterRigR15 & { Animate?: Script & { PlayEmote: BindableFunction } } }>();
 export type Body = ReturnType<typeof Body>;
 
 export const Interactable = component<{}>("Interactable");

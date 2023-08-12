@@ -93,6 +93,28 @@ type EmployeeDirective = BaseDirective & {
 
 type Directive = CustomerDirective | EmployeeDirective;
 
+type AnimationType =
+	| "cheer"
+	| "climb"
+	| "dance"
+	| "dance2"
+	| "dance3"
+	| "fall"
+	| "idle"
+	| "jump"
+	| "laugh"
+	| "mood"
+	| "point"
+	| "run"
+	| "sit"
+	| "swim"
+	| "swimidle"
+	| "toollunge"
+	| "toolnone"
+	| "toolslash"
+	| "walk"
+	| "wave";
+
 type NPC = {
 	directive: Directive;
 	npc: BaseNPC;
