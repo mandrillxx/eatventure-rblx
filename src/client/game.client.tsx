@@ -6,6 +6,9 @@ import { ClientState } from "shared/clientState";
 import { AnyEntity } from "@rbxts/matter";
 import { start } from "shared/start";
 import { receiveReplication } from "./receiveReplication";
+import Roact from "@rbxts/roact";
+import TestGUI from "./gui/menu";
+import { withHookDetection } from "@rbxts/roact-hooked";
 
 Log.SetLogger(Logger.configure().WriteTo(Log.RobloxOutput()).Create());
 
@@ -32,3 +35,6 @@ const state: ClientState = {
 };
 
 start([ReplicatedStorage.Client.systems, ReplicatedStorage.Shared.systems], state)(receiveReplication);
+
+withHookDetection(Roact);
+Roact.mount(<TestGUI />, player.FindFirstChildWhichIsA("PlayerGui")!);

@@ -28,6 +28,9 @@ dependencies:
   '@rbxts/objecat':
     specifier: ^1.1.1
     version: 1.1.1
+  '@rbxts/object-utils':
+    specifier: ^1.0.4
+    version: 1.0.4
   '@rbxts/plasma':
     specifier: 0.4.1-ts.1
     version: 0.4.1-ts.1
@@ -55,6 +58,9 @@ dependencies:
   '@rbxts/rodux':
     specifier: 3.0.0-ts.3
     version: 3.0.0-ts.3
+  '@rbxts/rowindcss':
+    specifier: ^1.3.1
+    version: 1.3.1
   '@rbxts/rust-classes':
     specifier: ^0.12.0
     version: 0.12.0
@@ -273,6 +279,10 @@ packages:
     resolution: {integrity: sha512-3Ho/MPKsdGj4AofIjl3z2c/RmIRIgwmOytpU3GXb6wlVNlHu/8RhxHrAFT5KaLX2lG++SRotMpOzPamEZNPs2g==}
     dev: false
 
+  /@rbxts/object-utils@1.0.4:
+    resolution: {integrity: sha512-dLLhf022ipV+9i910sOE7kl9losKHoon0WgeerHqVMQA5EYsLUsVT2AxhJuhk8MiDn5oJ2GiFofE/LadY9TpJQ==}
+    dev: false
+
   /@rbxts/plasma@0.4.1-ts.1:
     resolution: {integrity: sha512-RhLkC3GQW0KeyqjFwvOUbHhsIJOHmXg+BhcKLp0IgUDVgC5GktShi3zmW6GQ319yod+RlUDG1XHjOnP3Omo4bA==}
     dev: false
@@ -346,6 +356,14 @@ packages:
 
   /@rbxts/rodux@3.0.0-ts.3:
     resolution: {integrity: sha512-LrLowiF1YL5U+lQheCNMo8sbrSEoZAIlVFOGB7Edjein5TtZAeNgyJrhY5yFH5gAfJQzFRnZWVOxWFaMlD0GRg==}
+    dev: false
+
+  /@rbxts/rowindcss@1.3.1:
+    resolution: {integrity: sha512-JQsdOEXfiXqNcZ+D7b+U3RdIDNwuveKnO+vj2UYuZL3CgJJ68KpORctMEvDboJWqMlaXdkSZyPv41X69hCwrXA==}
+    dependencies:
+      '@rbxts/object-utils': 1.0.4
+      '@rbxts/roact': 1.4.4-ts.0
+      '@rbxts/roact-hooked': 2.6.0(@rbxts/roact@1.4.4-ts.0)
     dev: false
 
   /@rbxts/rust-classes@0.10.0:
