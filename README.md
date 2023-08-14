@@ -1,4 +1,4 @@
-![Discord](https://img.shields.io/discord/856971667393609759)
+![Discord](https://img.shields.io/discord/1140689343082672169)
 ![GitHub issues](https://img.shields.io/github/issues/mandrillxx/eatventure-rblx)
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 
