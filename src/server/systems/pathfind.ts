@@ -27,7 +27,7 @@ function pathfind(world: World, _: ServerState, ui: Widgets) {
 
 					const isPathfinding = path.Run(destination);
 					if (!isPathfinding) {
-						Log.Debug("Pathfind {@id} failed to pathfind", id);
+						Log.Warn("Pathfind {@id} failed to pathfind", id);
 						return;
 					}
 
@@ -39,28 +39,28 @@ function pathfind(world: World, _: ServerState, ui: Widgets) {
 
 					maid.GiveTask(
 						path.Error.Connect((errorType) => {
-							Log.Debug("Pathfind {@id} has errored: {@Error}", id, errorType);
+							Log.Error("Pathfind {@id} has errored: {@Error}", id, errorType);
 							endPath();
 						}),
 					);
 
 					maid.GiveTask(
 						path.Blocked.Connect(() => {
-							Log.Debug("Pathfind {@id} is blocked", id);
+							Log.Error("Pathfind {@id} is blocked", id);
 							endPath();
 						}),
 					);
 
 					maid.GiveTask(
 						path.Reached.Connect(() => {
-							Log.Debug("Pathfind {@id} has reached its destination", id);
+							Log.Info("Pathfind {@id} has reached its destination", id);
 							endPath();
 						}),
 					);
 
 					maid.GiveTask(
 						task.delay(watchdogAmount, () => {
-							Log.Debug("Pathfind {@id} has timed out after {@Seconds}s", id, watchdogAmount);
+							Log.Error("Pathfind {@id} has timed out after {@Seconds}s", id, watchdogAmount);
 							endPath();
 						}),
 					);

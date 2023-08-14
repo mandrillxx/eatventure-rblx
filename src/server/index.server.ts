@@ -5,24 +5,37 @@ import { setupTags } from "shared/setupTags";
 import { start } from "shared/start";
 import { Animate, Body, Client, NPC, Pathfind, Renderable, Transform } from "shared/components";
 import promiseR15 from "@rbxts/promise-character";
-import Debug from "./providers/debug";
 import { Network } from "shared/network";
+import { Level } from "shared/components/level";
+import { World } from "@rbxts/matter";
 
 declare const script: { systems: Folder };
-export interface ServerState {}
+export interface ServerState {
+	levels: Map<keyof Levels, WorldInfo>;
+}
 
-const state: ServerState = {};
+const state: ServerState = {
+	levels: new Map(),
+};
 
 const world = start([script.systems, ReplicatedStorage.Shared.systems], state)(setupTags);
+world.spawn(
+	Level({
+		name: "Level1",
+		npcs: [],
+		products: [],
+	}),
+);
 
 function playerAdded(player: Player) {
 	function characterAdded(character: Model) {
 		promiseR15(character).andThen((model) => {
+			const currentLevel: WorldInfo = state.levels.get("Level1")!;
 			const playerId = world.spawn(
 				Renderable({ model }),
 				Client({
 					player,
-					currentLevel: undefined,
+					currentLevel,
 					document: {
 						rewardsMultiplier: 1,
 					},
@@ -44,48 +57,4 @@ for (const player of Players.GetPlayers()) {
 
 Proton.awaitStart();
 
-const debug = Proton.get(Debug);
-debug.setWorld(world);
-
 Log.SetLogger(Logger.configure().WriteTo(Log.RobloxOutput()).Create());
-
-Network.summonCustomer.server.connect((player, name) => {
-	const npc = debug.summonCustomer(name);
-	world.insert(npc);
-});
-
-Network.hireEmployee.server.connect((player, name) => {
-	const npc = debug.hireEmployee(name);
-	const path = world.get(npc, Pathfind);
-	if (!path) {
-		Log.Debug("No pathfind component found for {@id}", npc);
-		return;
-	}
-	task.delay(2, () => {
-		world.insert(npc, path.patch({ destination: Workspace.Levels.Level1.CustomerAnchors.Destination1.Position }));
-	});
-});
-
-Network.moveEmployee.server.connect((player, employee) => {
-	for (const [id, _npc, _transform] of world.query(NPC, Transform)) {
-		const level = Workspace.Levels.FindFirstChild("Level1")! as BaseLevel;
-		world.insert(
-			id,
-			Pathfind({
-				destination: level.EmployeeAnchors.Spawn.Position,
-				running: false,
-			}),
-		);
-	}
-});
-
-Network.emoteEmployee.server.connect((player, name, emote) => {
-	for (const [id, _npc, _body] of world.query(NPC, Body)) {
-		world.insert(
-			id,
-			Animate({
-				animationType: emote,
-			}),
-		);
-	}
-});

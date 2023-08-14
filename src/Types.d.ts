@@ -47,6 +47,11 @@ type BaseNPC = import("@rbxts/promise-character").CharacterRigR15 & {
 	ID: IntValue;
 };
 
+type WorldInfo = Partial<import("@rbxts/matter").World> & {
+	LevelModel: BaseLevel;
+	Level: import("./shared/components/level").Level;
+};
+
 type NPCEmployee = BaseNPC & {
 	ClickDetector: ClickDetector;
 };

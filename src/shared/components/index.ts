@@ -1,11 +1,11 @@
-import { component } from "@rbxts/matter";
+import { World, component } from "@rbxts/matter";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { EmployeeType, CustomerType } from "shared/Types";
 import { Level as LevelComponent } from "./level";
 
 export const Client = component<{
 	player: Player;
-	currentLevel: BaseLevel | undefined;
+	currentLevel: WorldInfo;
 	document: {
 		rewardsMultiplier: number;
 		bonusMultiplier?: number;
@@ -26,6 +26,7 @@ export const Pathfind = component<{
 export type Pathfind = ReturnType<typeof Pathfind>;
 
 export const NPC = component<{
+	world: WorldInfo;
 	name: NPCNames;
 }>("NPC");
 export type NPC = ReturnType<typeof NPC>;

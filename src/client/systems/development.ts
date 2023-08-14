@@ -23,26 +23,22 @@ function development(world: World, _: ClientState, ui: Widgets) {
 	}
 
 	if (spawnCustomer) {
-		Network.summonCustomer.client.fire("Sophia");
 		Log.Debug("Spawned customer");
 	}
 
 	if (makeEmployeeEmote) {
-		Network.emoteEmployee.client.fire("Kenny", "dance2");
+		Log.Debug("Made employee emote");
 	}
 
 	if (makeEmployeeMove) {
-		Network.moveEmployee.client.fire("Kenny");
 		Log.Debug("Made employee move");
 	}
 
 	if (spawnLevel) {
-		Network.spawnLevel.client.fire("Level1");
 		Log.Debug("Spawned level");
 	}
 
 	if (hireEmployee) {
-		Network.hireEmployee.client.fire("Kenny");
 		Log.Debug("Hired employee");
 	}
 

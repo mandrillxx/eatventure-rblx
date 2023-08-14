@@ -37,4 +37,4 @@ const state: ClientState = {
 start([ReplicatedStorage.Client.systems, ReplicatedStorage.Shared.systems], state)(receiveReplication);
 
 withHookDetection(Roact);
-Roact.mount(<TestGUI />, player.FindFirstChildWhichIsA("PlayerGui")!);
+// Roact.mount(<TestGUI />, player.FindFirstChildWhichIsA("PlayerGui")!);
