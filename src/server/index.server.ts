@@ -3,7 +3,7 @@ import { Proton } from "@rbxts/proton";
 import { Players, ReplicatedStorage, Workspace } from "@rbxts/services";
 import { setupTags } from "shared/setupTags";
 import { start } from "shared/start";
-import { Animate, Body, Client, NPC, Pathfind, Renderable, Transform, Zone } from "shared/components";
+import { Animate, Body, Client, NPC, Pathfind, Renderable, Transform } from "shared/components";
 import promiseR15 from "@rbxts/promise-character";
 import Debug from "./providers/debug";
 import { Network } from "shared/network";
@@ -14,8 +14,6 @@ export interface ServerState {}
 const state: ServerState = {};
 
 const world = start([script.systems, ReplicatedStorage.Shared.systems], state)(setupTags);
-
-world.spawn(Zone({ maxCapacity: 5, population: 0 }));
 
 function playerAdded(player: Player) {
 	function characterAdded(character: Model) {
@@ -70,7 +68,7 @@ Network.hireEmployee.server.connect((player, name) => {
 
 Network.moveEmployee.server.connect((player, employee) => {
 	for (const [id, _npc, _transform] of world.query(NPC, Transform)) {
-		const level = Workspace.Levels.FindFirstChild("Level1")! as Level;
+		const level = Workspace.Levels.FindFirstChild("Level1")! as BaseLevel;
 		world.insert(
 			id,
 			Pathfind({
@@ -82,7 +80,7 @@ Network.moveEmployee.server.connect((player, employee) => {
 });
 
 Network.emoteEmployee.server.connect((player, name, emote) => {
-	for (const [id, _npc, body] of world.query(NPC, Body)) {
+	for (const [id, _npc, _body] of world.query(NPC, Body)) {
 		world.insert(
 			id,
 			Animate({

@@ -1,8 +1,7 @@
 import { Button, Div, Text } from "@rbxts/rowindcss";
 import Roact from "@rbxts/roact";
 import Log from "@rbxts/log";
-import { Players } from "@rbxts/services";
-import { useContext, useState, withHooks } from "@rbxts/roact-hooked";
+import { useState, withHooks } from "@rbxts/roact-hooked";
 
 function Test() {
 	const [state, setState] = useState<"State1" | "State2">("State1");

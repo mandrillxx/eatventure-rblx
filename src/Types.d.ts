@@ -1,6 +1,6 @@
 interface Workspace extends Instance {
 	Levels: Folder & {
-		[key: string]: Level;
+		[key: string]: BaseLevel;
 	};
 }
 
@@ -24,7 +24,7 @@ type Assets = Folder & {
 };
 
 type Levels = {
-	Level1: Level;
+	Level1: BaseLevel;
 };
 
 type Customers = {
@@ -130,7 +130,7 @@ type Employee = NPC & {
 	npc: NPCEmployee;
 };
 
-type Level = Model & {
+type BaseLevel = Model & {
 	NPCs: Folder & {
 		Customers: Folder;
 		Employees: Folder;

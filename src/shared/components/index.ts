@@ -1,10 +1,11 @@
 import { component } from "@rbxts/matter";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { EmployeeType, CustomerType } from "shared/Types";
+import { Level as LevelComponent } from "./level";
 
 export const Client = component<{
 	player: Player;
-	currentLevel: Level | undefined;
+	currentLevel: BaseLevel | undefined;
 	document: {
 		rewardsMultiplier: number;
 		bonusMultiplier?: number;
@@ -58,6 +59,3 @@ export type Renderable = ReturnType<typeof Renderable>;
 
 export const Transform = component<{ cf: CFrame; doNotReconcile?: boolean }>("Transform");
 export type Transform = ReturnType<typeof Transform>;
-
-export const Zone = component<{ maxCapacity: number; population: number }>("Zone");
-export type Zone = ReturnType<typeof Zone>;
