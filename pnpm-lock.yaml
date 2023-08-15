@@ -10,6 +10,9 @@ dependencies:
   '@rbxts/fusion':
     specifier: 0.1.1-ts.beta.1
     version: 0.1.1-ts.beta.1
+  '@rbxts/linked-lists':
+    specifier: ^1.0.4
+    version: 1.0.4
   '@rbxts/log':
     specifier: ^0.6.3
     version: 0.6.3
@@ -76,6 +79,9 @@ dependencies:
   '@rbxts/snapdragon':
     specifier: 2.0.0-beta.1
     version: 2.0.0-beta.1
+  '@rbxts/stacks-and-queues':
+    specifier: ^1.0.5
+    version: 1.0.5
   '@rbxts/string-utils':
     specifier: ^1.0.3
     version: 1.0.3
@@ -247,6 +253,12 @@ packages:
     resolution: {integrity: sha512-saDiH0sChLr0KFoFUyN0/aVS3rJ2fY5JQ0NegmxGz5CLLS+cwTb8P5DnT3SEPUzfqSjQ3+isPxtkIsZwmf3hdg==}
     dev: false
 
+  /@rbxts/linked-lists@1.0.4:
+    resolution: {integrity: sha512-ZC2yHSv38A7PppTXEu9urP3zUrRaRM2N8CElmGstgd5c8hy9s9muEg2pBm+4nw8b1KsnY1MvjWHPiD3l95jC1g==}
+    dependencies:
+      '@rbxts/testez': 0.3.1-ts.7
+    dev: false
+
   /@rbxts/log@0.5.0-beta.1:
     resolution: {integrity: sha512-MUVwRNTWU6bWMgehihaeTHF58s93AEHt1X+s8jF8+MdZc4hefZ6rT4b5OmskEoWw2r8niVKBCqjPXOGmnDj8xA==}
     dependencies:
@@ -394,6 +406,12 @@ packages:
     resolution: {integrity: sha512-cN2Qgg2Z+Tj5FZGXLFOrBz/QYq92du1al/vnLGtv7WDOb4SmhfQ8tNVCC4Jh/OBdmZuRYp/t07QSjKgYmolnlA==}
     dev: false
 
+  /@rbxts/stacks-and-queues@1.0.5:
+    resolution: {integrity: sha512-G8r7eMjN9AVKLItmILj1XncVhF+MrgT3CGRmdr8IB7c93WIulRUwnbQ8Uk+8nyE9rxL8HpR7Ne+WO5ocMemx6A==}
+    dependencies:
+      '@rbxts/linked-lists': 1.0.4
+    dev: false
+
   /@rbxts/string-utils@1.0.3:
     resolution: {integrity: sha512-nsZsPdGsrsBdwLg7qQ5RGHoVhfvK+U3GvZ/6S+7KufqaFrbHWk2lufESob/C3xYf5sAeXgTJKWUnDJknYBGTIQ==}
     dev: false
@@ -408,6 +426,10 @@ packages:
 
   /@rbxts/t@3.1.0:
     resolution: {integrity: sha512-ba/wfKYtAL6JWVhZNbhMnBZtzgGaTxttvfzxxpEcHDy0Qeaq0DF2Odo/zJ32Ajw961EMYkAMTnPXLLrLB/r+mw==}
+    dev: false
+
+  /@rbxts/testez@0.3.1-ts.7:
+    resolution: {integrity: sha512-DkIlRFdMODHjJPEYJT/cPYv2ZQzSqAufF4XAsqrx7zFg8OVAkSHY5aGChGoPNrZo0PM4zz9bw46ZIVqLfcM05Q==}
     dev: false
 
   /@rbxts/testez@0.4.2-ts.0:

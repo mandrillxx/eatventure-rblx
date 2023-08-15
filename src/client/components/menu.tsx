@@ -12,7 +12,7 @@ interface MenuProps {
 	playerId: AnyEntity;
 }
 
-function Test({ world, playerId }: MenuProps) {
+function Menu({ world, playerId }: MenuProps) {
 	const [bal, setBal] = useState(0.0);
 
 	let ranOnce = false;
@@ -27,7 +27,7 @@ function Test({ world, playerId }: MenuProps) {
 	return (
 		<screengui Key="Stinky">
 			<Div className="w-full h-full flex justify-start items-end">
-				<Div className="flex w-full justify-between items-center bg-blue-900">
+				<Div className="flex w-full justify-between items-center">
 					<Text className="text-white font-bold text-4xl" Text="Balance: " />
 					<Text className="text-yellow-500 font-bold text-4xl" Text={`${bal} coins`} />
 				</Div>
@@ -36,4 +36,4 @@ function Test({ world, playerId }: MenuProps) {
 	);
 }
 
-export default withHooks(Test);
+export default withHooks(Menu);

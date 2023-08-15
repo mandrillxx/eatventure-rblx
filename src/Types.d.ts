@@ -21,9 +21,7 @@ interface ReplicatedStorage extends Instance {
 type Assets = Folder & {
 	NPCs: Folder & Employees & Customers;
 	Levels: Folder & Levels;
-	Products: Folder & {
-		Coffee: Product;
-	};
+	Products: Folder & Products;
 };
 
 type Levels = {
@@ -54,7 +52,7 @@ type BaseNPC = import("@rbxts/promise-character").CharacterRigR15 & {
 	ID: IntValue;
 };
 
-type Product = Model & {
+type BaseProduct = Model & {
 	icon: StringValue;
 	price: NumberValue;
 	name: StringValue;
@@ -82,6 +80,10 @@ type AnimationType =
 	| "walk"
 	| "wave";
 
+type Products = {
+	Coffee: BaseProduct;
+};
+
 type BaseLevel = Model & {
 	NPCs: Folder & {
 		Customers: Folder;
@@ -92,7 +94,7 @@ type BaseLevel = Model & {
 			anchor: BasePart;
 		};
 	};
-	Products: Folder;
+	Products: Folder & Products;
 	CustomerAnchors: Folder & {
 		Spawn: BasePart;
 		[key: string]: BasePart & {

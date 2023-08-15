@@ -2,11 +2,10 @@ import Log, { Logger } from "@rbxts/log";
 import { Players, ReplicatedStorage } from "@rbxts/services";
 import { setupTags } from "shared/setupTags";
 import { start } from "shared/start";
-import { BelongsTo, Client, Level, NPC, OwnedBy, Pathfind, Renderable } from "shared/components";
+import { Client, Renderable } from "shared/components";
 import promiseR15 from "@rbxts/promise-character";
 import { Proton } from "@rbxts/proton";
 import { GameProvider } from "./providers/game";
-import { AnyEntity } from "@rbxts/matter";
 import { Balance } from "shared/components/game";
 
 Proton.awaitStart();

@@ -2,7 +2,8 @@ import Log from "@rbxts/log";
 import { World } from "@rbxts/matter";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState, _Level } from "server/index.server";
-import { Level, OwnedBy, Renderable, Transform } from "shared/components";
+import { Renderable, Transform } from "shared/components";
+import { Level, OpenStatus, OwnedBy } from "shared/components/level";
 
 function level(world: World, state: ServerState) {
 	for (const [id, level, ownedBy] of world.query(Level, OwnedBy).without(Renderable)) {
@@ -22,6 +23,9 @@ function level(world: World, state: ServerState) {
 			Renderable({ model: levelModel }),
 			Transform({
 				cf: levelModel.GetPivot(),
+			}),
+			OpenStatus({
+				open: false,
 			}),
 		);
 		const model = world.get(id, Renderable);

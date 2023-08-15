@@ -1,5 +1,6 @@
 import { component } from "@rbxts/matter";
 import { CharacterRigR15 } from "@rbxts/promise-character";
+import { Level } from "./level";
 
 // Components that should be replicated on both the server and client
 
@@ -10,16 +11,6 @@ export const Client = component<{
 	};
 }>("Client");
 export type Client = ReturnType<typeof Client>;
-
-export const Level = component<{
-	name: keyof Levels;
-}>("Level");
-export type Level = ReturnType<typeof Level>;
-
-export const OwnedBy = component<{
-	player: Player;
-}>("OwnedBy");
-export type OwnedBy = ReturnType<typeof OwnedBy>;
 
 export const Body = component<{ model: CharacterRigR15 }>();
 export type Body = ReturnType<typeof Body>;
@@ -34,8 +25,19 @@ export const NPC = component<{
 }>("NPC");
 export type NPC = ReturnType<typeof NPC>;
 
+export const Product = component<{
+	amount: number;
+	product: keyof Products;
+}>("Product");
+export type Product = ReturnType<typeof Product>;
+
+export const Wants = component<{
+	product: Product;
+}>("Wants");
+export type Wants = ReturnType<typeof Wants>;
+
 export const Pathfind = component<{
-	destination: Vector3 | undefined;
+	destination: Vector3;
 	running: boolean;
 }>("Pathfind");
 export type Pathfind = ReturnType<typeof Pathfind>;
