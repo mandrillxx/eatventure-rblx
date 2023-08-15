@@ -7,6 +7,7 @@ export enum PlayerState {
 
 export interface ClientState {
 	debugEnabled: boolean;
+	playerId: AnyEntity | undefined;
 	character: CharacterRigR15;
 	isRunning: boolean;
 	entityIdMap: Map<string, AnyEntity>;

@@ -4,6 +4,12 @@ import { setupTags } from "shared/setupTags";
 import { start } from "shared/start";
 import { BelongsTo, Client, Level, NPC, OwnedBy, Pathfind, Renderable } from "shared/components";
 import promiseR15 from "@rbxts/promise-character";
+import { Proton } from "@rbxts/proton";
+import { GameProvider } from "./providers/game";
+import { AnyEntity } from "@rbxts/matter";
+import { Balance } from "shared/components/game";
+
+Proton.awaitStart();
 
 Log.SetLogger(Logger.configure().WriteTo(Log.RobloxOutput()).Create());
 
@@ -14,19 +20,25 @@ export interface _Level {
 declare const script: { systems: Folder };
 export interface ServerState {
 	levels: Map<number, _Level>;
+	debug: boolean;
 }
 
 const state: ServerState = {
 	levels: new Map(),
+	debug: true,
 };
 
 const world = start([script.systems, ReplicatedStorage.Shared.systems], state)(setupTags);
+const gameProvider = Proton.get(GameProvider);
 
 function playerAdded(player: Player) {
 	function characterAdded(character: Model) {
 		promiseR15(character).andThen((model) => {
-			const playerId = world.spawn(
+			const playerEntity = world.spawn(
 				Renderable({ model }),
+				Balance({
+					balance: 35.2,
+				}),
 				Client({
 					player,
 					document: {
@@ -35,60 +47,13 @@ function playerAdded(player: Player) {
 				}),
 			);
 
-			character.SetAttribute("entityId", playerId);
+			gameProvider.setup(playerEntity, world, model);
+			character.SetAttribute("entityId", playerEntity);
 		});
 	}
 
-	function giveLevel(character: Model) {
-		promiseR15(character).andThen((model) => {
-			const levelName = "Level1";
-			const levelId = world.spawn(
-				Level({
-					name: levelName,
-				}),
-				OwnedBy({
-					player,
-				}),
-			);
-
-			Log.Info("Spawned level {@LevelName} for {@Name}", levelName, player.Name);
-
-			task.delay(1, () => {
-				const levelRenderable = world.get(levelId, Renderable);
-				if (!levelRenderable) {
-					Log.Error("Level {@LevelName} could not be found", levelName);
-					return;
-				}
-				const levelModel = levelRenderable.model as BaseLevel;
-				if (levelRenderable && levelRenderable.model) {
-					model.PivotTo(levelModel.EmployeeAnchors.Spawn.CFrame.add(new Vector3(0, 5, 0)));
-					Log.Info("Teleported {@Name} to {@LevelName}", levelName, player.Name);
-				}
-				const level = world.get(levelId, Level);
-
-				world.insert(
-					levelId,
-					NPC({
-						name: "Erik",
-					}),
-					BelongsTo({
-						level,
-					}),
-					Pathfind({
-						destination: levelModel.CustomerAnchors.Spawn.Position,
-						running: false,
-					}),
-				);
-			});
-		});
-	}
-
-	if (player.Character) {
-		characterAdded(player.Character);
-		giveLevel(player.Character);
-	}
+	if (player.Character) characterAdded(player.Character);
 	player.CharacterAdded.Connect(characterAdded);
-	player.CharacterAdded.Connect(giveLevel);
 }
 
 Players.PlayerAdded.Connect(playerAdded);

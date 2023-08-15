@@ -3,6 +3,7 @@ import { World } from "@rbxts/matter";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState } from "server/index.server";
 import { Body, NPC, Renderable } from "shared/components";
+import { Balance } from "shared/components/game";
 
 function npc(world: World, _: ServerState) {
 	for (const [id, npc] of world.query(NPC).without(Body)) {
@@ -14,6 +15,7 @@ function npc(world: World, _: ServerState) {
 
 		bodyModel = bodyModel.Clone();
 		bodyModel.ID.Value = id;
+		bodyModel.Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Viewer;
 		bodyModel.Parent = Workspace.NPCs;
 
 		world.insert(
@@ -25,6 +27,12 @@ function npc(world: World, _: ServerState) {
 				model: bodyModel,
 			}),
 		);
+	}
+
+	for (const [id, npc] of world.queryChanged(NPC)) {
+		if (npc.old && !npc.new) {
+			if (world.contains(id)) world.remove(id);
+		}
 	}
 
 	for (const [_id, body] of world.queryChanged(Body)) {

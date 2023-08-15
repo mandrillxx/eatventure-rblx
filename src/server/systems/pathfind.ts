@@ -5,9 +5,10 @@ import { ServerState } from "server/index.server";
 import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
 
-function pathfind(world: World, _: ServerState) {
+function pathfind(world: World, state: ServerState) {
 	for (const [id, pathfind] of world.queryChanged(Pathfind)) {
 		if (!pathfind.old && pathfind.new && pathfind.new.destination && !pathfind.new.running) {
+			if (!world.contains(id)) continue;
 			Log.Debug("Pathfind {@id} is moving to {@Destination}", id, pathfind.new.destination);
 			world.insert(id, pathfind.new.patch({ running: true }));
 			const body = world.get(id, Body);
@@ -22,7 +23,7 @@ function pathfind(world: World, _: ServerState) {
 			maid.GiveTask(
 				task.spawn(() => {
 					const path = new Simplepath(body.model);
-					path.Visualize = true;
+					path.Visualize = state.debug;
 
 					const isPathfinding = path.Run(destination);
 					if (!isPathfinding) {
@@ -32,8 +33,9 @@ function pathfind(world: World, _: ServerState) {
 
 					function endPath() {
 						maid.DoCleaning();
-						world.remove(id, Pathfind);
 						path.Destroy();
+						if (!world.contains(id)) return;
+						world.remove(id, Pathfind);
 					}
 
 					maid.GiveTask(
