@@ -3,6 +3,7 @@ import { AnyEntity, World } from "@rbxts/matter";
 import { Provider } from "@rbxts/proton";
 import { t } from "@rbxts/t";
 import { BelongsTo, Client, Level, NPC, OwnedBy, Pathfind, Renderable } from "shared/components";
+import { Balance } from "shared/components/game";
 
 interface PlayerData {
 	level: number;
@@ -31,6 +32,11 @@ export class GameProvider {
 			Log.Error("Client component not found on player entity");
 			return;
 		}
+		const balance = world.get(playerEntity, Balance);
+		if (!balance) {
+			Log.Error("Balance component not found on player entity");
+			return;
+		}
 		const playerData = this.loadPlayerData(client);
 		const playerInventory = this.loadPlayerInventory(client);
 		const levelId = this.loadLevel(world, client, playerData.level, character);
@@ -41,6 +47,15 @@ export class GameProvider {
 		const level = world.get(levelId, Level);
 
 		this.beginGameplayLoop(world, client, level);
+
+		task.delay(5, () => {
+			world.insert(
+				playerEntity,
+				balance.patch({
+					balance: 199.8,
+				}),
+			);
+		});
 	}
 
 	private beginGameplayLoop(world: World, client: Client, level: Level) {}

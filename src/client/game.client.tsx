@@ -9,6 +9,9 @@ import Roact from "@rbxts/roact";
 import { withHookDetection } from "@rbxts/roact-hooked";
 import { Proton } from "@rbxts/proton";
 import Menu from "./components/menu";
+import { Network } from "shared/network";
+import { Balance } from "shared/components/game";
+import { Client } from "shared/components";
 
 Proton.awaitStart();
 
@@ -45,4 +48,38 @@ task.delay(1, () => {
 		return;
 	}
 	Roact.mount(<Menu world={world} playerId={state.playerId} />, player.FindFirstChildOfClass("PlayerGui")!);
+});
+
+while (!state.playerId) {
+	task.wait(1);
+}
+
+Network.updateBalance.client.connect((amount) => {
+	if (!state.playerId) {
+		Log.Error("Server tried to update balance but player id was not set for {@PlayerName}", player.Name);
+		return;
+	}
+	const client = world.get(state.playerId, Client);
+	if (!client) {
+		Log.Error("Server tried to update balance but client component was not found for {@PlayerName}", player.Name);
+		return;
+	}
+	const balance = world.get(state.playerId, Balance);
+	if (!balance) {
+		Log.Info("Balance component was not found for {@PlayerName}, creating one", player.Name);
+		world.insert(
+			state.playerId,
+			Balance({
+				balance: amount,
+			}),
+		);
+		return;
+	}
+	Log.Info("Updating balance for {@PlayerName} to {@Balance}", player.Name, amount);
+	world.insert(
+		state.playerId,
+		balance.patch({
+			balance: amount,
+		}),
+	);
 });
