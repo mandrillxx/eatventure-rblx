@@ -1,3 +1,4 @@
+import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
 import { World } from "@rbxts/matter";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
@@ -15,6 +16,36 @@ function npc(world: World, _: ServerState) {
 
 		bodyModel = bodyModel.Clone();
 		bodyModel.ID.Value = id;
+		New("BillboardGui")({
+			Parent: bodyModel,
+			Adornee: bodyModel.HumanoidRootPart,
+			AlwaysOnTop: true,
+			Enabled: false,
+			Active: true,
+			Size: new UDim2(1, 100, 0.5, 0),
+			StudsOffsetWorldSpace: new Vector3(0, 3, 0),
+			Name: "DialogGui",
+		});
+		New("Frame")({
+			Parent: bodyModel.DialogGui,
+			Name: "DialogFrame",
+			Size: new UDim2(1, 0, 1, 0),
+		});
+		New("UIPadding")({
+			Parent: bodyModel.DialogGui.DialogFrame,
+			PaddingBottom: new UDim(0.1, 0),
+			PaddingLeft: new UDim(0.1, 0),
+			PaddingRight: new UDim(0.1, 0),
+			PaddingTop: new UDim(0.1, 0),
+		});
+		New("TextLabel")({
+			Parent: bodyModel.DialogGui.DialogFrame,
+			Name: "DialogText",
+			Size: new UDim2(1, 0, 1, 0),
+			FontFace: new Font("SourceSans", Enum.FontWeight.SemiBold),
+			TextScaled: true,
+			Text: "",
+		});
 		bodyModel.Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Viewer;
 		bodyModel.Parent = Workspace.NPCs;
 

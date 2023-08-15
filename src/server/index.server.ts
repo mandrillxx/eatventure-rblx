@@ -59,3 +59,13 @@ Players.PlayerAdded.Connect(playerAdded);
 for (const player of Players.GetPlayers()) {
 	playerAdded(player);
 }
+
+task.wait(5);
+
+gameProvider.addEvent(Players.GetPlayers()[0], {
+	type: "newCustomer",
+	args: {
+		customerName: "Kenny",
+	},
+	ran: false,
+});

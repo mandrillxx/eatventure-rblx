@@ -22,6 +22,7 @@ interface Cosmetics {
 
 interface PlayerSession {
 	maid: Maid;
+	queue: Queue<Event>;
 	player: IPlayer;
 }
 
@@ -35,7 +36,8 @@ interface IPlayer {
 interface Event {
 	type: "newCustomer" | "closeStore" | "openStore" | "setLevel";
 	args?: {
-		level: number;
+		level?: number;
+		customerName?: NPCNames;
 	};
 	ran: boolean;
 }
@@ -80,9 +82,19 @@ export class GameProvider {
 		this.beginGameplayLoop(world, client, playerEntity, level, levelId);
 	}
 
+	addEvent(player: Player, event: Event) {
+		const session = this.playerSessions.find((session) => session.player.player === player);
+		if (!session) {
+			Log.Error("Player {@Player} does not have a session, cannot send event", player);
+			return;
+		}
+		session.queue.push(event);
+	}
+
 	private beginGameplayLoop(world: World, client: Client, entity: AnyEntity, level: Level, levelId: AnyEntity) {
 		const session: PlayerSession = {
 			maid: new Maid(),
+			queue: new Queue(),
 			player: {
 				player: client.player,
 				client,
@@ -91,7 +103,7 @@ export class GameProvider {
 			},
 		};
 		this.playerSessions.push(session);
-		const queue: Queue<Event> = new Queue();
+		const { queue, maid } = session;
 		const openStore: Event = {
 			type: "openStore",
 			ran: false,
@@ -100,8 +112,8 @@ export class GameProvider {
 			type: "newCustomer",
 			ran: false,
 		};
-		queue.push(openStore);
 		queue.push(newCustomer);
+		queue.push(openStore);
 		queue.push({
 			type: "setLevel",
 			args: {
@@ -148,7 +160,7 @@ export class GameProvider {
 					const destination = levelModel.CustomerAnchors.Destination1.Position;
 					world.spawn(
 						NPC({
-							name: "Erik",
+							name: event.args?.customerName ?? "Erik",
 						}),
 						BelongsTo({
 							level,
@@ -159,8 +171,8 @@ export class GameProvider {
 						}),
 						Wants({
 							product: Product({
-								product: "Coffee",
-								amount: 1,
+								product: math.random(0, 1) === 1 ? "Bagel" : math.random(0, 1) === 1 ? "Coffee" : "Tea",
+								amount: math.random(1, 3),
 							}),
 						}),
 					);
@@ -177,7 +189,7 @@ export class GameProvider {
 			runGameLoop();
 		};
 
-		session.maid.GiveTask(
+		maid.GiveTask(
 			task.spawn(() => {
 				runGameLoop();
 			}),

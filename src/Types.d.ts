@@ -50,6 +50,11 @@ type NPCType = "employee" | "customer";
 
 type BaseNPC = import("@rbxts/promise-character").CharacterRigR15 & {
 	ID: IntValue;
+	DialogGui: BillboardGui & {
+		DialogFrame: Frame & {
+			DialogText: TextLabel;
+		};
+	};
 };
 
 type BaseProduct = Model & {
@@ -82,6 +87,8 @@ type AnimationType =
 
 type Products = {
 	Coffee: BaseProduct;
+	Bagel: BaseProduct;
+	Tea: BaseProduct;
 };
 
 type BaseLevel = Model & {
