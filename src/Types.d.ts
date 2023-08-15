@@ -2,6 +2,9 @@ interface Workspace extends Instance {
 	Levels: Folder & {
 		[key: string]: BaseLevel;
 	};
+	NPCs: Folder & {
+		[key: string]: BaseNPC;
+	};
 }
 
 interface ReplicatedStorage extends Instance {
@@ -27,14 +30,18 @@ type Levels = {
 	Level1: BaseLevel;
 };
 
+type NPC = import("@rbxts/promise-character").CharacterRigR15 & {
+	ID: IntValue;
+};
+
 type Customers = {
-	Erik: NPCCustomer;
-	Kendra: NPCCustomer;
-	Sophia: NPCCustomer;
+	Erik: NPC;
+	Kendra: NPC;
+	Sophia: NPC;
 };
 
 type Employees = {
-	Kenny: NPCEmployee;
+	Kenny: NPC;
 };
 
 type CustomerNames = keyof Customers;
@@ -47,56 +54,11 @@ type BaseNPC = import("@rbxts/promise-character").CharacterRigR15 & {
 	ID: IntValue;
 };
 
-type WorldInfo = Partial<import("@rbxts/matter").World> & {
-	LevelModel: BaseLevel;
-	Level: import("./shared/components/level").Level;
-};
-
-type NPCEmployee = BaseNPC & {
-	ClickDetector: ClickDetector;
-};
-
-type NPCCustomer = BaseNPC & {
-	ClickDetector: ClickDetector;
-};
-
-type Urgency = "low" | "medium" | "high";
-
 type Product = Model & {
 	icon: StringValue;
 	price: NumberValue;
 	name: StringValue;
 };
-
-type CustomerProduct =
-	| Product
-	| {
-			icon: string;
-			price: number;
-			name: string;
-	  };
-
-type CustomerObjective = "purchase" | "steal";
-
-type EmployeeObjective = "fulfill" | "idle";
-
-type Objective = CustomerObjective | EmployeeObjective;
-
-type BaseDirective = {
-	urgency: Urgency;
-};
-
-type CustomerDirective = BaseDirective & {
-	objective: CustomerObjective;
-	wants: CustomerProduct;
-};
-
-type EmployeeDirective = BaseDirective & {
-	objective: EmployeeObjective;
-	destination: Vector3 | undefined;
-};
-
-type Directive = CustomerDirective | EmployeeDirective;
 
 type AnimationType =
 	| "cheer"
@@ -119,21 +81,6 @@ type AnimationType =
 	| "toolslash"
 	| "walk"
 	| "wave";
-
-type NPC = {
-	directive: Directive;
-	npc: BaseNPC;
-};
-
-type Customer = NPC & {
-	directive: CustomerDirective;
-	npc: NPCCustomer;
-};
-
-type Employee = NPC & {
-	directive: EmployeeDirective;
-	npc: NPCEmployee;
-};
 
 type BaseLevel = Model & {
 	NPCs: Folder & {

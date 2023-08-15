@@ -1,9 +1,9 @@
 import { New } from "@rbxts/fusion";
-import { World, useEvent } from "@rbxts/matter";
-import { AnyComponent, ComponentCtor } from "@rbxts/matter/lib/component";
+import { AnyComponent, useEvent, World } from "@rbxts/matter";
+import { ComponentCtor } from "@rbxts/matter/lib/component";
 import { Players, ReplicatedStorage } from "@rbxts/services";
 import { Client, Renderable } from "shared/components";
-import { ComponentNames } from "shared/Types";
+import { ComponentNames } from "shared/types";
 
 const remoteEvent = New("RemoteEvent")({
 	Name: "Replication",
@@ -12,8 +12,8 @@ const remoteEvent = New("RemoteEvent")({
 
 const REPLICATED_COMPONENTS = new Set<ComponentCtor>([Client, Renderable]);
 
-function replication(world: World) {
-	for (const [, plr] of useEvent(Players, "PlayerAdded")) {
+function replication(world: World): void {
+	for (const [_, plr] of useEvent(Players, "PlayerAdded")) {
 		const payload = new Map<string, Map<ComponentNames, { data: AnyComponent }>>();
 
 		for (const [id, entityData] of world) {

@@ -1,49 +1,36 @@
 import Log from "@rbxts/log";
 import { World } from "@rbxts/matter";
-import { Widgets } from "@rbxts/plasma";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState } from "server/index.server";
-import { Animate, Body, NPC, Pathfind, Renderable, Transform } from "shared/components";
+import { Body, NPC, Renderable } from "shared/components";
 
-function npc(world: World, state: ServerState, ui: Widgets) {
-	if (ui.button("Spawn NPC").clicked()) {
-		const world = state.levels.get("Level1")!;
-		world.spawn(
-			NPC({
-				name: "Erik",
-				world,
-			}),
-		);
-	}
-
-	for (const [id, npc] of world.queryChanged(NPC)) {
-		if (!npc.old && npc.new) {
-			const world = state.levels.get("Level1")!;
-			world.Levell.npcs.push(npc.new);
-		}
-	}
-
+function npc(world: World, _: ServerState) {
 	for (const [id, npc] of world.query(NPC).without(Body)) {
-		Log.Info("Found {@id}, {@NPC} without body", id, npc.name);
-		const body = ReplicatedStorage.Assets.NPCs.FindFirstChild(npc.name)!.Clone() as BaseNPC;
-		body.Parent = Workspace;
-		body.ID.Value = id;
+		let bodyModel = ReplicatedStorage.Assets.NPCs.FindFirstChild(npc.name) as BaseNPC;
+		if (!bodyModel) {
+			Log.Error("NPC {@NPCName} does not have a representative asset", npc.name);
+			continue;
+		}
+
+		bodyModel = bodyModel.Clone();
+		bodyModel.ID.Value = id;
+		bodyModel.Parent = Workspace.NPCs;
 
 		world.insert(
 			id,
 			Body({
-				model: body,
+				model: bodyModel,
 			}),
 			Renderable({
-				model: body,
+				model: bodyModel,
 			}),
-			Transform({
-				cf: body.PrimaryPart!.CFrame,
-			}),
-			Animate(),
 		);
+	}
 
-		Log.Info("Inserted body for {@id} {@Parent} {@Name}", id, body.Parent.Name, body.Parent.Parent!.Name);
+	for (const [_id, body] of world.queryChanged(Body)) {
+		if (body.old && body.old.model && !body.new) {
+			body.old.model.Destroy();
+		}
 	}
 }
 

@@ -1,4 +1,3 @@
-import { Proton } from "@rbxts/proton";
 import Log, { Logger } from "@rbxts/log";
 import { Players, ReplicatedStorage } from "@rbxts/services";
 import { CharacterRigR15 } from "@rbxts/promise-character";
@@ -7,7 +6,6 @@ import { AnyEntity } from "@rbxts/matter";
 import { start } from "shared/start";
 import { receiveReplication } from "./receiveReplication";
 import Roact from "@rbxts/roact";
-import TestGUI from "./gui/menu";
 import { withHookDetection } from "@rbxts/roact-hooked";
 
 Log.SetLogger(Logger.configure().WriteTo(Log.RobloxOutput()).Create());
@@ -29,7 +27,6 @@ const state: ClientState = {
 	controller: {
 		actions: [],
 	},
-	isJumping: false,
 	isRunning: false,
 	promptKeyboardKeyCode: Enum.KeyCode.F,
 };
@@ -37,4 +34,3 @@ const state: ClientState = {
 start([ReplicatedStorage.Client.systems, ReplicatedStorage.Shared.systems], state)(receiveReplication);
 
 withHookDetection(Roact);
-// Roact.mount(<TestGUI />, player.FindFirstChildWhichIsA("PlayerGui")!);

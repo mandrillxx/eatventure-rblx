@@ -1,10 +1,11 @@
+import Log from "@rbxts/log";
 import { AnyComponent, World } from "@rbxts/matter";
 import { ComponentCtor } from "@rbxts/matter/lib/component";
 import { ReplicatedStorage } from "@rbxts/services";
 import { t } from "@rbxts/t";
 import { ClientState } from "shared/clientState";
 import * as Components from "shared/components";
-import { ComponentNames, UnionComponentsMap } from "shared/Types";
+import { ComponentNames, UnionComponentsMap } from "shared/types";
 
 const remoteEvent = ReplicatedStorage.WaitForChild("Replication") as RemoteEvent;
 
@@ -43,6 +44,10 @@ export function receiveReplication(world: World, state: ClientState) {
 
 			if (clientEntityId === undefined) {
 				clientEntityId = world.spawn(...componentsToInsert);
+				if (!world.contains(clientEntityId)) {
+					Log.Error("Failed to spawn entity");
+					continue;
+				}
 
 				entityIdMap.set(serverEntityId, clientEntityId);
 			} else {

@@ -1,12 +1,11 @@
 import { World } from "@rbxts/matter";
-import { Body, NPC, Pathfind } from "shared/components";
+import { Body, Pathfind } from "shared/components";
 import Simplepath from "@rbxts/simplepath";
 import { ServerState } from "server/index.server";
-import { Widgets } from "@rbxts/plasma";
 import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
 
-function pathfind(world: World, _: ServerState, ui: Widgets) {
+function pathfind(world: World, _: ServerState) {
 	for (const [id, pathfind] of world.queryChanged(Pathfind)) {
 		if (!pathfind.old && pathfind.new && pathfind.new.destination && !pathfind.new.running) {
 			Log.Debug("Pathfind {@id} is moving to {@Destination}", id, pathfind.new.destination);
