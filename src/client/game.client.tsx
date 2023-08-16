@@ -44,23 +44,21 @@ const state: ClientState = {
 
 const world = start([ReplicatedStorage.Client.systems, ReplicatedStorage.Shared.systems], state)(receiveReplication);
 
-withHookDetection(Roact);
-task.delay(1, () => {
-	if (!state.playerId) {
-		Log.Error("{@PlayerName}'s state was not set", player.Name);
-		return;
+function bootstrap() {
+	withHookDetection(Roact);
+	while (!state.playerId) {
+		task.wait(1);
 	}
+
 	Roact.mount(
 		<Menu world={world} playerId={state.playerId} state={state} />,
 		player.FindFirstChildOfClass("PlayerGui")!,
 	);
 	// Roact.mount(<Npc npc={{ name: "Erik" }} />, player.FindFirstChildOfClass("PlayerGui")!);
-});
 
-while (!state.playerId) {
-	task.wait(1);
+	Network.setState.client.connect((state) => {
+		state = { ...state };
+	});
 }
 
-Network.setState.client.connect((state) => {
-	state = { ...state };
-});
+bootstrap();

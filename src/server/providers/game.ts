@@ -2,13 +2,20 @@ import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
 import { AnyEntity, World } from "@rbxts/matter";
 import { Provider } from "@rbxts/proton";
-import { ReplicatedStorage } from "@rbxts/services";
 import { Queue } from "@rbxts/stacks-and-queues";
-import DataStore from "@rbxts/suphi-datastore";
-import { t } from "@rbxts/t";
-import { BelongsTo, Client, NPC, Pathfind, Product, Renderable, Wants } from "shared/components";
+import {
+	BelongsTo,
+	Client,
+	NPC,
+	Pathfind,
+	Product,
+	Renderable,
+	Wants,
+	Level,
+	OpenStatus,
+	OwnedBy,
+} from "shared/components";
 import { Balance } from "shared/components";
-import { Level, OpenStatus, OwnedBy } from "shared/components/level";
 import { Network } from "shared/network";
 
 interface PlayerData {

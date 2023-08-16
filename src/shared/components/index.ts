@@ -1,8 +1,5 @@
 import { component } from "@rbxts/matter";
 import { CharacterRigR15 } from "@rbxts/promise-character";
-import { Level } from "./level";
-
-// Components that should be replicated on both the server and client
 
 export const Client = component<{
 	player: Player;
@@ -62,3 +59,21 @@ export const Transform = component<{
 	doNotReconcile?: boolean;
 }>("Transform");
 export type Transform = ReturnType<typeof Transform>;
+
+export const Level = component<{
+	name: keyof Levels;
+	maxEmployees: number;
+	maxCustomers: number;
+	spawnRate: number;
+}>("Level");
+export type Level = ReturnType<typeof Level>;
+
+export const OwnedBy = component<{
+	player: Player;
+}>("OwnedBy");
+export type OwnedBy = ReturnType<typeof OwnedBy>;
+
+export const OpenStatus = component<{
+	open: boolean;
+}>("OpenStatus");
+export type OpenStatus = ReturnType<typeof OpenStatus>;

@@ -2,8 +2,7 @@ import Log from "@rbxts/log";
 import { World } from "@rbxts/matter";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState, _Level } from "server/index.server";
-import { BelongsTo, NPC, Renderable, Transform } from "shared/components";
-import { Level, OpenStatus, OwnedBy } from "shared/components/level";
+import { BelongsTo, NPC, Renderable, Transform, Level, OpenStatus, OwnedBy } from "shared/components";
 
 function level(world: World, state: ServerState) {
 	for (const [id, level, ownedBy] of world.query(Level, OwnedBy).without(Renderable)) {

@@ -4,12 +4,18 @@ dependencies:
   '@rbxts/beacon':
     specifier: ^2.1.1
     version: 2.1.1
+  '@rbxts/dumpster':
+    specifier: ^1.0.8
+    version: 1.0.8
   '@rbxts/flipper':
     specifier: ^2.0.1
     version: 2.0.1
   '@rbxts/fusion':
     specifier: 0.1.1-ts.beta.1
     version: 0.1.1-ts.beta.1
+  '@rbxts/inspect':
+    specifier: ^1.0.1
+    version: 1.0.1
   '@rbxts/linked-lists':
     specifier: ^1.0.4
     version: 1.0.4
@@ -37,6 +43,9 @@ dependencies:
   '@rbxts/plasma':
     specifier: 0.4.1-ts.1
     version: 0.4.1-ts.1
+  '@rbxts/player-statistics':
+    specifier: ^1.0.4
+    version: 1.0.4
   '@rbxts/promise-character':
     specifier: ^1.0.3
     version: 1.0.3
@@ -73,6 +82,9 @@ dependencies:
   '@rbxts/signal':
     specifier: ^1.1.1
     version: 1.1.1
+  '@rbxts/signals-tooling':
+    specifier: ^1.0.8
+    version: 1.0.8
   '@rbxts/simplepath':
     specifier: 2.2.1-ts.2
     version: 2.2.1-ts.2
@@ -248,12 +260,24 @@ packages:
     resolution: {integrity: sha512-+ztwutzuNivWsgsERiC7n5il4C5gfJUuGJUmXYRq8FwY4ye3aupRi9RocmyAHq6255sO7z+RM61AVbqx3llsLQ==}
     dev: true
 
+  /@rbxts/dumpster@1.0.8:
+    resolution: {integrity: sha512-mkitEvfA166+EkRPF51vji9ZkAJEbqtwvrMAtPhP6EJy8IKAgh5QseHu5Zh1d5n459ufy1qY+5XHjGi2fQCqJg==}
+    dev: false
+
+  /@rbxts/fitumi@1.0.11:
+    resolution: {integrity: sha512-6Zq5wdHuQJ5gG3txJplETzWezftNasfakP0IraK3pWc9xrEMjkNoaPcaYs8LewXOT7MBOEfUvQDwap7ApVhjag==}
+    dev: false
+
   /@rbxts/flipper@2.0.1:
     resolution: {integrity: sha512-kxb5AZizP05XSmo3waS/QkcfNMD5b6HX4gGwyHOyBow260R5MIT4L/ZUPLvleXXyb9b67X4NVmHoac1tPXOLNA==}
     dev: false
 
   /@rbxts/fusion@0.1.1-ts.beta.1:
     resolution: {integrity: sha512-saDiH0sChLr0KFoFUyN0/aVS3rJ2fY5JQ0NegmxGz5CLLS+cwTb8P5DnT3SEPUzfqSjQ3+isPxtkIsZwmf3hdg==}
+    dev: false
+
+  /@rbxts/inspect@1.0.1:
+    resolution: {integrity: sha512-O+fbpjl0iKWfVSILrgBRoZcCUzYSbRIOrgW8RrLWNBLFzoxIBu9uydx4RavYgT2RsmRm5zK2aM3MakEZ2z+jlQ==}
     dev: false
 
   /@rbxts/linked-lists@1.0.4:
@@ -300,6 +324,18 @@ packages:
 
   /@rbxts/plasma@0.4.1-ts.1:
     resolution: {integrity: sha512-RhLkC3GQW0KeyqjFwvOUbHhsIJOHmXg+BhcKLp0IgUDVgC5GktShi3zmW6GQ319yod+RlUDG1XHjOnP3Omo4bA==}
+    dev: false
+
+  /@rbxts/player-statistics@1.0.4:
+    resolution: {integrity: sha512-CoPdyUfe+205dROkzpuwWmDouKA2WoH2O1lGI4hBPCVkjtZq51z01Q63PJZtz2fIetSfVpM4XzT5NemObAsobg==}
+    dependencies:
+      '@rbxts/dumpster': 1.0.8
+      '@rbxts/fitumi': 1.0.11
+      '@rbxts/inspect': 1.0.1
+      '@rbxts/object-utils': 1.0.4
+      '@rbxts/services': 1.5.1
+      '@rbxts/signals-tooling': 1.0.8
+      '@rbxts/testez': 0.3.1-ts.7
     dev: false
 
   /@rbxts/promise-character@1.0.3:
@@ -399,6 +435,13 @@ packages:
 
   /@rbxts/signal@1.1.1:
     resolution: {integrity: sha512-WX+ONE+ld4pG9PvRkR8OgDld9NpaV1RfXyUIw+Q2oXP/5rehkYzvt20NWtrLAP3NhMc5inYInLd+hnufey6nFw==}
+    dev: false
+
+  /@rbxts/signals-tooling@1.0.8:
+    resolution: {integrity: sha512-BJ5uiFqoKMw7F5QfK5k21CXg/RoFiikh1PfEgoobbEbgWRxPbNT4QCWDASixxcNjBA0Hfph1hb7CUc61p+u6KQ==}
+    dependencies:
+      '@rbxts/dumpster': 1.0.8
+      '@rbxts/services': 1.5.1
     dev: false
 
   /@rbxts/simplepath@2.2.1-ts.2:
