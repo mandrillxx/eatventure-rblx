@@ -2,7 +2,7 @@ import Log from "@rbxts/log";
 import { World } from "@rbxts/matter";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState, _Level } from "server/index.server";
-import { BelongsTo, NPC, Renderable, Transform, Level, OpenStatus, OwnedBy } from "shared/components";
+import { BelongsTo, NPC, Renderable, Transform, Level, OpenStatus, OwnedBy, Utility, Product } from "shared/components";
 
 function level(world: World, state: ServerState) {
 	for (const [id, level, ownedBy] of world.query(Level, OwnedBy).without(Renderable)) {
@@ -31,6 +31,20 @@ function level(world: World, state: ServerState) {
 		if (!model) {
 			Log.Error("Level {@LevelName} encountered a fatal error", level.name);
 			continue;
+		}
+
+		for (const utility of levelModel.Utilities.GetChildren()) {
+			world.spawn(
+				Utility({
+					type: utility.Name,
+					unlocked: true,
+					makes: Product({ product: "Bagel", amount: 1 }),
+					every: 5,
+				}),
+				Renderable({
+					model: utility as Model,
+				}),
+			);
 		}
 
 		const _level: _Level = {

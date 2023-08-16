@@ -25,6 +25,14 @@ export const BelongsTo = component<{
 }>("BelongsTo");
 export type BelongsTo = ReturnType<typeof BelongsTo>;
 
+export const Utility = component<{
+	type: string; //"Oven" | "IceCreamMaker" | "Fryer" | "DrinkMaker";
+	unlocked: boolean;
+	makes: Product;
+	every: number;
+}>("Utility");
+export type Utility = ReturnType<typeof Utility>;
+
 export const NPC = component<{
 	name: NPCNames;
 	type: NPCType;
@@ -36,6 +44,11 @@ export const Product = component<{
 	product: keyof Products;
 }>("Product");
 export type Product = ReturnType<typeof Product>;
+
+export const Serving = component<{
+	serving: NPC;
+}>("Serving");
+export type Serving = ReturnType<typeof Serving>;
 
 export const Wants = component<{
 	product: Product;

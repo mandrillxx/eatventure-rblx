@@ -15,6 +15,7 @@ import {
 	Level,
 	OpenStatus,
 	OwnedBy,
+	Serving,
 } from "shared/components";
 import { Balance } from "shared/components";
 import { Network } from "shared/network";

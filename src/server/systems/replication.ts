@@ -2,7 +2,7 @@ import { New } from "@rbxts/fusion";
 import { AnyComponent, useEvent, World } from "@rbxts/matter";
 import { ComponentCtor } from "@rbxts/matter/lib/component";
 import { Players, ReplicatedStorage } from "@rbxts/services";
-import { Balance, Body, Client, Level, NPC, OpenStatus, Renderable, Wants } from "shared/components";
+import { Balance, Body, Client, Level, NPC, OpenStatus, Renderable, Utility, Wants } from "shared/components";
 import { ComponentNames } from "shared/types";
 
 const remoteEvent = New("RemoteEvent")({
@@ -19,6 +19,7 @@ const REPLICATED_COMPONENTS = new Set<ComponentCtor>([
 	Wants,
 	Level,
 	OpenStatus,
+	Utility,
 ]);
 
 function replication(world: World): void {

@@ -24,6 +24,11 @@ type Assets = Folder & {
 	Products: Folder & Products;
 };
 
+type BaseUtility = Model & {
+	SelectionBox: SelectionBox;
+	ClickDetector: ClickDetector;
+};
+
 type Levels = {
 	Level1: BaseLevel;
 };
@@ -98,12 +103,9 @@ type BaseLevel = Model & {
 		Customers: Folder;
 		Employees: Folder;
 	};
-	Upgrades: Folder & {
-		[key: string]: Model & {
-			anchor: BasePart;
-		};
+	Utilities: Folder & {
+		[key: string]: BaseUtility;
 	};
-	Products: Folder & Products;
 	CustomerAnchors: Folder & {
 		Spawn: BasePart;
 		[key: string]: BasePart & {
