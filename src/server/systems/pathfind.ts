@@ -20,55 +20,62 @@ function pathfind(world: World, state: ServerState) {
 			const watchdogAmount = 10;
 			const maid = new Maid();
 
-			maid.GiveTask(
-				task.spawn(() => {
-					const path = new Simplepath(body.model);
-					path.Visualize = state.debug;
+			const attemptPathfind = () => {
+				const path = new Simplepath(body.model);
+				path.Visualize = state.debug;
 
-					const isPathfinding = path.Run(destination);
-					if (!isPathfinding) {
-						Log.Warn("Pathfind {@id} failed to pathfind", id);
+				const isPathfinding = path.Run(destination);
+				if (!isPathfinding) {
+					Log.Warn("Pathfind {@id} failed to pathfind", id);
+					attemptPathfind();
+					return;
+				}
+
+				function endPath(retry: boolean = false) {
+					maid.DoCleaning();
+					path.Destroy();
+					if (retry) {
+						task.spawn(attemptPathfind);
 						return;
 					}
+					if (!world.contains(id)) return;
+					world.remove(id, Pathfind);
+				}
 
-					function endPath() {
-						maid.DoCleaning();
-						path.Destroy();
-						if (!world.contains(id)) return;
-						world.remove(id, Pathfind);
-					}
+				maid.GiveTask(
+					path.Error.Connect((errorType) => {
+						Log.Error("Pathfind {@id} has errored: {@Error}", id, errorType);
+						endPath(true);
+					}),
+				);
 
-					maid.GiveTask(
-						path.Error.Connect((errorType) => {
-							Log.Error("Pathfind {@id} has errored: {@Error}", id, errorType);
-							endPath();
-						}),
-					);
+				maid.GiveTask(
+					path.Blocked.Connect(() => {
+						Log.Error("Pathfind {@id} is blocked", id);
+						endPath(true);
+					}),
+				);
 
-					maid.GiveTask(
-						path.Blocked.Connect(() => {
-							Log.Error("Pathfind {@id} is blocked", id);
-							endPath();
-						}),
-					);
+				maid.GiveTask(
+					path.Reached.Connect(() => {
+						Log.Info("Pathfind {@id} has reached its destination", id);
+						endPath();
+					}),
+				);
 
-					maid.GiveTask(
-						path.Reached.Connect(() => {
-							Log.Info("Pathfind {@id} has reached its destination", id);
-							endPath();
-						}),
-					);
+				maid.GiveTask(
+					task.delay(watchdogAmount, () => {
+						if (world.contains(id)) {
+							Log.Error("Pathfind {@id} has timed out after {@Seconds}s", id, watchdogAmount);
+							endPath(true);
+							return;
+						}
+						endPath();
+					}),
+				);
+			};
 
-					maid.GiveTask(
-						task.delay(watchdogAmount, () => {
-							if (world.contains(id)) {
-								Log.Error("Pathfind {@id} has timed out after {@Seconds}s", id, watchdogAmount);
-							}
-							endPath();
-						}),
-					);
-				}),
-			);
+			maid.GiveTask(task.spawn(attemptPathfind));
 		}
 	}
 }

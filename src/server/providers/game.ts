@@ -120,8 +120,8 @@ export class GameProvider {
 	private savePlayerData(session: PlayerSession) {
 		const { player, client, entity } = session.player;
 		const { world } = session;
-		const dataStore = DataStore.find<PlayerData>("playerData", tostring(player.UserId));
-		dataStore?.Destroy();
+		// const dataStore = DataStore.find<PlayerData>("playerData", tostring(player.UserId));
+		// dataStore?.Destroy();
 		const balance = world.get(entity, Balance);
 		if (!balance) {
 			Log.Error("Balance component not found for {@PlayerName}, cannot save data", player.Name);
@@ -159,6 +159,24 @@ export class GameProvider {
 			task.wait(1);
 			const event = queue.pop();
 			if (!event) {
+				const openStatus = world.get(levelId, OpenStatus);
+				if (openStatus && openStatus.open) {
+					queue.push({
+						type: "newCustomer",
+						args: {
+							customerName:
+								math.random(1, 10) < 5
+									? "Erik"
+									: math.random(1, 10) < 5
+									? "Kendra"
+									: math.random(1, 10) < 5
+									? "Sophia"
+									: "Kenny",
+						},
+						ran: false,
+					});
+				}
+				Log.Debug("Running game loop again");
 				runGameLoop();
 				return;
 			}
@@ -265,11 +283,11 @@ export class GameProvider {
 			money: 1000,
 		};
 
-		const dataStore = new DataStore<PlayerData>("playerData", tostring(client.player.UserId));
-		const [success, data] = dataStore.Open(playerData);
-		if (success !== "Success") {
-			Log.Error("Could not load player data for {@Name} {@Return} {@Data}", client.player.Name, success, data);
-		}
+		// const dataStore = new DataStore<PlayerData>("playerData", tostring(client.player.UserId));
+		// const [success, data] = dataStore.Open(playerData);
+		// if (success !== "Success") {
+		// 	Log.Error("Could not load player data for {@Name} {@Return} {@Data}", client.player.Name, success, data);
+		// }
 		return playerData;
 	}
 
