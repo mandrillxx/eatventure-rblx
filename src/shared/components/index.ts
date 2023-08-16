@@ -17,6 +17,7 @@ export type Body = ReturnType<typeof Body>;
 
 export const BelongsTo = component<{
 	level: Level;
+	client: Client;
 }>("BelongsTo");
 export type BelongsTo = ReturnType<typeof BelongsTo>;
 

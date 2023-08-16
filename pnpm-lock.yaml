@@ -85,6 +85,9 @@ dependencies:
   '@rbxts/string-utils':
     specifier: ^1.0.3
     version: 1.0.3
+  '@rbxts/suphi-datastore':
+    specifier: ^1.0.0
+    version: 1.0.0
   '@rbxts/t':
     specifier: ^3.1.0
     version: 3.1.0
@@ -414,6 +417,10 @@ packages:
 
   /@rbxts/string-utils@1.0.3:
     resolution: {integrity: sha512-nsZsPdGsrsBdwLg7qQ5RGHoVhfvK+U3GvZ/6S+7KufqaFrbHWk2lufESob/C3xYf5sAeXgTJKWUnDJknYBGTIQ==}
+    dev: false
+
+  /@rbxts/suphi-datastore@1.0.0:
+    resolution: {integrity: sha512-4c8aJFau4e//Bx8BhJPbox/ZidONsd4+QHV+/RNBIQTtnBeZRJ9TLzCAKkpOWAGpK+DKaM6aUceDElgU9mr54Q==}
     dev: false
 
   /@rbxts/t@1.3.5(@rbxts/types@1.0.708):

@@ -3,10 +3,12 @@ import Maid from "@rbxts/maid";
 import { AnyEntity, World } from "@rbxts/matter";
 import { Provider } from "@rbxts/proton";
 import { Queue } from "@rbxts/stacks-and-queues";
+import DataStore from "@rbxts/suphi-datastore";
 import { t } from "@rbxts/t";
 import { BelongsTo, Client, NPC, Pathfind, Product, Renderable, Wants } from "shared/components";
 import { Balance } from "shared/components/game";
 import { Level, OpenStatus, OwnedBy } from "shared/components/level";
+import { Network } from "shared/network";
 
 interface PlayerData {
 	level: number;
@@ -22,6 +24,7 @@ interface Cosmetics {
 
 interface PlayerSession {
 	maid: Maid;
+	world: World;
 	queue: Queue<Event>;
 	player: IPlayer;
 }
@@ -47,11 +50,34 @@ export class GameProvider {
 	/*
       Player Joins -> 
       GameProvider.setup() ->                   <[client]               
-      GameProvider.loadPlayerData() ->          >[level, money, utility levels, ]  
+      GameProvider.loadPlayerData() ->          >[level, money, utility levels]  
       GameProvider.loadPlayerInventory() ->     >[cosmetics]
-     */
+    
+	  Player Leaves ->
+	  GameProvider.saveAndCleanup() ->          <[player]
+	  GameProvider.savePlayerData() ->          >[level, money, utility levels]
+	  */
 
 	private playerSessions: PlayerSession[] = [];
+
+	saveAndCleanup(player: Player) {
+		const session = this.playerSessions.find((session, index) => {
+			const matches = session.player.player === player;
+			if (matches) {
+				this.playerSessions.remove(index);
+			}
+			return matches;
+		});
+
+		if (!session) {
+			Log.Error("{@Player} does not have a session, cannot terminate", player.Name);
+			return;
+		}
+		const { client, entity } = session.player;
+		session.maid.DoCleaning();
+		session.queue.clear();
+		this.savePlayerData(session);
+	}
 
 	setup(playerEntity: AnyEntity, world: World, character: Model) {
 		const client = world.get(playerEntity, Client);
@@ -91,10 +117,24 @@ export class GameProvider {
 		session.queue.push(event);
 	}
 
+	private savePlayerData(session: PlayerSession) {
+		const { player, client, entity } = session.player;
+		const { world } = session;
+		const dataStore = DataStore.find<PlayerData>("playerData", tostring(player.UserId));
+		dataStore?.Destroy();
+		const balance = world.get(entity, Balance);
+		if (!balance) {
+			Log.Error("Balance component not found for {@PlayerName}, cannot save data", player.Name);
+			return;
+		}
+		Log.Debug("Saving data for {@PlayerName} with {@Balance} coins", player.Name, balance.balance);
+	}
+
 	private beginGameplayLoop(world: World, client: Client, entity: AnyEntity, level: Level, levelId: AnyEntity) {
 		const session: PlayerSession = {
 			maid: new Maid(),
 			queue: new Queue(),
+			world,
 			player: {
 				player: client.player,
 				client,
@@ -114,19 +154,11 @@ export class GameProvider {
 		};
 		queue.push(newCustomer);
 		queue.push(openStore);
-		queue.push({
-			type: "setLevel",
-			args: {
-				level: 4,
-			},
-			ran: false,
-		});
 
 		const runGameLoop = () => {
 			task.wait(1);
 			const event = queue.pop();
 			if (!event) {
-				Log.Debug("No event for this cycle");
 				runGameLoop();
 				return;
 			}
@@ -142,6 +174,9 @@ export class GameProvider {
 						open,
 					}),
 				);
+				task.spawn(() => {
+					Network.setStoreStatus.server.fire(client.player, open);
+				});
 				event.ran = true;
 			};
 			switch (event.type) {
@@ -164,6 +199,7 @@ export class GameProvider {
 						}),
 						BelongsTo({
 							level,
+							client,
 						}),
 						Pathfind({
 							destination,
@@ -171,7 +207,8 @@ export class GameProvider {
 						}),
 						Wants({
 							product: Product({
-								product: math.random(0, 1) === 1 ? "Bagel" : math.random(0, 1) === 1 ? "Coffee" : "Tea",
+								product:
+									math.random(0, 100) <= 51 ? "Bagel" : math.random(0, 100) <= 51 ? "Coffee" : "Tea",
 								amount: math.random(1, 3),
 							}),
 						}),
@@ -185,7 +222,6 @@ export class GameProvider {
 					break;
 				}
 			}
-			Log.Debug("Running loop again");
 			runGameLoop();
 		};
 
@@ -229,6 +265,11 @@ export class GameProvider {
 			money: 1000,
 		};
 
+		const dataStore = new DataStore<PlayerData>("playerData", tostring(client.player.UserId));
+		const [success, data] = dataStore.Open(playerData);
+		if (success !== "Success") {
+			Log.Error("Could not load player data for {@Name} {@Return} {@Data}", client.player.Name, success, data);
+		}
 		return playerData;
 	}
 

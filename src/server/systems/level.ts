@@ -2,7 +2,7 @@ import Log from "@rbxts/log";
 import { World } from "@rbxts/matter";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState, _Level } from "server/index.server";
-import { Renderable, Transform } from "shared/components";
+import { BelongsTo, NPC, Renderable, Transform } from "shared/components";
 import { Level, OpenStatus, OwnedBy } from "shared/components/level";
 
 function level(world: World, state: ServerState) {
@@ -38,6 +38,23 @@ function level(world: World, state: ServerState) {
 			model,
 		};
 		state.levels.set(ownedBy.player.UserId, _level);
+	}
+
+	for (const [id, openStatus] of world.queryChanged(OpenStatus)) {
+		if (openStatus.new && !openStatus.new.open) {
+			const level = world.get(id, Level);
+			const ownedBy = world.get(id, OwnedBy);
+			if (!level || !ownedBy) {
+				Log.Error("Level could not be found");
+				continue;
+			}
+			for (const [id, npc, belongsTo] of world.query(NPC, BelongsTo)) {
+				if (belongsTo.client.player.UserId === ownedBy.player.UserId) {
+					Log.Debug("Npc {@NPC} belongs to {@BelongsTo}", npc, belongsTo.level.name);
+					world.despawn(id);
+				}
+			}
+		}
 	}
 }
 

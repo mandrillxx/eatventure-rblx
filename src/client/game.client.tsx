@@ -30,6 +30,9 @@ const state: ClientState = {
 	entityIdMap: new Map<string, AnyEntity>(),
 	character,
 	playerId: undefined,
+	storeStatus: {
+		open: false,
+	},
 	overlapParams,
 	raycastParams,
 	controller: {
@@ -47,12 +50,19 @@ task.delay(1, () => {
 		Log.Error("{@PlayerName}'s state was not set", player.Name);
 		return;
 	}
-	Roact.mount(<Menu world={world} playerId={state.playerId} />, player.FindFirstChildOfClass("PlayerGui")!);
+	Roact.mount(
+		<Menu world={world} playerId={state.playerId} state={state} />,
+		player.FindFirstChildOfClass("PlayerGui")!,
+	);
 });
 
 while (!state.playerId) {
 	task.wait(1);
 }
+
+Network.setStoreStatus.client.connect((open) => {
+	state.storeStatus.open = open;
+});
 
 Network.updateBalance.client.connect((amount) => {
 	if (!state.playerId) {

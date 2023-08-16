@@ -7,6 +7,7 @@ import promiseR15 from "@rbxts/promise-character";
 import { Proton } from "@rbxts/proton";
 import { GameProvider } from "./providers/game";
 import { Balance } from "shared/components/game";
+import { Network } from "shared/network";
 
 Proton.awaitStart();
 
@@ -29,6 +30,10 @@ const state: ServerState = {
 
 const world = start([script.systems, ReplicatedStorage.Shared.systems], state)(setupTags);
 const gameProvider = Proton.get(GameProvider);
+
+function playerRemoving(player: Player) {
+	gameProvider.saveAndCleanup(player);
+}
 
 function playerAdded(player: Player) {
 	function characterAdded(character: Model) {
@@ -56,9 +61,17 @@ function playerAdded(player: Player) {
 }
 
 Players.PlayerAdded.Connect(playerAdded);
+Players.PlayerRemoving.Connect(playerRemoving);
 for (const player of Players.GetPlayers()) {
 	playerAdded(player);
 }
+
+Network.setStoreStatus.server.connect((player, open) => {
+	gameProvider.addEvent(player, {
+		type: open ? "openStore" : "closeStore",
+		ran: false,
+	});
+});
 
 task.wait(5);
 

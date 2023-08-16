@@ -61,7 +61,9 @@ function pathfind(world: World, state: ServerState) {
 
 					maid.GiveTask(
 						task.delay(watchdogAmount, () => {
-							Log.Error("Pathfind {@id} has timed out after {@Seconds}s", id, watchdogAmount);
+							if (world.contains(id)) {
+								Log.Error("Pathfind {@id} has timed out after {@Seconds}s", id, watchdogAmount);
+							}
 							endPath();
 						}),
 					);

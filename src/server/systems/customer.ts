@@ -8,6 +8,7 @@ function customer(world: World, _: ServerState) {
 		if (!wants.old && wants.new) {
 			Log.Info(`v Wants ${id} | ${wants.new.product.amount}x ${wants.new.product.product}`);
 			task.delay(1, () => {
+				if (!world.contains(id)) return;
 				const npc = world.get(id, NPC);
 				const body = world.get(id, Body)?.model as BaseNPC;
 				if (!npc || !body) {
@@ -22,6 +23,7 @@ function customer(world: World, _: ServerState) {
 		}
 		if (wants.old && wants.new) {
 			Log.Info(`x Wants ${id} | ${wants.new.product.amount}x ${wants.new.product.product}`);
+			if (!world.contains(id)) return;
 			const npc = world.get(id, NPC);
 			const body = world.get(id, Body)?.model as BaseNPC;
 			if (!npc || !body) {
@@ -32,6 +34,7 @@ function customer(world: World, _: ServerState) {
 			body.DialogGui.Enabled = true;
 		}
 		if (wants.old && !wants.new) {
+			if (!world.contains(id)) return;
 			const npc = world.get(id, NPC);
 			const body = world.get(id, Body)?.model as BaseNPC;
 			if (!npc || !body) {
