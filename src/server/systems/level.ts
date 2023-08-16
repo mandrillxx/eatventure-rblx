@@ -40,6 +40,7 @@ function level(world: World, state: ServerState) {
 					unlocked: true,
 					makes: Product({ product: "Bagel", amount: 1 }),
 					every: 5,
+					level,
 				}),
 				Renderable({
 					model: utility as Model,

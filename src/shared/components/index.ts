@@ -28,6 +28,7 @@ export type BelongsTo = ReturnType<typeof BelongsTo>;
 export const Utility = component<{
 	type: string; //"Oven" | "IceCreamMaker" | "Fryer" | "DrinkMaker";
 	unlocked: boolean;
+	level: Level;
 	makes: Product;
 	every: number;
 }>("Utility");
@@ -38,6 +39,11 @@ export const NPC = component<{
 	type: NPCType;
 }>("NPC");
 export type NPC = ReturnType<typeof NPC>;
+
+export const Holding = component<{
+	product: Product[];
+}>("Holding");
+export type Holding = ReturnType<typeof Holding>;
 
 export const Product = component<{
 	amount: number;

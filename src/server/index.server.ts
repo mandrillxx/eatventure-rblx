@@ -16,6 +16,7 @@ import {
 	StatisticsDefinition,
 } from "@rbxts/player-statistics";
 import { PlayerStatisticEventsDefinition, PlayerStatisticsDefinition } from "./data/PlayerStatisticsDefinition";
+import { AnyEntity } from "@rbxts/matter";
 
 Proton.awaitStart();
 
@@ -28,6 +29,7 @@ export interface _Level {
 declare const script: { systems: Folder };
 export interface ServerState {
 	levels: Map<number, _Level>;
+	clients: Map<number, AnyEntity>;
 	playerStatisticsProvider: IPlayerStatisticsProvider<StatisticsDefinition, EventsDefinition<StatisticsDefinition>>;
 	debug: boolean;
 	verbose: boolean;
@@ -35,6 +37,7 @@ export interface ServerState {
 
 const state: ServerState = {
 	levels: new Map(),
+	clients: new Map(),
 	playerStatisticsProvider: undefined as unknown as IPlayerStatisticsProvider<
 		StatisticsDefinition,
 		EventsDefinition<StatisticsDefinition>
@@ -59,6 +62,7 @@ function statistics() {
 
 function bootstrap() {
 	function playerRemoving(player: Player) {
+		state.clients.delete(player.UserId);
 		gameProvider.saveAndCleanup(player);
 	}
 
@@ -78,6 +82,7 @@ function bootstrap() {
 					}),
 				);
 
+				state.clients.set(player.UserId, playerEntity);
 				gameProvider.setup(playerEntity, world, state, model);
 				character.SetAttribute("entityId", playerEntity);
 			});
@@ -105,29 +110,6 @@ function bootstrap() {
 	Network.retrieveStatistics.server.handle((player) => {
 		const snapshot = state.playerStatisticsProvider.getStatisticsSnapshotForPlayer(player);
 		return snapshot;
-	});
-
-	Network.provide.server.connect((player, id) => {
-		const wants = world.get(id, Wants);
-		if (!wants) {
-			Log.Error("Player {@PlayerName} tried to provide for {@ID} but it doesn't exist", player.Name, id);
-			return;
-		}
-		if (wants.product.amount === 1) {
-			if (state.verbose) Log.Info("NPC {@NPC} got what they wanted", id);
-			world.remove(id, Wants);
-		} else {
-			if (state.verbose) Log.Info("NPC {@NPC} got what they wanted, but still wants more", id);
-			world.insert(
-				id,
-				wants.patch({
-					product: { ...wants.product, amount: wants.product.amount - 1 },
-				}),
-			);
-		}
-		const snapshot = state.playerStatisticsProvider.getStatisticsSnapshotForPlayer(player);
-		if (state.verbose) Log.Warn("================ customersServed {@CustomersServed}", snapshot.customersServed);
-		state.playerStatisticsProvider.recordEvent(player, "customersServed", 1);
 	});
 }
 
