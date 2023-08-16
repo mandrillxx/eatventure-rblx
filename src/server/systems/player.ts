@@ -2,7 +2,7 @@ import Log from "@rbxts/log";
 import { World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
 import { Client } from "shared/components";
-import { Balance } from "shared/components/game";
+import { Balance } from "shared/components";
 import { Network } from "shared/network";
 
 function player(world: World, _: ServerState) {
@@ -19,7 +19,6 @@ function player(world: World, _: ServerState) {
 				balance.new.balance,
 				balance.old?.balance,
 			);
-			Network.updateBalance.server.fire(client.player, balance.new.balance);
 		}
 	}
 }

@@ -2,7 +2,7 @@ import Log, { Logger } from "@rbxts/log";
 import { Players, ReplicatedStorage } from "@rbxts/services";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { ClientState } from "shared/clientState";
-import { AnyEntity } from "@rbxts/matter";
+import { AnyComponent, AnyEntity } from "@rbxts/matter";
 import { start } from "shared/start";
 import { receiveReplication } from "./receiveReplication";
 import Roact from "@rbxts/roact";
@@ -10,7 +10,6 @@ import { withHookDetection } from "@rbxts/roact-hooked";
 import { Proton } from "@rbxts/proton";
 import Menu from "./components/menu";
 import { Network } from "shared/network";
-import { Balance } from "shared/components/game";
 import { Client } from "shared/components";
 
 Proton.awaitStart();
@@ -60,36 +59,6 @@ while (!state.playerId) {
 	task.wait(1);
 }
 
-Network.setStoreStatus.client.connect((open) => {
-	state.storeStatus.open = open;
-});
-
-Network.updateBalance.client.connect((amount) => {
-	if (!state.playerId) {
-		Log.Error("Server tried to update balance but player id was not set for {@PlayerName}", player.Name);
-		return;
-	}
-	const client = world.get(state.playerId, Client);
-	if (!client) {
-		Log.Error("Server tried to update balance but client component was not found for {@PlayerName}", player.Name);
-		return;
-	}
-	const balance = world.get(state.playerId, Balance);
-	if (!balance) {
-		Log.Info("Balance component was not found for {@PlayerName}, creating one", player.Name);
-		world.insert(
-			state.playerId,
-			Balance({
-				balance: amount,
-			}),
-		);
-		return;
-	}
-	Log.Info("Updating balance for {@PlayerName} to {@Balance}", player.Name, amount);
-	world.insert(
-		state.playerId,
-		balance.patch({
-			balance: amount,
-		}),
-	);
+Network.setState.client.connect((state) => {
+	state = { ...state };
 });

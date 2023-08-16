@@ -6,7 +6,7 @@ import { Client, Renderable } from "shared/components";
 import promiseR15 from "@rbxts/promise-character";
 import { Proton } from "@rbxts/proton";
 import { GameProvider } from "./providers/game";
-import { Balance } from "shared/components/game";
+import { Balance } from "shared/components";
 import { Network } from "shared/network";
 
 Proton.awaitStart();

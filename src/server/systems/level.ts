@@ -40,6 +40,45 @@ function level(world: World, state: ServerState) {
 		state.levels.set(ownedBy.player.UserId, _level);
 	}
 
+	for (const [id, npc] of world.queryChanged(NPC)) {
+		if (!npc.old && npc.new) {
+			const belongsTo = world.get(id, BelongsTo);
+			if (!belongsTo) {
+				Log.Error("NPC {@NPC} could not be found, bypass check", npc);
+				continue;
+			}
+			const { spawnRate, maxCustomers, maxEmployees } = belongsTo.level;
+			const npcType = npc.new.type;
+			let customers = 0;
+			let employees = 0;
+			for (const [_id, _npc, _belongsTo] of world.query(NPC, BelongsTo)) {
+				if (belongsTo.level === _belongsTo.level) {
+					if (_npc.type === "customer") customers++;
+					if (_npc.type === "employee") employees++;
+					continue;
+				}
+			}
+			const finalCustomers = customers;
+			const finalEmployees = employees;
+			Log.Warn(
+				"Customers: {@Customers}/{@MaxCustomers} Employees: {@Employees}/{@MaxEmployees}",
+				customers,
+				maxCustomers,
+				employees,
+				maxEmployees,
+			);
+			if (npcType === "customer" && finalCustomers > maxCustomers) {
+				world.despawn(id);
+				Log.Warn("Despawning {@NPC} due to max customers", npc.new.type);
+				continue;
+			} else if (npcType === "employee" && finalEmployees > maxEmployees) {
+				world.despawn(id);
+				Log.Warn("Despawning {@NPC} due to max employees", npc.new.type);
+				continue;
+			}
+		}
+	}
+
 	for (const [id, openStatus] of world.queryChanged(OpenStatus)) {
 		if (openStatus.new && !openStatus.new.open) {
 			const level = world.get(id, Level);

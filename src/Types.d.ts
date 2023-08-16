@@ -55,6 +55,8 @@ type BaseNPC = import("@rbxts/promise-character").CharacterRigR15 & {
 			DialogText: TextLabel;
 		};
 	};
+	ClickDetector: ClickDetector;
+	HoverSelection: SelectionBox;
 };
 
 type BaseProduct = Model & {

@@ -2,11 +2,12 @@ import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
 import { AnyEntity, World } from "@rbxts/matter";
 import { Provider } from "@rbxts/proton";
+import { ReplicatedStorage } from "@rbxts/services";
 import { Queue } from "@rbxts/stacks-and-queues";
 import DataStore from "@rbxts/suphi-datastore";
 import { t } from "@rbxts/t";
 import { BelongsTo, Client, NPC, Pathfind, Product, Renderable, Wants } from "shared/components";
-import { Balance } from "shared/components/game";
+import { Balance } from "shared/components";
 import { Level, OpenStatus, OwnedBy } from "shared/components/level";
 import { Network } from "shared/network";
 
@@ -193,7 +194,7 @@ export class GameProvider {
 					}),
 				);
 				task.spawn(() => {
-					Network.setStoreStatus.server.fire(client.player, open);
+					Network.setState.server.fire(client.player, { storeStatus: { open } });
 				});
 				event.ran = true;
 			};
@@ -211,9 +212,11 @@ export class GameProvider {
 					Log.Debug("Spawning new customer");
 					const levelModel = world.get(levelId, Renderable)!.model as BaseLevel;
 					const destination = levelModel.CustomerAnchors.Destination1.Position;
+					const name = event.args?.customerName ?? "Erik";
 					world.spawn(
 						NPC({
-							name: event.args?.customerName ?? "Erik",
+							name,
+							type: name === "Erik" ? "customer" : "employee",
 						}),
 						BelongsTo({
 							level,
@@ -255,6 +258,9 @@ export class GameProvider {
 		const levelId = world.spawn(
 			Level({
 				name: levelName,
+				maxCustomers: 5,
+				maxEmployees: 2,
+				spawnRate: 1.0,
 			}),
 			OwnedBy({
 				player: client.player,

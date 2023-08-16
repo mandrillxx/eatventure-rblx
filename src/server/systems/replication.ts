@@ -2,7 +2,7 @@ import { New } from "@rbxts/fusion";
 import { AnyComponent, useEvent, World } from "@rbxts/matter";
 import { ComponentCtor } from "@rbxts/matter/lib/component";
 import { Players, ReplicatedStorage } from "@rbxts/services";
-import { Client, Renderable } from "shared/components";
+import { Balance, Body, Client, NPC, Renderable } from "shared/components";
 import { ComponentNames } from "shared/types";
 
 const remoteEvent = New("RemoteEvent")({
@@ -10,7 +10,7 @@ const remoteEvent = New("RemoteEvent")({
 	Parent: ReplicatedStorage,
 });
 
-const REPLICATED_COMPONENTS = new Set<ComponentCtor>([Client, Renderable]);
+const REPLICATED_COMPONENTS = new Set<ComponentCtor>([Client, Renderable, Balance, NPC]);
 
 function replication(world: World): void {
 	for (const [_, plr] of useEvent(Players, "PlayerAdded")) {

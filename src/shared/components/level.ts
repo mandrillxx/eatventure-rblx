@@ -2,6 +2,9 @@ import { component } from "@rbxts/matter";
 
 export const Level = component<{
 	name: keyof Levels;
+	maxEmployees: number;
+	maxCustomers: number;
+	spawnRate: number;
 }>("Level");
 export type Level = ReturnType<typeof Level>;
 

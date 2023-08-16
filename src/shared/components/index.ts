@@ -12,6 +12,11 @@ export const Client = component<{
 }>("Client");
 export type Client = ReturnType<typeof Client>;
 
+export const Balance = component<{
+	balance: number;
+}>("Balance");
+export type Balance = ReturnType<typeof Balance>;
+
 export const Body = component<{ model: CharacterRigR15 }>();
 export type Body = ReturnType<typeof Body>;
 
@@ -23,6 +28,7 @@ export type BelongsTo = ReturnType<typeof BelongsTo>;
 
 export const NPC = component<{
 	name: NPCNames;
+	type: NPCType;
 }>("NPC");
 export type NPC = ReturnType<typeof NPC>;
 

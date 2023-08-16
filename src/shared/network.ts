@@ -1,6 +1,7 @@
 import { NetEvent, NetEventType } from "@rbxts/proton";
+import { ClientState } from "./clientState";
 
 export namespace Network {
-	export const updateBalance = new NetEvent<[amount: number], NetEventType.ServerToClient>();
-	export const setStoreStatus = new NetEvent<[open: boolean], NetEventType.TwoWay>();
+	export const setStoreStatus = new NetEvent<[open: boolean], NetEventType.ClientToServer>();
+	export const setState = new NetEvent<[state: Partial<ClientState>], NetEventType.ServerToClient>();
 }
