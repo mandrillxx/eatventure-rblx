@@ -17,7 +17,9 @@ export const Balance = component<{
 }>("Balance");
 export type Balance = ReturnType<typeof Balance>;
 
-export const Body = component<{ model: CharacterRigR15 }>();
+export const Body = component<{
+	model: CharacterRigR15;
+}>("Body");
 export type Body = ReturnType<typeof Body>;
 
 export const BelongsTo = component<{
@@ -49,8 +51,14 @@ export const Pathfind = component<{
 }>("Pathfind");
 export type Pathfind = ReturnType<typeof Pathfind>;
 
-export const Renderable = component<{ model: Model; doNotDestroy?: boolean }>("Renderable");
+export const Renderable = component<{
+	model: Model;
+	doNotDestroy?: boolean;
+}>("Renderable");
 export type Renderable = ReturnType<typeof Renderable>;
 
-export const Transform = component<{ cf: CFrame; doNotReconcile?: boolean }>("Transform");
+export const Transform = component<{
+	cf: CFrame;
+	doNotReconcile?: boolean;
+}>("Transform");
 export type Transform = ReturnType<typeof Transform>;

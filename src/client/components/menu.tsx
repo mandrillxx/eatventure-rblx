@@ -1,9 +1,10 @@
 import { Button, Div, Text } from "@rbxts/rowindcss";
 import Roact from "@rbxts/roact";
-import { useState, withHooks } from "@rbxts/roact-hooked";
+import { useEffect, useState, withHooks } from "@rbxts/roact-hooked";
 import { AnyEntity, World } from "@rbxts/matter";
 import { Network } from "shared/network";
 import { ClientState } from "shared/clientState";
+import { Balance } from "shared/components";
 
 interface MenuProps {
 	world: World;
@@ -15,7 +16,12 @@ function Menu({ world, playerId, state }: MenuProps) {
 	const [bal, setBal] = useState(0.0);
 	const [open, setOpen] = useState(true);
 
-	const ranOnce = [false, false];
+	const balance = world.get(playerId, Balance);
+	if (balance) {
+		useEffect(() => {
+			setBal(balance.balance);
+		}, [balance.balance]);
+	}
 
 	return (
 		<screengui Key="Stinky">

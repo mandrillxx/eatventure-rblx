@@ -11,6 +11,7 @@ import { Proton } from "@rbxts/proton";
 import Menu from "./components/menu";
 import { Network } from "shared/network";
 import { Client } from "shared/components";
+import Npc from "./components/npc";
 
 Proton.awaitStart();
 
@@ -53,6 +54,7 @@ task.delay(1, () => {
 		<Menu world={world} playerId={state.playerId} state={state} />,
 		player.FindFirstChildOfClass("PlayerGui")!,
 	);
+	// Roact.mount(<Npc npc={{ name: "Erik" }} />, player.FindFirstChildOfClass("PlayerGui")!);
 });
 
 while (!state.playerId) {

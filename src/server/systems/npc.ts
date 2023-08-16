@@ -4,7 +4,6 @@ import { World } from "@rbxts/matter";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState } from "server/index.server";
 import { Body, NPC, Renderable } from "shared/components";
-import { Balance } from "shared/components";
 
 function npc(world: World, _: ServerState) {
 	for (const [id, npc] of world.query(NPC).without(Body)) {
@@ -46,26 +45,19 @@ function npc(world: World, _: ServerState) {
 			TextScaled: true,
 			Text: "",
 		});
-
-		const selection = bodyModel.HumanoidRootPart.Clone();
-
-		selection.Name = "Selection";
-		selection.Parent = bodyModel;
-		selection.Transparency = 1;
-		selection.CanCollide = false;
-		selection.Size = new Vector3(3.8, 5, 1.764);
-		selection.Position = selection.Position.add(new Vector3(0, -1, 0));
-
 		New("ClickDetector")({
 			Parent: bodyModel,
-			MaxActivationDistance: 10,
+			MaxActivationDistance: 32,
 		});
 		New("SelectionBox")({
 			Parent: bodyModel,
 			Name: "HoverSelection",
 			Color3: new Color3(0, 255, 127),
-			Transparency: 0.5,
-			Adornee: bodyModel.HumanoidRootPart,
+			SurfaceColor3: new Color3(0, 255, 127),
+			SurfaceTransparency: 0.8,
+			Transparency: 0.8,
+			LineThickness: 0.05,
+			Adornee: bodyModel,
 			Visible: false,
 		});
 		bodyModel.Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Viewer;

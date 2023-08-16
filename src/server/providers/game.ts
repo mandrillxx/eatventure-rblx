@@ -106,6 +106,9 @@ export class GameProvider {
 				balance: playerData.money,
 			}),
 		);
+		task.delay(6, () => {
+			world.insert(playerEntity, Balance({ balance: playerData.money * 3 }));
+		});
 		this.beginGameplayLoop(world, client, playerEntity, level, levelId);
 	}
 

@@ -72,13 +72,3 @@ Network.setStoreStatus.server.connect((player, open) => {
 		ran: false,
 	});
 });
-
-task.wait(5);
-
-gameProvider.addEvent(Players.GetPlayers()[0], {
-	type: "newCustomer",
-	args: {
-		customerName: "Kenny",
-	},
-	ran: false,
-});

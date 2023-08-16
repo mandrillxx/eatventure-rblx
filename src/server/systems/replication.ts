@@ -10,7 +10,7 @@ const remoteEvent = New("RemoteEvent")({
 	Parent: ReplicatedStorage,
 });
 
-const REPLICATED_COMPONENTS = new Set<ComponentCtor>([Client, Renderable, Balance, NPC]);
+const REPLICATED_COMPONENTS = new Set<ComponentCtor>([Client, Renderable, Balance, NPC, Body]);
 
 function replication(world: World): void {
 	for (const [_, plr] of useEvent(Players, "PlayerAdded")) {
