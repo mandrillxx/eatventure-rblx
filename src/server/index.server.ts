@@ -30,6 +30,7 @@ export interface ServerState {
 	levels: Map<number, _Level>;
 	playerStatisticsProvider: IPlayerStatisticsProvider<StatisticsDefinition, EventsDefinition<StatisticsDefinition>>;
 	debug: boolean;
+	verbose: boolean;
 }
 
 const state: ServerState = {
@@ -39,6 +40,7 @@ const state: ServerState = {
 		EventsDefinition<StatisticsDefinition>
 	>,
 	debug: true,
+	verbose: false,
 };
 
 const world = start([script.systems, ReplicatedStorage.Shared.systems], state)(setupTags);
@@ -76,7 +78,7 @@ function bootstrap() {
 					}),
 				);
 
-				gameProvider.setup(playerEntity, world, model);
+				gameProvider.setup(playerEntity, world, state, model);
 				character.SetAttribute("entityId", playerEntity);
 			});
 		}
@@ -112,10 +114,10 @@ function bootstrap() {
 			return;
 		}
 		if (wants.product.amount === 1) {
-			Log.Info("NPC {@NPC} got what they wanted", id);
+			if (state.verbose) Log.Info("NPC {@NPC} got what they wanted", id);
 			world.remove(id, Wants);
 		} else {
-			Log.Info("NPC {@NPC} got what they wanted, but still wants more", id);
+			if (state.verbose) Log.Info("NPC {@NPC} got what they wanted, but still wants more", id);
 			world.insert(
 				id,
 				wants.patch({
@@ -124,7 +126,7 @@ function bootstrap() {
 			);
 		}
 		const snapshot = state.playerStatisticsProvider.getStatisticsSnapshotForPlayer(player);
-		Log.Warn("================ customersServed {@CustomersServed}", snapshot.customersServed);
+		if (state.verbose) Log.Warn("================ customersServed {@CustomersServed}", snapshot.customersServed);
 		state.playerStatisticsProvider.recordEvent(player, "customersServed", 1);
 	});
 }

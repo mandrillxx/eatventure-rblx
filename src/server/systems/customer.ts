@@ -25,7 +25,7 @@ function customer(world: World, _: ServerState) {
 				continue;
 			}
 			body.DialogGui.DialogFrame.DialogText.Text = "Thanks!";
-			task.delay(2, () => (body.DialogGui.Enabled = false));
+			task.delay(2, () => world.despawn(id));
 		}
 		if (!wants.old && wants.new) {
 			task.delay(1, () => {

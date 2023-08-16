@@ -48,8 +48,8 @@ function level(world: World, state: ServerState) {
 			}
 			const { spawnRate, maxCustomers, maxEmployees } = belongsTo.level;
 			const npcType = npc.new.type;
-			let customers = 0;
-			let employees = 0;
+			let customers = 0,
+				employees = 0;
 			for (const [_id, _npc, _belongsTo] of world.query(NPC, BelongsTo)) {
 				if (belongsTo.level === _belongsTo.level) {
 					if (_npc.type === "customer") customers++;
@@ -59,20 +59,22 @@ function level(world: World, state: ServerState) {
 			}
 			const finalCustomers = customers;
 			const finalEmployees = employees;
-			Log.Warn(
-				"Customers: {@Customers}/{@MaxCustomers} Employees: {@Employees}/{@MaxEmployees}",
-				customers,
-				maxCustomers,
-				employees,
-				maxEmployees,
-			);
+			if (state.verbose)
+				Log.Warn(
+					"Spawn Rate: {@SpawnRate} | Customers: {@Customers}/{@MaxCustomers} Employees: {@Employees}/{@MaxEmployees}",
+					spawnRate,
+					customers,
+					maxCustomers,
+					employees,
+					maxEmployees,
+				);
 			if (npcType === "customer" && finalCustomers > maxCustomers) {
 				world.despawn(id);
-				Log.Warn("Despawning {@NPC} due to max customers", npc.new.type);
+				if (state.verbose) Log.Warn("Despawning {@NPC} due to max customers", npc.new.type);
 				continue;
 			} else if (npcType === "employee" && finalEmployees > maxEmployees) {
 				world.despawn(id);
-				Log.Warn("Despawning {@NPC} due to max employees", npc.new.type);
+				if (state.verbose) Log.Warn("Despawning {@NPC} due to max employees", npc.new.type);
 				continue;
 			}
 		}

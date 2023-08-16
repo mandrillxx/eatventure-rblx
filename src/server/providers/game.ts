@@ -3,6 +3,7 @@ import Maid from "@rbxts/maid";
 import { AnyEntity, World } from "@rbxts/matter";
 import { Provider } from "@rbxts/proton";
 import { Queue } from "@rbxts/stacks-and-queues";
+import { ServerState } from "server/index.server";
 import {
 	BelongsTo,
 	Client,
@@ -45,10 +46,11 @@ interface IPlayer {
 }
 
 interface Event {
-	type: "newCustomer" | "closeStore" | "openStore" | "setLevel";
+	type: "newCustomer" | "newEmployee" | "closeStore" | "openStore" | "setLevel";
 	args?: {
 		level?: number;
-		customerName?: NPCNames;
+		customerName?: CustomerNames;
+		employeeName?: EmployeeNames;
 	};
 	ran: boolean;
 }
@@ -87,7 +89,7 @@ export class GameProvider {
 		this.savePlayerData(session);
 	}
 
-	setup(playerEntity: AnyEntity, world: World, character: Model) {
+	setup(playerEntity: AnyEntity, world: World, state: ServerState, character: Model) {
 		const client = world.get(playerEntity, Client);
 		if (!client) {
 			Log.Error("Client component not found on player entity");
@@ -116,7 +118,7 @@ export class GameProvider {
 		task.delay(6, () => {
 			world.insert(playerEntity, Balance({ balance: playerData.money * 3 }));
 		});
-		this.beginGameplayLoop(world, client, playerEntity, level, levelId);
+		this.beginGameplayLoop(world, state, client, playerEntity, level, levelId);
 	}
 
 	addEvent(player: Player, event: Event) {
@@ -141,7 +143,14 @@ export class GameProvider {
 		Log.Debug("Saving data for {@PlayerName} with {@Balance} coins", player.Name, balance.balance);
 	}
 
-	private beginGameplayLoop(world: World, client: Client, entity: AnyEntity, level: Level, levelId: AnyEntity) {
+	private beginGameplayLoop(
+		world: World,
+		state: ServerState,
+		client: Client,
+		entity: AnyEntity,
+		level: Level,
+		levelId: AnyEntity,
+	) {
 		const session: PlayerSession = {
 			maid: new Maid(),
 			queue: new Queue(),
@@ -173,21 +182,15 @@ export class GameProvider {
 				const openStatus = world.get(levelId, OpenStatus);
 				if (openStatus && openStatus.open) {
 					queue.push({
-						type: "newCustomer",
+						type: math.random(1, 10) < 5 ? "newCustomer" : "newEmployee",
 						args: {
 							customerName:
-								math.random(1, 10) < 5
-									? "Erik"
-									: math.random(1, 10) < 5
-									? "Kendra"
-									: math.random(1, 10) < 5
-									? "Sophia"
-									: "Kenny",
+								math.random(1, 10) < 5 ? "Erik" : math.random(1, 10) < 5 ? "Kendra" : "Sophia",
 						},
 						ran: false,
 					});
 				}
-				Log.Debug("Running game loop again");
+				if (state.verbose) Log.Debug("Running game loop again");
 				runGameLoop();
 				return;
 			}
@@ -196,7 +199,7 @@ export class GameProvider {
 					runGameLoop();
 					return;
 				}
-				Log.Debug("{@Status} store", open ? "Opening" : "Closing");
+				if (state.verbose) Log.Debug("{@Status} store", open ? "Opening" : "Closing");
 				world.insert(
 					levelId,
 					OpenStatus({
@@ -217,16 +220,39 @@ export class GameProvider {
 					toggleStore(false);
 					break;
 				}
+				case "newEmployee": {
+					if (event.ran) return;
+					if (state.verbose) Log.Debug("Spawning new employee");
+					const levelModel = world.get(levelId, Renderable)!.model as BaseLevel;
+					const destination = levelModel.EmployeeAnchors.Destination1.Position;
+					const name = event.args?.employeeName ?? "Kenny";
+					world.spawn(
+						NPC({
+							name,
+							type: "employee",
+						}),
+						BelongsTo({
+							level,
+							client,
+						}),
+						Pathfind({
+							destination,
+							running: false,
+						}),
+					);
+					event.ran = true;
+					break;
+				}
 				case "newCustomer": {
 					if (event.ran) return;
-					Log.Debug("Spawning new customer");
+					if (state.verbose) Log.Debug("Spawning new customer");
 					const levelModel = world.get(levelId, Renderable)!.model as BaseLevel;
 					const destination = levelModel.CustomerAnchors.Destination1.Position;
 					const name = event.args?.customerName ?? "Erik";
 					world.spawn(
 						NPC({
 							name,
-							type: name === "Erik" ? "customer" : "employee",
+							type: "customer",
 						}),
 						BelongsTo({
 							level,

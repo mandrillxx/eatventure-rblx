@@ -9,7 +9,7 @@ function pathfind(world: World, state: ServerState) {
 	for (const [id, pathfind] of world.queryChanged(Pathfind)) {
 		if (!pathfind.old && pathfind.new && pathfind.new.destination && !pathfind.new.running) {
 			if (!world.contains(id)) continue;
-			Log.Debug("Pathfind {@id} is moving to {@Destination}", id, pathfind.new.destination);
+			if (state.verbose) Log.Debug("Pathfind {@id} is moving to {@Destination}", id, pathfind.new.destination);
 			world.insert(id, pathfind.new.patch({ running: true }));
 			const body = world.get(id, Body);
 			if (!body) {
@@ -44,21 +44,21 @@ function pathfind(world: World, state: ServerState) {
 
 				maid.GiveTask(
 					path.Error.Connect((errorType) => {
-						Log.Error("Pathfind {@id} has errored: {@Error}", id, errorType);
+						if (state.debug) Log.Error("Pathfind {@id} has errored: {@Error}", id, errorType);
 						endPath(true);
 					}),
 				);
 
 				maid.GiveTask(
 					path.Blocked.Connect(() => {
-						Log.Error("Pathfind {@id} is blocked", id);
+						if (state.debug) Log.Error("Pathfind {@id} is blocked", id);
 						endPath(true);
 					}),
 				);
 
 				maid.GiveTask(
 					path.Reached.Connect(() => {
-						Log.Info("Pathfind {@id} has reached its destination", id);
+						if (state.verbose) Log.Info("Pathfind {@id} has reached its destination", id);
 						endPath();
 					}),
 				);
@@ -66,7 +66,8 @@ function pathfind(world: World, state: ServerState) {
 				maid.GiveTask(
 					task.delay(watchdogAmount, () => {
 						if (world.contains(id)) {
-							Log.Error("Pathfind {@id} has timed out after {@Seconds}s", id, watchdogAmount);
+							if (state.debug)
+								Log.Error("Pathfind {@id} has timed out after {@Seconds}s", id, watchdogAmount);
 							endPath(true);
 							return;
 						}
