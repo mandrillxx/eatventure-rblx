@@ -1,8 +1,9 @@
-import { BelongsTo, Body, Holding, NPC, Pathfind, Wants } from "shared/components";
+import { BelongsTo, Body, Holding, NPC, Pathfind, Speech, Wants } from "shared/components";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
+import { giveItem } from "server/components/methods";
 
 function customer(world: World, state: ServerState) {
 	const maids = new Map<AnyEntity, Maid>();
@@ -17,8 +18,7 @@ function customer(world: World, state: ServerState) {
 				Log.Error("No NPC or Body component for customer");
 				continue;
 			}
-			body.DialogGui.DialogFrame.DialogText.Text = `I want ${wants.new.product.amount}x ${wants.new.product.product}`;
-			body.DialogGui.Enabled = wants.new.display;
+			world.insert(id, Speech({ text: `I want ${wants.new.product.amount}x ${wants.new.product.product}` }));
 		}
 		if (wants.old && !wants.new) {
 			if (!world.contains(id)) return;
@@ -35,8 +35,7 @@ function customer(world: World, state: ServerState) {
 				continue;
 			}
 			world.remove(id, Pathfind);
-			body.DialogGui.Enabled = true;
-			body.DialogGui.DialogFrame.DialogText.Text = "Thanks!";
+			world.insert(id, Speech({ text: "Thanks!" }));
 			if (state.playerStatisticsProvider.areStatisticsLoadedForPlayer(belongsTo.client.player))
 				state.playerStatisticsProvider.recordEvent(belongsTo.client.player, "customersServed", 1);
 			task.delay(2, () => world.despawn(id));
@@ -52,60 +51,23 @@ function customer(world: World, state: ServerState) {
 					return;
 				}
 				const maid = maids.get(id)!;
+
 				maid.GiveTask(
 					body.ClickDetector.MouseClick.Connect((player) => {
-						if (!world.contains(id) || !wants.new) return;
-						const currentWants = world.get(id, Wants);
-						if (!currentWants) {
-							if (state.verbose) Log.Info("Customer no longer wants anything, cleaning up");
-							maid.DoCleaning();
-							return;
-						}
-						const playerId = state.clients.get(player.UserId)!;
-						const playerHolding = world.get(playerId, Holding);
-						if (!playerHolding) {
-							if (state.verbose) Log.Info("Player not holding anything, cannot provide for NPC");
-							return;
-						}
-						const playerHoldingRequestedProduct = playerHolding.product.find(
-							(product) => product.product === currentWants.product.product,
-						);
-						if (!playerHoldingRequestedProduct) {
-							if (state.verbose) Log.Info("Player not holding requested product, cannot provide for NPC");
-							return;
-						}
-						world.insert(
-							playerId,
-							playerHolding.patch({
-								product: [
-									...playerHolding.product.filter(
-										(product) => product.product !== playerHoldingRequestedProduct.product,
-									),
-									{
-										...playerHoldingRequestedProduct,
-										amount: playerHoldingRequestedProduct.amount - 1,
-									},
-								],
-							}),
-						);
-						if (currentWants.product.amount === 1) {
-							if (state.verbose) Log.Info("NPC {@NPC} got what they wanted", id);
-							world.remove(id, Wants);
-						} else {
-							if (state.verbose) Log.Info("NPC {@NPC} got what they wanted, but still wants more", id);
-							world.insert(
-								id,
-								currentWants.patch({
-									product: { ...currentWants.product, amount: currentWants.product.amount - 1 },
-								}),
-							);
-						}
+						giveItem({
+							player,
+							world,
+							maid,
+							id,
+							wants: wants.new!,
+							state,
+						});
 					}),
 				);
-				body.DialogGui.DialogFrame.DialogText.Text = `I want ${wants.new!.product.amount}x ${
-					wants.new!.product.product
-				}`;
-				body.DialogGui.Enabled = true;
+				world.insert(
+					id,
+					Speech({ text: `I want ${wants.new!.product.amount}x ${wants.new!.product.product}` }),
+				);
 			});
 		}
 	}

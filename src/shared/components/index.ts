@@ -45,6 +45,12 @@ export const NPC = component<{
 }>("NPC");
 export type NPC = ReturnType<typeof NPC>;
 
+export const Speech = component<{
+	text: string;
+	isImage?: boolean;
+}>("Speech");
+export type Speech = ReturnType<typeof Speech>;
+
 export const Customer = component<{
 	servedBy?: AnyEntity; // Employee
 }>("Customer");

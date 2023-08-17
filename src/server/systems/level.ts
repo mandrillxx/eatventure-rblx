@@ -55,8 +55,8 @@ function level(world: World, state: ServerState) {
 			const utilityComponent = Utility({
 				type: utility.Name,
 				unlocked: true,
-				makes: Product({ product: product.makes, amount: 1 }),
-				every: 5,
+				makes: Product({ product: product.makes, amount: product.amount }),
+				every: product.every,
 				level,
 			});
 			const utilityId = world.spawn(
