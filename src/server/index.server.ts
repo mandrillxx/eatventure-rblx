@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-import Log, { Logger } from "@rbxts/log";
-import { DataStoreService, PhysicsService, Players, ReplicatedStorage } from "@rbxts/services";
-import { setupTags } from "shared/setupTags";
-import { start } from "shared/start";
-import { Client, Renderable, Wants } from "shared/components";
-import promiseR15 from "@rbxts/promise-character";
-import { Proton } from "@rbxts/proton";
-import { GameProvider } from "./providers/game";
-import { Balance } from "shared/components";
-import { Network } from "shared/network";
-=======
->>>>>>> 4429656 (add: gui state)
 import {
 	DataStorePlayerStatisticsPersistenceLayer,
 	EventsDefinition,

@@ -12,25 +12,9 @@ import {
 } from "shared/components";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState, _Level } from "server/index.server";
-<<<<<<< HEAD
-import {
-	BelongsTo,
-	NPC,
-	Renderable,
-	Transform,
-	Level,
-	OpenStatus,
-	OwnedBy,
-	Utility,
-	Product,
-	HasUtilities,
-} from "shared/components";
-import { makes } from "shared/components/level";
-=======
 import { World } from "@rbxts/matter";
 import { makes } from "shared/components/level";
 import Log from "@rbxts/log";
->>>>>>> 4429656 (add: gui state)
 
 function level(world: World, state: ServerState) {
 	for (const [id, level, ownedBy] of world.query(Level, OwnedBy).without(Renderable)) {

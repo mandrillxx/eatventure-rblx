@@ -1,8 +1,8 @@
-import { Button, Div, Text } from "@rbxts/rowindcss";
 import { useState, withHooks } from "@rbxts/roact-hooked";
-import { Network } from "shared/network";
-import { ClientState } from "shared/clientState";
+import { Button, Div, Text } from "@rbxts/rowindcss";
 import { useMountEffect } from "@rbxts/pretty-roact-hooks";
+import { ClientState } from "shared/clientState";
+import { Network } from "shared/network";
 import Roact from "@rbxts/roact";
 
 interface MenuProps {

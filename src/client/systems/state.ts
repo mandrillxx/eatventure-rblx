@@ -1,7 +1,7 @@
-import { World } from "@rbxts/matter";
-import { Players } from "@rbxts/services";
-import { ClientState } from "shared/clientState";
 import { Balance, OpenStatus } from "shared/components";
+import { ClientState } from "shared/clientState";
+import { Players } from "@rbxts/services";
+import { World } from "@rbxts/matter";
 
 const player = Players.LocalPlayer;
 

@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-import Log from "@rbxts/log";
-import { AnyEntity, World, useThrottle } from "@rbxts/matter";
-import { ServerState } from "server/index.server";
-=======
->>>>>>> 4429656 (add: gui state)
 import {
 	BelongsTo,
 	Body,
@@ -16,14 +10,10 @@ import {
 	Serving,
 	Wants,
 } from "shared/components";
-<<<<<<< HEAD
-import { makes } from "shared/components/level";
-=======
 import { AnyEntity, World, useThrottle } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
 import { makes } from "shared/components/level";
 import Log from "@rbxts/log";
->>>>>>> 4429656 (add: gui state)
 
 function employee(world: World, state: ServerState) {
 	if (useThrottle(math.random(2, 5))) {
@@ -66,10 +56,7 @@ function employee(world: World, state: ServerState) {
 								Log.Warn("========================== PATHFIND STARTING ==========================");
 							if (world.get(id, Pathfind)) return;
 							world.insert(customer.npcId, customer.customer.patch({ servedBy: id }));
-<<<<<<< HEAD
-=======
 							world.insert(customer.npcId, customer.wants.patch({ display: false }));
->>>>>>> 4429656 (add: gui state)
 							world.insert(
 								id,
 								Pathfind({

@@ -1,7 +1,3 @@
-import { AnyEntity, World } from "@rbxts/matter";
-import { Provider } from "@rbxts/proton";
-import { Queue } from "@rbxts/stacks-and-queues";
-import { ServerState } from "server/index.server";
 import {
 	BelongsTo,
 	Client,
@@ -14,8 +10,12 @@ import {
 	OpenStatus,
 	OwnedBy,
 } from "shared/components";
-import { Balance } from "shared/components";
+import { AnyEntity, World } from "@rbxts/matter";
+import { ServerState } from "server/index.server";
+import { Provider } from "@rbxts/proton";
 import { Network } from "shared/network";
+import { Balance } from "shared/components";
+import { Queue } from "@rbxts/stacks-and-queues";
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
 
@@ -313,13 +313,8 @@ export class GameProvider {
 		const levelId = world.spawn(
 			Level({
 				name: levelName,
-<<<<<<< HEAD
-				maxCustomers: 18,
-				maxEmployees: 5,
-=======
 				maxCustomers: 2,
 				maxEmployees: 3,
->>>>>>> 4429656 (add: gui state)
 				spawnRate: 1.0,
 			}),
 			OwnedBy({

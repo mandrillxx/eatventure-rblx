@@ -1,18 +1,9 @@
-<<<<<<< HEAD
-import { New } from "@rbxts/fusion";
-import Log from "@rbxts/log";
-import { World } from "@rbxts/matter";
-import { PhysicsService, ReplicatedStorage, Workspace } from "@rbxts/services";
-import { ServerState } from "server/index.server";
-import { Body, Customer, Employee, NPC, Renderable } from "shared/components";
-=======
 import { Body, Customer, Employee, NPC, Renderable } from "shared/components";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState } from "server/index.server";
 import { World } from "@rbxts/matter";
 import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
->>>>>>> 4429656 (add: gui state)
 
 function npc(world: World, _: ServerState) {
 	for (const [id, npc] of world.query(NPC).without(Body)) {

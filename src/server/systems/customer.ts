@@ -1,12 +1,8 @@
 import { BelongsTo, Body, Holding, NPC, Pathfind, Wants } from "shared/components";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
-<<<<<<< HEAD
-import { BelongsTo, Body, Client, Customer, Holding, NPC, Pathfind, Wants } from "shared/components";
-=======
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
->>>>>>> 4429656 (add: gui state)
 
 function customer(world: World, state: ServerState) {
 	const maids = new Map<AnyEntity, Maid>();

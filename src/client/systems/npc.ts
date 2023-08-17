@@ -1,6 +1,6 @@
-import { World } from "@rbxts/matter";
 import { ClientState } from "shared/clientState";
 import { Body, NPC } from "shared/components";
+import { World } from "@rbxts/matter";
 import Maid from "@rbxts/maid";
 
 function npc(world: World, _: ClientState) {

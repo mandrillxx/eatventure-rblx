@@ -1,14 +1,14 @@
 import { Players, ReplicatedStorage } from "@rbxts/services";
+import { receiveReplication } from "./receiveReplication";
+import { withHookDetection } from "@rbxts/roact-hooked";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { ClientState } from "shared/clientState";
 import { AnyEntity } from "@rbxts/matter";
-import { start } from "shared/start";
-import { receiveReplication } from "./receiveReplication";
-import Roact from "@rbxts/roact";
-import { withHookDetection } from "@rbxts/roact-hooked";
-import { Proton } from "@rbxts/proton";
 import { Network } from "shared/network";
+import { Proton } from "@rbxts/proton";
+import { start } from "shared/start";
 import Log, { Logger } from "@rbxts/log";
+import Roact from "@rbxts/roact";
 import Menu from "./components/menu";
 
 Proton.awaitStart();

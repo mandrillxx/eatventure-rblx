@@ -1,6 +1,6 @@
-import { World } from "@rbxts/matter";
-import { Widgets } from "@rbxts/plasma";
 import { ClientState } from "shared/clientState";
+import { Widgets } from "@rbxts/plasma";
+import { World } from "@rbxts/matter";
 import Log from "@rbxts/log";
 
 function development(_world: World, _: ClientState, ui: Widgets) {

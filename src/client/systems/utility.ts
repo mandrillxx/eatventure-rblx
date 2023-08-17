@@ -1,6 +1,6 @@
-import { World } from "@rbxts/matter";
-import { ClientState } from "shared/clientState";
 import { Renderable, Utility } from "shared/components";
+import { ClientState } from "shared/clientState";
+import { World } from "@rbxts/matter";
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
 
