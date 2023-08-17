@@ -2,7 +2,19 @@ import Log from "@rbxts/log";
 import { World } from "@rbxts/matter";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState, _Level } from "server/index.server";
-import { BelongsTo, NPC, Renderable, Transform, Level, OpenStatus, OwnedBy, Utility, Product } from "shared/components";
+import {
+	BelongsTo,
+	NPC,
+	Renderable,
+	Transform,
+	Level,
+	OpenStatus,
+	OwnedBy,
+	Utility,
+	Product,
+	HasUtilities,
+} from "shared/components";
+import { makes } from "shared/components/level";
 
 function level(world: World, state: ServerState) {
 	for (const [id, level, ownedBy] of world.query(Level, OwnedBy).without(Renderable)) {
@@ -33,42 +45,41 @@ function level(world: World, state: ServerState) {
 			continue;
 		}
 
+		const utilities: { utility: Utility; model: Model }[] = [];
 		for (const utility of levelModel.Utilities.GetChildren()) {
-			const makes: { utilityName: string; makes: keyof Products }[] = [
-				{
-					utilityName: "Oven",
-					makes: "Bagel",
-				},
-				{
-					utilityName: "Tea",
-					makes: "Tea",
-				},
-				{
-					utilityName: "CoffeeMaker",
-					makes: "Coffee",
-				},
-			];
 			const product = makes.find((x) => utility.Name === x.utilityName);
 			if (!product) {
 				Log.Error("Utility {@UtilityName} does not have a representative product", utility.Name);
 				continue;
 			}
-			world.spawn(
-				Utility({
-					type: utility.Name,
-					unlocked: true,
-					makes: Product({ product: product.makes, amount: 1 }),
-					every: 5,
-					level,
-				}),
+			const utilityComponent = Utility({
+				type: utility.Name,
+				unlocked: true,
+				makes: Product({ product: product.makes, amount: 1 }),
+				every: 5,
+				level,
+			});
+			const utilityId = world.spawn(
+				utilityComponent,
 				Renderable({
 					model: utility as Model,
+				}),
+			);
+			utilities.push({
+				utility: utilityComponent,
+				model: utility as Model,
+			});
+			world.insert(
+				id,
+				HasUtilities({
+					utilities,
 				}),
 			);
 		}
 
 		const _level: _Level = {
 			model,
+			levelId: id,
 		};
 		state.levels.set(ownedBy.player.UserId, _level);
 	}

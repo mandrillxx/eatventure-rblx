@@ -1,5 +1,5 @@
 import Log, { Logger } from "@rbxts/log";
-import { DataStoreService, Players, ReplicatedStorage } from "@rbxts/services";
+import { DataStoreService, PhysicsService, Players, ReplicatedStorage } from "@rbxts/services";
 import { setupTags } from "shared/setupTags";
 import { start } from "shared/start";
 import { Client, Renderable, Wants } from "shared/components";
@@ -24,6 +24,7 @@ Log.SetLogger(Logger.configure().WriteTo(Log.RobloxOutput()).Create());
 
 export interface _Level {
 	model: Renderable;
+	levelId: AnyEntity;
 }
 
 declare const script: { systems: Folder };
@@ -58,6 +59,12 @@ function statistics() {
 		playerStatisticsPersistenceLayer,
 		PlayerStatisticsDefinition,
 	);
+}
+
+function collision() {
+	PhysicsService.RegisterCollisionGroup("NPCs");
+	PhysicsService.CollisionGroupSetCollidable("NPCs", "NPCs", false);
+	PhysicsService.CollisionGroupSetCollidable("NPCs", "Default", true);
 }
 
 function bootstrap() {
@@ -99,6 +106,7 @@ function bootstrap() {
 	}
 
 	statistics();
+	collision();
 
 	Network.setStoreStatus.server.connect((player, open) => {
 		gameProvider.addEvent(player, {

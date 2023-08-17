@@ -2,7 +2,7 @@ import Log from "@rbxts/log";
 import Maid from "@rbxts/maid";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
-import { Body, Holding, NPC, Pathfind, Wants } from "shared/components";
+import { BelongsTo, Body, Client, Customer, Holding, NPC, Pathfind, Wants } from "shared/components";
 
 function customer(world: World, state: ServerState) {
 	const maids = new Map<AnyEntity, Maid>();
@@ -27,6 +27,7 @@ function customer(world: World, state: ServerState) {
 				maids.delete(id);
 			}
 			const npc = world.get(id, NPC);
+			const belongsTo = world.get(id, BelongsTo)!;
 			const body = world.get(id, Body)?.model as BaseNPC;
 			if (!npc || !body) {
 				Log.Error("No NPC or Body component for customer");
@@ -34,6 +35,7 @@ function customer(world: World, state: ServerState) {
 			}
 			world.remove(id, Pathfind);
 			body.DialogGui.DialogFrame.DialogText.Text = "Thanks!";
+			state.playerStatisticsProvider.recordEvent(belongsTo.client.player, "customersServed", 1);
 			task.delay(2, () => world.despawn(id));
 		}
 		if (!wants.old && wants.new) {

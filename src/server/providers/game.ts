@@ -169,11 +169,20 @@ export class GameProvider {
 			type: "openStore",
 			ran: false,
 		};
-		const newCustomer: Event = {
-			type: "newCustomer",
+		queue.push({
+			type: "newEmployee",
 			ran: false,
-		};
-		queue.push(newCustomer);
+		});
+		queue.push({
+			type: "newEmployee",
+			ran: false,
+		});
+		for (let i = 0; i < 18; i++) {
+			queue.push({
+				type: "newCustomer",
+				ran: false,
+			});
+		}
 		queue.push(openStore);
 
 		const runGameLoop = () => {
@@ -225,7 +234,9 @@ export class GameProvider {
 					if (event.ran) return;
 					if (state.verbose) Log.Debug("Spawning new employee");
 					const levelModel = world.get(levelId, Renderable)!.model as BaseLevel;
-					const destination = levelModel.EmployeeAnchors.Destination1.Position;
+					const destination = levelModel.EmployeeAnchors.Destination1.Position.add(
+						new Vector3(math.random(-0.5, 0.5), 0, math.random(-2, 2)),
+					);
 					const name = event.args?.employeeName ?? "Kenny";
 					world.spawn(
 						NPC({
@@ -248,8 +259,15 @@ export class GameProvider {
 					if (event.ran) return;
 					if (state.verbose) Log.Debug("Spawning new customer");
 					const levelModel = world.get(levelId, Renderable)!.model as BaseLevel;
-					const destination = levelModel.CustomerAnchors.Destination1.Position;
-					const name = event.args?.customerName ?? "Erik";
+					const destination = levelModel.CustomerAnchors.Destination1.Position.add(
+						new Vector3(math.random(-0.5, 0.5), 0, math.random(-2, 2)),
+					);
+					const name =
+						event.args?.customerName ?? math.random(1, 10) < 5
+							? "Erik"
+							: math.random(1, 10) < 5
+							? "Kendra"
+							: "Sophia";
 					world.spawn(
 						NPC({
 							name,
@@ -295,8 +313,8 @@ export class GameProvider {
 		const levelId = world.spawn(
 			Level({
 				name: levelName,
-				maxCustomers: 5,
-				maxEmployees: 2,
+				maxCustomers: 18,
+				maxEmployees: 5,
 				spawnRate: 1.0,
 			}),
 			OwnedBy({

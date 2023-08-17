@@ -1,4 +1,4 @@
-import { component } from "@rbxts/matter";
+import { AnyEntity, component } from "@rbxts/matter";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 
 export const Client = component<{
@@ -25,6 +25,11 @@ export const BelongsTo = component<{
 }>("BelongsTo");
 export type BelongsTo = ReturnType<typeof BelongsTo>;
 
+export const HasUtilities = component<{
+	utilities: { utility: Utility; model: Model }[];
+}>("HasUtilities");
+export type HasUtilities = ReturnType<typeof HasUtilities>;
+
 export const Utility = component<{
 	type: string; //"Oven" | "IceCreamMaker" | "Fryer" | "DrinkMaker";
 	unlocked: boolean;
@@ -40,6 +45,14 @@ export const NPC = component<{
 }>("NPC");
 export type NPC = ReturnType<typeof NPC>;
 
+export const Customer = component<{
+	servedBy?: AnyEntity; // Employee
+}>("Customer");
+export type Customer = ReturnType<typeof Customer>;
+
+export const Employee = component("Employee");
+export type Employee = ReturnType<typeof Employee>;
+
 export const Holding = component<{
 	product: Product[];
 }>("Holding");
@@ -53,6 +66,7 @@ export type Product = ReturnType<typeof Product>;
 
 export const Serving = component<{
 	serving: NPC;
+	wants: Wants;
 }>("Serving");
 export type Serving = ReturnType<typeof Serving>;
 
@@ -64,6 +78,7 @@ export type Wants = ReturnType<typeof Wants>;
 export const Pathfind = component<{
 	destination: Vector3;
 	running: boolean;
+	finished?: Callback;
 }>("Pathfind");
 export type Pathfind = ReturnType<typeof Pathfind>;
 

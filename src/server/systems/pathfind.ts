@@ -40,6 +40,10 @@ function pathfind(world: World, state: ServerState) {
 					}
 					if (!world.contains(id)) return;
 					world.remove(id, Pathfind);
+					if (pathfind.new?.finished) {
+						if (state.verbose) Log.Debug("Pathfind {@id} has finished, running finished callback", id);
+						task.spawn(pathfind.new.finished);
+					}
 				}
 
 				maid.GiveTask(

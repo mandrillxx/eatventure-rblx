@@ -1,9 +1,9 @@
 import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
 import { World } from "@rbxts/matter";
-import { ReplicatedStorage, Workspace } from "@rbxts/services";
+import { PhysicsService, ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState } from "server/index.server";
-import { Body, NPC, Renderable } from "shared/components";
+import { Body, Customer, Employee, NPC, Renderable } from "shared/components";
 
 function npc(world: World, _: ServerState) {
 	for (const [id, npc] of world.query(NPC).without(Body)) {
@@ -63,6 +63,16 @@ function npc(world: World, _: ServerState) {
 		bodyModel.Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Viewer;
 		bodyModel.Parent = Workspace.NPCs;
 
+		const setNPCCollisionGroup = () => {
+			for (const v of bodyModel.GetDescendants()) {
+				if (v.IsA("BasePart")) {
+					v.CollisionGroup = "NPCs";
+				}
+			}
+		};
+		setNPCCollisionGroup();
+
+		const employeeOrCustomer = npc.type === "employee" ? Employee() : Customer({ servedBy: undefined });
 		world.insert(
 			id,
 			Body({
@@ -71,6 +81,7 @@ function npc(world: World, _: ServerState) {
 			Renderable({
 				model: bodyModel,
 			}),
+			employeeOrCustomer,
 		);
 	}
 
