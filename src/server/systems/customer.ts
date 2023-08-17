@@ -84,10 +84,10 @@ function customer(world: World, state: ServerState) {
 							}),
 						);
 						if (currentWants.product.amount === 1) {
-							Log.Info("NPC {@NPC} got what they wanted", id);
+							if (state.verbose) Log.Info("NPC {@NPC} got what they wanted", id);
 							world.remove(id, Wants);
 						} else {
-							Log.Info("NPC {@NPC} got what they wanted, but still wants more", id);
+							if (state.verbose) Log.Info("NPC {@NPC} got what they wanted, but still wants more", id);
 							world.insert(
 								id,
 								currentWants.patch({

@@ -61,7 +61,7 @@ function utility(world: World, state: ServerState) {
 					const holdingMadeProduct = holding.product.find(
 						(product) => product.product === utility.new!.makes.product,
 					);
-					Log.Debug("Holding made product: {@Product}", holdingMadeProduct);
+					if (state.verbose) Log.Debug("Holding made product: {@Product}", holdingMadeProduct);
 					if (!holdingMadeProduct) {
 						world.insert(
 							playerId,

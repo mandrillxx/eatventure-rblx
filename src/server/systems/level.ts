@@ -34,11 +34,30 @@ function level(world: World, state: ServerState) {
 		}
 
 		for (const utility of levelModel.Utilities.GetChildren()) {
+			const makes: { utilityName: string; makes: keyof Products }[] = [
+				{
+					utilityName: "Oven",
+					makes: "Bagel",
+				},
+				{
+					utilityName: "Tea",
+					makes: "Tea",
+				},
+				{
+					utilityName: "CoffeeMaker",
+					makes: "Coffee",
+				},
+			];
+			const product = makes.find((x) => utility.Name === x.utilityName);
+			if (!product) {
+				Log.Error("Utility {@UtilityName} does not have a representative product", utility.Name);
+				continue;
+			}
 			world.spawn(
 				Utility({
 					type: utility.Name,
 					unlocked: true,
-					makes: Product({ product: "Bagel", amount: 1 }),
+					makes: Product({ product: product.makes, amount: 1 }),
 					every: 5,
 					level,
 				}),

@@ -22,17 +22,6 @@ function npc(world: World, _: ClientState) {
 					model.HoverSelection.Visible = false;
 				}),
 			);
-			maid.GiveTask(
-				model.ClickDetector.MouseClick.Connect(() => {
-					const wants = world.get(id, Wants);
-					if (!wants) {
-						Log.Error("NPC {@NPC} does not want anything", id);
-						return;
-					}
-					if (!world.contains(id)) return;
-					Network.provide.client.fire(id);
-				}),
-			);
 		}
 		if (body.old && !body.new) {
 			maid.DoCleaning();
