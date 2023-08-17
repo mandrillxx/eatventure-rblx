@@ -35,9 +35,10 @@ function customer(world: World, state: ServerState) {
 				continue;
 			}
 			world.remove(id, Pathfind);
-			body.DialogGui.DialogFrame.DialogText.Visible = true;
+			body.DialogGui.Enabled = true;
 			body.DialogGui.DialogFrame.DialogText.Text = "Thanks!";
-			state.playerStatisticsProvider.recordEvent(belongsTo.client.player, "customersServed", 1);
+			if (state.playerStatisticsProvider.areStatisticsLoadedForPlayer(belongsTo.client.player))
+				state.playerStatisticsProvider.recordEvent(belongsTo.client.player, "customersServed", 1);
 			task.delay(2, () => world.despawn(id));
 		}
 		if (!wants.old && wants.new) {

@@ -4,6 +4,7 @@ import {
 	Customer,
 	Employee,
 	HasUtilities,
+	Holding,
 	NPC,
 	Pathfind,
 	Renderable,
@@ -71,12 +72,15 @@ function employee(world: World, state: ServerState) {
 											() => {
 												world.insert(
 													id,
+													Holding({
+														product: [product],
+													}),
 													Pathfind({
 														destination: (levelModel.model as BaseLevel).EmployeeAnchors
 															.Destination1.Position,
 														running: false,
 														finished: () => {
-															world.remove(id, Serving);
+															world.remove(id, Serving, Holding);
 															if (!world.contains(customer.npcId)) return;
 															world.insert(
 																customer.npcId,
