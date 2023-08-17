@@ -65,19 +65,24 @@ function employee(world: World, state: ServerState) {
 							if (world.get(id, Pathfind)) return;
 							world.insert(customer.npcId, customer.customer.patch({ servedBy: id }));
 							world.insert(customer.npcId, customer.wants.patch({ display: false }));
-							world.insert(
-								id,
-								Speech({
-									text: `Serving ${customer.npc.name} ${_utility.utility.makes.amount}x ${_utility.utility.makes.product}`,
-								}),
-							);
+
 							world.insert(
 								id,
 								Pathfind({
 									destination,
 									running: false,
 									finished: () => {
+										world.insert(
+											id,
+											Speech({
+												specialType: {
+													type: "meter",
+													time: _utility.utility.every,
+												},
+											}),
+										);
 										task.delay(_utility.utility.every, () => {
+											world.remove(id, Speech);
 											world.insert(
 												id,
 												Holding({
@@ -87,9 +92,6 @@ function employee(world: World, state: ServerState) {
 															amount: _utility.utility.makes.amount,
 														}),
 													],
-												}),
-												Speech({
-													text: `Delivering ${_utility.utility.makes.amount}x ${_utility.utility.makes.product} to ${customer.npc.name}`,
 												}),
 												Pathfind({
 													destination: (levelModel.model as BaseLevel).EmployeeAnchors

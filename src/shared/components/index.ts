@@ -46,8 +46,8 @@ export const NPC = component<{
 export type NPC = ReturnType<typeof NPC>;
 
 export const Speech = component<{
-	text: string;
-	isImage?: boolean;
+	text?: string;
+	specialType?: { type: "image" | "meter"; image?: string; value?: number; time?: number };
 }>("Speech");
 export type Speech = ReturnType<typeof Speech>;
 

@@ -135,8 +135,8 @@ function level(world: World, state: ServerState) {
 			}
 			for (const [id, npc, belongsTo] of world.query(NPC, BelongsTo)) {
 				if (belongsTo.client.player.UserId === ownedBy.player.UserId) {
-					Log.Debug("Npc {@NPC} belongs to {@BelongsTo}", npc, belongsTo.level.name);
-					world.despawn(id);
+					if (state.verbose) Log.Debug("Npc {@NPC} belongs to {@BelongsTo}", npc, belongsTo.level.name);
+					if (world.contains(id)) world.despawn(id);
 				}
 			}
 		}

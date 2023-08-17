@@ -19,15 +19,19 @@ function npc(world: World, _: ServerState) {
 			Parent: bodyModel,
 			Adornee: bodyModel.HumanoidRootPart,
 			AlwaysOnTop: true,
-			Enabled: false,
-			Active: true,
-			Size: new UDim2(1, 100, 0.5, 0),
-			StudsOffsetWorldSpace: new Vector3(0, 3, 0),
+			Enabled: true,
+			Size: new UDim2(npc.type === "employee" ? 1 : 4, 0, 1, 0),
+			SizeOffset: new Vector2(0, 2.5),
+			ZIndexBehavior: Enum.ZIndexBehavior.Global,
 			Name: "DialogGui",
 		});
+		const progressFrame = ReplicatedStorage.Shared.Progress.Clone();
+		progressFrame.Visible = false;
+		progressFrame.Parent = bodyModel.DialogGui;
 		New("Frame")({
 			Parent: bodyModel.DialogGui,
 			Name: "DialogFrame",
+			Visible: false,
 			Size: new UDim2(1, 0, 1, 0),
 		});
 		New("UIPadding")({

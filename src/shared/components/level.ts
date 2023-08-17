@@ -3,13 +3,13 @@ export const makes: { utilityName: string; makes: keyof Products; amount: number
 		utilityName: "Oven",
 		makes: "Bagel",
 		amount: 1,
-		every: 5,
+		every: 10,
 	},
 	{
 		utilityName: "Tea",
 		makes: "Tea",
 		amount: 1,
-		every: 5,
+		every: 3,
 	},
 	{
 		utilityName: "CoffeeMaker",

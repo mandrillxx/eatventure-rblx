@@ -11,6 +11,7 @@ interface ReplicatedStorage extends Instance {
 	Shared: Folder & {
 		systems: Folder;
 		tests: Folder;
+		Progress: RadialInstance;
 	};
 	Client: Folder & {
 		systems: Folder;
@@ -22,6 +23,19 @@ type Assets = Folder & {
 	NPCs: Folder & Employees & Customers;
 	Levels: Folder & Levels;
 	Products: Folder & Products;
+};
+
+type RadialInstance = Frame & {
+	Frame1: Frame & {
+		ImageLabel: ImageLabel & {
+			UIGradient: UIGradient;
+		};
+	};
+	Frame2: Frame & {
+		ImageLabel: ImageLabel & {
+			UIGradient: UIGradient;
+		};
+	};
 };
 
 type BaseUtility = Model & {
@@ -59,6 +73,7 @@ type BaseNPC = import("@rbxts/promise-character").CharacterRigR15 & {
 		DialogFrame: Frame & {
 			DialogText: TextLabel;
 		};
+		Progress: RadialInstance;
 	};
 	ClickDetector: ClickDetector;
 	HoverSelection: SelectionBox;
