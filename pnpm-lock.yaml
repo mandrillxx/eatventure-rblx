@@ -46,6 +46,9 @@ dependencies:
   '@rbxts/player-statistics':
     specifier: ^1.0.4
     version: 1.0.4
+  '@rbxts/pretty-roact-hooks':
+    specifier: ^3.1.1
+    version: 3.1.1(@rbxts/flipper@2.0.1)(@rbxts/roact-hooked@2.6.0)(@rbxts/roact@1.4.4-ts.0)
   '@rbxts/promise-character':
     specifier: ^1.0.3
     version: 1.0.3
@@ -79,6 +82,9 @@ dependencies:
   '@rbxts/services':
     specifier: ^1.5.1
     version: 1.5.1
+  '@rbxts/set-timeout':
+    specifier: ^1.1.2
+    version: 1.1.2
   '@rbxts/signal':
     specifier: ^1.1.1
     version: 1.1.1
@@ -338,6 +344,20 @@ packages:
       '@rbxts/testez': 0.3.1-ts.7
     dev: false
 
+  /@rbxts/pretty-roact-hooks@3.1.1(@rbxts/flipper@2.0.1)(@rbxts/roact-hooked@2.6.0)(@rbxts/roact@1.4.4-ts.0):
+    resolution: {integrity: sha512-eve1L7GWKZVo6ZLgcmk6c95SDvhTRIjWwR8notAz7g+CQ/jdtOoX+5fVHOQLMYE6HbQ79Bth+LO13WOM4T3WKg==}
+    peerDependencies:
+      '@rbxts/flipper': ^2.0.1
+      '@rbxts/roact': 1.4.4-ts.0
+      '@rbxts/roact-hooked': ^2.3.3
+    dependencies:
+      '@rbxts/flipper': 2.0.1
+      '@rbxts/roact': 1.4.4-ts.0
+      '@rbxts/roact-hooked': 2.6.0(@rbxts/roact@1.4.4-ts.0)
+      '@rbxts/services': 1.5.1
+      '@rbxts/set-timeout': 1.1.2
+    dev: false
+
   /@rbxts/promise-character@1.0.3:
     resolution: {integrity: sha512-2OaN4JIoCfRetBcgEFCwlj1lmipLoyj9zCrp+kDSEjD66+vNY+3XUd9XYXlJIue4/yhc9ObHuYIdvegROTmjHg==}
     dependencies:
@@ -431,6 +451,12 @@ packages:
 
   /@rbxts/services@1.5.1:
     resolution: {integrity: sha512-SRtfIjga0K4YYSXRpK+eH3kcTq7ZXo9OHOt0jszaOOoEOIJloMGlyuRPqesPHyhveh2AMXAZr3TYbRMSD+u+kQ==}
+    dev: false
+
+  /@rbxts/set-timeout@1.1.2:
+    resolution: {integrity: sha512-P/A0IiH9wuZdSJYr4Us0MDFm61nvIFR0acfKFHLkcOsgvIgELC90Up9ugiSsaMEHRIcIcO5UjE39LuS3xTzQHw==}
+    dependencies:
+      '@rbxts/services': 1.5.1
     dev: false
 
   /@rbxts/signal@1.1.1:

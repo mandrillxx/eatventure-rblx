@@ -1,24 +1,26 @@
 import { Button, Div, Text } from "@rbxts/rowindcss";
-import Roact from "@rbxts/roact";
 import { useState, withHooks } from "@rbxts/roact-hooked";
-import { AnyEntity, World } from "@rbxts/matter";
 import { Network } from "shared/network";
 import { ClientState } from "shared/clientState";
+import { useMountEffect } from "@rbxts/pretty-roact-hooks";
+import Roact from "@rbxts/roact";
 
 interface MenuProps {
-	world: World;
-	playerId: AnyEntity;
 	state: ClientState;
 }
 
-function Menu({ world, playerId, state }: MenuProps) {
+function Menu({ state }: MenuProps) {
 	const [balance, setBalance] = useState(0.0);
 	const [open, setOpen] = useState(true);
 
-	task.spawn(() => {
-		const [success, statistics] = Network.retrieveStatistics.client.invoke().await();
-		if (!success) return;
-		setBalance(statistics.customersServed);
+	useMountEffect(() => {
+		state.update = (key: "open" | "balance", value: unknown) => {
+			if (key === "open") {
+				setOpen(value as boolean);
+			} else if (key === "balance") {
+				setBalance(value as number);
+			}
+		};
 	});
 
 	return (

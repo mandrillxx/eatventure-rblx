@@ -1,7 +1,7 @@
-import { AnyEntity, World } from "@rbxts/matter";
-import { ComponentCtor } from "@rbxts/matter/lib/component";
 import { Renderable, Transform } from "./components";
 import { CollectionService } from "@rbxts/services";
+import { AnyEntity, World } from "@rbxts/matter";
+import { ComponentCtor } from "@rbxts/matter/lib/component";
 
 const boundTags = new Set([]);
 

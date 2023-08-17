@@ -1,7 +1,7 @@
-import Log from "@rbxts/log";
 import { World } from "@rbxts/matter";
 import { Widgets } from "@rbxts/plasma";
 import { ClientState } from "shared/clientState";
+import Log from "@rbxts/log";
 
 function development(_world: World, _: ClientState, ui: Widgets) {
 	const npcs: NPCNames[] = ["Erik", "Kendra", "Kenny", "Sophia"];

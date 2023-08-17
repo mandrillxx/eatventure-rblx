@@ -1,17 +1,15 @@
-import Log, { Logger } from "@rbxts/log";
 import { Players, ReplicatedStorage } from "@rbxts/services";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { ClientState } from "shared/clientState";
-import { AnyComponent, AnyEntity } from "@rbxts/matter";
+import { AnyEntity } from "@rbxts/matter";
 import { start } from "shared/start";
 import { receiveReplication } from "./receiveReplication";
 import Roact from "@rbxts/roact";
 import { withHookDetection } from "@rbxts/roact-hooked";
 import { Proton } from "@rbxts/proton";
-import Menu from "./components/menu";
 import { Network } from "shared/network";
-import { Client } from "shared/components";
-import Npc from "./components/npc";
+import Log, { Logger } from "@rbxts/log";
+import Menu from "./components/menu";
 
 Proton.awaitStart();
 
@@ -40,6 +38,7 @@ const state: ClientState = {
 	},
 	isRunning: false,
 	promptKeyboardKeyCode: Enum.KeyCode.F,
+	update: () => {},
 };
 
 const world = start([ReplicatedStorage.Client.systems, ReplicatedStorage.Shared.systems], state)(receiveReplication);
@@ -50,11 +49,8 @@ function bootstrap() {
 		task.wait(1);
 	}
 
-	Roact.mount(
-		<Menu world={world} playerId={state.playerId} state={state} />,
-		player.FindFirstChildOfClass("PlayerGui")!,
-	);
-	// Roact.mount(<Npc npc={{ name: "Erik" }} />, player.FindFirstChildOfClass("PlayerGui")!);
+	Roact.mount(<Menu state={state} />, player.FindFirstChildOfClass("PlayerGui")!);
+	// Roact.mount(<Npc state={state} npc={{ name: "Erik" }} />, player.FindFirstChildOfClass("PlayerGui")!);
 
 	Network.setState.client.connect((state) => {
 		state = { ...state };

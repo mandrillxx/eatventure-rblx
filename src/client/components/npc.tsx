@@ -1,12 +1,14 @@
 import { Div, Text } from "@rbxts/rowindcss";
-import Roact from "@rbxts/roact";
 import { withHooks } from "@rbxts/roact-hooked";
+import { ClientState } from "shared/clientState";
+import Roact from "@rbxts/roact";
 
 interface NPCProps {
 	npc: { name: NPCNames };
+	state: ClientState;
 }
 
-function NPC({ npc }: NPCProps) {
+function NPC({ npc, state }: NPCProps) {
 	return (
 		<screengui Key="NPCInfo">
 			<Div className="w-full h-full justify-end items-center">

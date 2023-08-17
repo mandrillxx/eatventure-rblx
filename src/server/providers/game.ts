@@ -1,5 +1,3 @@
-import Log from "@rbxts/log";
-import Maid from "@rbxts/maid";
 import { AnyEntity, World } from "@rbxts/matter";
 import { Provider } from "@rbxts/proton";
 import { Queue } from "@rbxts/stacks-and-queues";
@@ -15,10 +13,11 @@ import {
 	Level,
 	OpenStatus,
 	OwnedBy,
-	Serving,
 } from "shared/components";
 import { Balance } from "shared/components";
 import { Network } from "shared/network";
+import Maid from "@rbxts/maid";
+import Log from "@rbxts/log";
 
 interface PlayerData {
 	level: number;
@@ -287,6 +286,7 @@ export class GameProvider {
 									math.random(0, 100) <= 51 ? "Bagel" : math.random(0, 100) <= 51 ? "Coffee" : "Tea",
 								amount: math.random(1, 3),
 							}),
+							display: true,
 						}),
 					);
 					event.ran = true;
@@ -313,8 +313,13 @@ export class GameProvider {
 		const levelId = world.spawn(
 			Level({
 				name: levelName,
+<<<<<<< HEAD
 				maxCustomers: 18,
 				maxEmployees: 5,
+=======
+				maxCustomers: 2,
+				maxEmployees: 3,
+>>>>>>> 4429656 (add: gui state)
 				spawnRate: 1.0,
 			}),
 			OwnedBy({

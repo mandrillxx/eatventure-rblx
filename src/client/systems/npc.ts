@@ -1,9 +1,7 @@
-import Log from "@rbxts/log";
-import Maid from "@rbxts/maid";
 import { World } from "@rbxts/matter";
 import { ClientState } from "shared/clientState";
-import { Body, NPC, Wants } from "shared/components";
-import { Network } from "shared/network";
+import { Body, NPC } from "shared/components";
+import Maid from "@rbxts/maid";
 
 function npc(world: World, _: ClientState) {
 	const maid = new Maid();

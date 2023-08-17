@@ -1,11 +1,11 @@
-import Log from "@rbxts/log";
 import { AnyComponent, World } from "@rbxts/matter";
 import { ComponentCtor } from "@rbxts/matter/lib/component";
 import { ReplicatedStorage } from "@rbxts/services";
-import { t } from "@rbxts/t";
 import { ClientState } from "shared/clientState";
-import * as Components from "shared/components";
 import { ComponentNames, UnionComponentsMap } from "shared/types";
+import { t } from "@rbxts/t";
+import * as Components from "shared/components";
+import Log from "@rbxts/log";
 
 const remoteEvent = ReplicatedStorage.WaitForChild("Replication") as RemoteEvent;
 

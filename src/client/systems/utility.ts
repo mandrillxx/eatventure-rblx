@@ -1,8 +1,8 @@
-import Log from "@rbxts/log";
-import Maid from "@rbxts/maid";
 import { World } from "@rbxts/matter";
 import { ClientState } from "shared/clientState";
 import { Renderable, Utility } from "shared/components";
+import Maid from "@rbxts/maid";
+import Log from "@rbxts/log";
 
 function utility(world: World, _: ClientState) {
 	const maid = new Maid();

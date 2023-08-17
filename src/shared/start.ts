@@ -1,10 +1,10 @@
 import { Debugger, Loop, System, World } from "@rbxts/matter";
-import Plasma from "@rbxts/plasma";
-import { Renderable } from "./components";
-import { Context, HotReloader } from "@rbxts/rewire";
-import Log from "@rbxts/log";
 import { RunService, UserInputService } from "@rbxts/services";
+import { Context, HotReloader } from "@rbxts/rewire";
 import { ClientState } from "./clientState";
+import { Renderable } from "./components";
+import Plasma from "@rbxts/plasma";
+import Log from "@rbxts/log";
 
 export function start<S extends object>(
 	containers: Array<Instance>,

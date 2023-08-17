@@ -1,9 +1,9 @@
-import { New } from "@rbxts/fusion";
-import { AnyComponent, useEvent, World } from "@rbxts/matter";
-import { ComponentCtor } from "@rbxts/matter/lib/component";
-import { Players, ReplicatedStorage } from "@rbxts/services";
 import { Balance, Body, Client, Level, NPC, OpenStatus, Renderable, Utility, Wants } from "shared/components";
+import { AnyComponent, useEvent, World } from "@rbxts/matter";
+import { Players, ReplicatedStorage } from "@rbxts/services";
 import { ComponentNames } from "shared/types";
+import { ComponentCtor } from "@rbxts/matter/lib/component";
+import { New } from "@rbxts/fusion";
 
 const remoteEvent = New("RemoteEvent")({
 	Name: "Replication",

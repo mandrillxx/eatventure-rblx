@@ -1,8 +1,8 @@
-import Log from "@rbxts/log";
-import Maid from "@rbxts/maid";
+import { Holding, Renderable, Utility } from "shared/components";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
-import { Holding, Renderable, Utility } from "shared/components";
+import Maid from "@rbxts/maid";
+import Log from "@rbxts/log";
 
 function utility(world: World, state: ServerState) {
 	const maids = new Map<AnyEntity, Maid>();

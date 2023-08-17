@@ -1,8 +1,12 @@
-import Log from "@rbxts/log";
-import Maid from "@rbxts/maid";
+import { BelongsTo, Body, Holding, NPC, Pathfind, Wants } from "shared/components";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
+<<<<<<< HEAD
 import { BelongsTo, Body, Client, Customer, Holding, NPC, Pathfind, Wants } from "shared/components";
+=======
+import Maid from "@rbxts/maid";
+import Log from "@rbxts/log";
+>>>>>>> 4429656 (add: gui state)
 
 function customer(world: World, state: ServerState) {
 	const maids = new Map<AnyEntity, Maid>();
@@ -10,6 +14,7 @@ function customer(world: World, state: ServerState) {
 	for (const [id, wants] of world.queryChanged(Wants)) {
 		if (wants.old && wants.new) {
 			if (!world.contains(id)) return;
+
 			const npc = world.get(id, NPC);
 			const body = world.get(id, Body)?.model as BaseNPC;
 			if (!npc || !body) {
@@ -17,7 +22,7 @@ function customer(world: World, state: ServerState) {
 				continue;
 			}
 			body.DialogGui.DialogFrame.DialogText.Text = `I want ${wants.new.product.amount}x ${wants.new.product.product}`;
-			body.DialogGui.Enabled = true;
+			body.DialogGui.Enabled = wants.new.display;
 		}
 		if (wants.old && !wants.new) {
 			if (!world.contains(id)) return;
@@ -34,6 +39,7 @@ function customer(world: World, state: ServerState) {
 				continue;
 			}
 			world.remove(id, Pathfind);
+			body.DialogGui.DialogFrame.DialogText.Visible = true;
 			body.DialogGui.DialogFrame.DialogText.Text = "Thanks!";
 			state.playerStatisticsProvider.recordEvent(belongsTo.client.player, "customersServed", 1);
 			task.delay(2, () => world.despawn(id));

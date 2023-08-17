@@ -13,6 +13,7 @@ export interface ClientState {
 	debugEnabled: boolean;
 	playerId: AnyEntity | undefined;
 	storeStatus: StoreStatus;
+	update: (key: "open" | "balance", value: unknown) => void;
 	character: CharacterRigR15;
 	isRunning: boolean;
 	entityIdMap: Map<string, AnyEntity>;

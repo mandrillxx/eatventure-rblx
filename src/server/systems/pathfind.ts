@@ -1,9 +1,9 @@
-import { World } from "@rbxts/matter";
 import { Body, Pathfind } from "shared/components";
-import Simplepath from "@rbxts/simplepath";
 import { ServerState } from "server/index.server";
-import Log from "@rbxts/log";
+import { World } from "@rbxts/matter";
+import Simplepath from "@rbxts/simplepath";
 import Maid from "@rbxts/maid";
+import Log from "@rbxts/log";
 
 function pathfind(world: World, state: ServerState) {
 	for (const [id, pathfind] of world.queryChanged(Pathfind)) {

@@ -72,6 +72,7 @@ export type Serving = ReturnType<typeof Serving>;
 
 export const Wants = component<{
 	product: Product;
+	display: boolean;
 }>("Wants");
 export type Wants = ReturnType<typeof Wants>;
 

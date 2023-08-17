@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import Log, { Logger } from "@rbxts/log";
 import { DataStoreService, PhysicsService, Players, ReplicatedStorage } from "@rbxts/services";
 import { setupTags } from "shared/setupTags";
@@ -8,6 +9,8 @@ import { Proton } from "@rbxts/proton";
 import { GameProvider } from "./providers/game";
 import { Balance } from "shared/components";
 import { Network } from "shared/network";
+=======
+>>>>>>> 4429656 (add: gui state)
 import {
 	DataStorePlayerStatisticsPersistenceLayer,
 	EventsDefinition,
@@ -15,8 +18,18 @@ import {
 	PlayerStatisticsProvider,
 	StatisticsDefinition,
 } from "@rbxts/player-statistics";
+import { DataStoreService, PhysicsService, Players, ReplicatedStorage } from "@rbxts/services";
 import { PlayerStatisticEventsDefinition, PlayerStatisticsDefinition } from "./data/PlayerStatisticsDefinition";
+import { Client, Renderable } from "shared/components";
+import { GameProvider } from "./providers/game";
 import { AnyEntity } from "@rbxts/matter";
+import { setupTags } from "shared/setupTags";
+import { Network } from "shared/network";
+import { Balance } from "shared/components";
+import { Proton } from "@rbxts/proton";
+import { start } from "shared/start";
+import Log, { Logger } from "@rbxts/log";
+import promiseR15 from "@rbxts/promise-character";
 
 Proton.awaitStart();
 

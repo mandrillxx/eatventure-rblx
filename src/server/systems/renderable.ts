@@ -1,6 +1,6 @@
-import { World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
 import { Renderable } from "shared/components";
+import { World } from "@rbxts/matter";
 
 function renderable(world: World, _: ServerState) {
 	for (const [id, model] of world.query(Renderable)) {

@@ -1,5 +1,5 @@
-import { World } from "@rbxts/matter";
 import { Renderable, Transform } from "shared/components";
+import { World } from "@rbxts/matter";
 
 function updateTransforms(world: World) {
 	for (const [id, transform] of world.queryChanged(Transform)) {
