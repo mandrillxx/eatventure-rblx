@@ -28,7 +28,7 @@ function npc(world: World, state: ServerState) {
 			ZIndexBehavior: Enum.ZIndexBehavior.Global,
 			Name: "DialogGui",
 		});
-		const progressFrame = ReplicatedStorage.Shared.Progress.Clone();
+		const progressFrame = ReplicatedStorage.Assets.Progress.Clone();
 		progressFrame.Visible = false;
 		progressFrame.Parent = bodyModel.DialogGui;
 		New("Frame")({

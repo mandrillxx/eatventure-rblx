@@ -89,6 +89,7 @@ function level(world: World, state: ServerState) {
 				open: false,
 			}),
 		);
+		if (!world.contains(id)) continue;
 		const model = world.get(id, Renderable);
 		if (!model) {
 			Log.Error("Level {@LevelName} encountered a fatal error", level.name);
@@ -134,6 +135,7 @@ function level(world: World, state: ServerState) {
 
 	for (const [id, npc] of world.queryChanged(NPC)) {
 		if (!npc.old && npc.new) {
+			if (!world.contains(id)) continue;
 			const belongsTo = world.get(id, BelongsTo);
 			if (!belongsTo) {
 				Log.Error("NPC {@NPC} could not be found, bypass check", npc);
@@ -144,10 +146,9 @@ function level(world: World, state: ServerState) {
 			let customers = 0,
 				employees = 0;
 			for (const [_id, _npc, _belongsTo] of world.query(NPC, BelongsTo)) {
-				if (belongsTo.level === _belongsTo.level) {
+				if (belongsTo.level.name === _belongsTo.level.name) {
 					if (_npc.type === "customer") customers++;
 					if (_npc.type === "employee") employees++;
-					continue;
 				}
 			}
 			const finalCustomers = customers;
@@ -188,6 +189,7 @@ function level(world: World, state: ServerState) {
 
 	for (const [id, openStatus] of world.queryChanged(OpenStatus)) {
 		if (openStatus.new && !openStatus.new.open) {
+			if (!world.contains(id)) continue;
 			const level = world.get(id, Level);
 			const ownedBy = world.get(id, OwnedBy);
 			if (!level || !ownedBy) {

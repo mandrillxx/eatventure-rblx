@@ -118,7 +118,7 @@ export class GameProvider {
 		);
 		task.delay(1, () => {
 			this.beginGameplayLoop(world, state, client, playerEntity, level, levelId);
-			world.insert(levelId, level.patch({ employeePace: 32 }));
+			world.insert(levelId, level.patch({ employeePace: 10 }));
 		});
 	}
 
@@ -178,7 +178,7 @@ export class GameProvider {
 			ran: false,
 		});
 		queue.push(openStore);
-		for (let i = 0; i < 18; i++) {
+		for (let i = 0; i < 5; i++) {
 			queue.push({
 				type: "newCustomer",
 				ran: false,
@@ -333,8 +333,8 @@ export class GameProvider {
 		const levelId = world.spawn(
 			Level({
 				name: levelName,
-				maxCustomers: 20,
-				maxEmployees: 30,
+				maxCustomers: 5,
+				maxEmployees: 2,
 				eventRate: 0.1,
 				workRate: 6,
 				employeePace: 16,

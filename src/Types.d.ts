@@ -11,7 +11,6 @@ interface ReplicatedStorage extends Instance {
 	Shared: Folder & {
 		systems: Folder;
 		tests: Folder;
-		Progress: RadialInstance;
 	};
 	Client: Folder & {
 		systems: Folder;
@@ -23,6 +22,7 @@ type Assets = Folder & {
 	NPCs: Folder & Employees & Customers;
 	Levels: Folder & Levels;
 	Products: Folder & Products;
+	Progress: RadialInstance;
 };
 
 type RadialInstance = Frame & {
