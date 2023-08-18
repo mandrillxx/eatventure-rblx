@@ -9,6 +9,7 @@ import {
 	Level,
 	OpenStatus,
 	OwnedBy,
+	HasUtilities,
 } from "shared/components";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
@@ -115,12 +116,9 @@ export class GameProvider {
 				balance: playerData.money,
 			}),
 		);
-		task.delay(6, () => {
-			world.insert(playerEntity, Balance({ balance: playerData.money * 3 }));
-			world.insert(levelId, level.patch({ employeePace: 32 }));
-		});
 		task.delay(1, () => {
 			this.beginGameplayLoop(world, state, client, playerEntity, level, levelId);
+			world.insert(levelId, level.patch({ employeePace: 32 }));
 		});
 	}
 
@@ -276,6 +274,19 @@ export class GameProvider {
 							: math.random(1, 10) < 5
 							? "Kendra"
 							: "Sophia";
+					const hasUtilities = world.get(levelId, HasUtilities);
+					if (!hasUtilities) {
+						Log.Error("Level {@LevelId} does not have a HasUtilities component", levelId);
+						return;
+					}
+					const i = new Random().NextInteger(0, hasUtilities.utilities.size() - 1);
+					const product = hasUtilities.utilities[i];
+					if (!product) {
+						Log.Error("No product found for customer {@CustomerName} index: {@Index}", name, i);
+						return;
+					}
+					const productName = product.model.Makes.Value as keyof Products;
+
 					world.spawn(
 						NPC({
 							name,
@@ -292,8 +303,7 @@ export class GameProvider {
 						}),
 						Wants({
 							product: Product({
-								product:
-									math.random(0, 100) <= 51 ? "Bagel" : math.random(0, 100) <= 51 ? "Coffee" : "Tea",
+								product: productName,
 								amount: math.random(1, 3),
 							}),
 							display: true,

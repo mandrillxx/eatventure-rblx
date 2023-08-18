@@ -1,13 +1,14 @@
-import { BelongsTo, Body, Customer, Employee, NPC, Pathfind, Renderable } from "shared/components";
+import { BelongsTo, Body, Customer, Employee, Level, NPC, Pathfind, Renderable } from "shared/components";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState } from "server/index.server";
 import { World } from "@rbxts/matter";
 import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
 
-function npc(world: World, _: ServerState) {
+function npc(world: World, state: ServerState) {
 	for (const [id, npc, belongsTo] of world.query(NPC, BelongsTo).without(Body)) {
 		let bodyModel = ReplicatedStorage.Assets.NPCs.FindFirstChild(npc.name) as BaseNPC;
+		const level = world.get(belongsTo.levelId, Level)!;
 		const levelModel = world.get(belongsTo.levelId, Renderable)!.model as BaseLevel;
 		if (!bodyModel) {
 			Log.Error("NPC {@NPCName} does not have a representative asset", npc.name);
@@ -15,7 +16,6 @@ function npc(world: World, _: ServerState) {
 		}
 
 		const employee = npc.type === "employee";
-		if (employee) bodyModel.Humanoid.WalkSpeed = belongsTo.level.employeePace;
 		bodyModel = bodyModel.Clone();
 		bodyModel.ID.Value = id;
 		New("BillboardGui")({
@@ -89,6 +89,15 @@ function npc(world: World, _: ServerState) {
 		if (destination) {
 			world.insert(destination.destinationId, destination.destination.patch({ occupiedBy: id }));
 		}
+		if (employee) {
+			if (state.verbose)
+				Log.Warn(
+					"Employee {@EmployeeName} has been spawned, setting ws to {@WS}",
+					npc.name,
+					level.employeePace,
+				);
+			bodyModel.Humanoid.WalkSpeed = level.employeePace;
+		}
 
 		world.insert(
 			id,
@@ -106,6 +115,7 @@ function npc(world: World, _: ServerState) {
 						: levelModel.CustomerAnchors.Wait.PrimaryPart!.Position),
 				running: false,
 			}),
+			belongsTo.patch({ level }),
 			employeeOrCustomer,
 		);
 	}

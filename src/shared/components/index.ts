@@ -27,7 +27,7 @@ export const BelongsTo = component<{
 export type BelongsTo = ReturnType<typeof BelongsTo>;
 
 export const HasUtilities = component<{
-	utilities: { utility: Utility; model: Model }[];
+	utilities: { utility: Utility; model: BaseUtility }[];
 }>("HasUtilities");
 export type HasUtilities = ReturnType<typeof HasUtilities>;
 

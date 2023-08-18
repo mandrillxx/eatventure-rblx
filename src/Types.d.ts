@@ -41,6 +41,9 @@ type RadialInstance = Frame & {
 type BaseUtility = Model & {
 	SelectionBox: SelectionBox;
 	ClickDetector: ClickDetector;
+	Makes: StringValue;
+	Amount: IntValue;
+	Every: IntValue;
 };
 
 type Levels = {

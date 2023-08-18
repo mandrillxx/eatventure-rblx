@@ -16,8 +16,8 @@ import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState, _Level } from "server/index.server";
 import { AnyEntity, World } from "@rbxts/matter";
 import { makes } from "shared/components/level";
-import Log from "@rbxts/log";
 import { New } from "@rbxts/fusion";
+import Log from "@rbxts/log";
 
 function level(world: World, state: ServerState) {
 	for (const [id, level, ownedBy] of world.query(Level, OwnedBy).without(Renderable)) {
@@ -95,29 +95,27 @@ function level(world: World, state: ServerState) {
 			continue;
 		}
 
-		const utilities: { utility: Utility; model: Model }[] = [];
+		const utilities: { utility: Utility; model: BaseUtility }[] = [];
 		for (const utility of levelModel.Utilities.GetChildren()) {
-			const product = makes.find((x) => utility.Name === x.utilityName);
-			if (!product) {
-				Log.Error("Utility {@UtilityName} does not have a representative product", utility.Name);
-				continue;
-			}
+			const product = (utility as BaseUtility).Makes.Value as keyof Products;
+			const amount = (utility as BaseUtility).Amount.Value;
+			const every = (utility as BaseUtility).Every.Value;
 			const utilityComponent = Utility({
 				type: utility.Name,
 				unlocked: true,
-				makes: Product({ product: product.makes, amount: product.amount }),
-				every: product.every,
+				makes: Product({ product, amount }),
+				every,
 				level,
 			});
 			const utilityId = world.spawn(
 				utilityComponent,
 				Renderable({
-					model: utility as Model,
+					model: utility as BaseUtility,
 				}),
 			);
 			utilities.push({
 				utility: utilityComponent,
-				model: utility as Model,
+				model: utility as BaseUtility,
 			});
 			world.insert(
 				id,
@@ -177,7 +175,8 @@ function level(world: World, state: ServerState) {
 
 	for (const [_id, level] of world.queryChanged(Level)) {
 		if (level.old && level.new && level.old.employeePace !== level.new.employeePace) {
-			Log.Warn("Employee pace changed from {@Old} to {@New}", level.old.employeePace, level.new.employeePace);
+			if (state.verbose)
+				Log.Warn("Employee pace changed from {@Old} to {@New}", level.old.employeePace, level.new.employeePace);
 			for (const [_id, npc, body, belongsTo] of world.query(NPC, Body, BelongsTo)) {
 				if (npc.type === "employee" && belongsTo.level.name === level.new.name) {
 					Log.Warn("Setting {@NPC} walk speed to {@WalkSpeed}", npc.type, level.new.employeePace);

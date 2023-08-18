@@ -25,6 +25,7 @@ function updateTransforms(world: World) {
 		if (model.model.PrimaryPart?.Anchored) continue;
 
 		const existingCFrame = transform.cf;
+		if (!model.model.PrimaryPart) continue;
 		const currentCFrame = model.model.PrimaryPart!.CFrame;
 
 		if (currentCFrame !== existingCFrame) {

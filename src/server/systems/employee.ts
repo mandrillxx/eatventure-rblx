@@ -22,15 +22,6 @@ import Log from "@rbxts/log";
 import { giveItem } from "server/components/methods";
 
 function employee(world: World, state: ServerState) {
-	for (const [id, employee] of world.queryChanged(Employee)) {
-		if (employee.new) {
-			const body = world.get(id, Body)!;
-			const level = world.get(id, BelongsTo)!.level;
-			Log.Warn("Employee {@ID} has joined, setting walkspeed to {@Walkspeed}", id, level.employeePace);
-			body.model.Humanoid.WalkSpeed = level.employeePace;
-		}
-	}
-
 	const getCustomers = () => {
 		const customers: {
 			npcId: AnyEntity;
@@ -69,22 +60,18 @@ function employee(world: World, state: ServerState) {
 			const customers = getCustomers();
 
 			for (const customer of customers) {
-				// Find first customer who isn't being served
 				if (!customer.customer.servedBy) {
-					const { product } = customer.wants;
-					const utilityInfo = makes.find((x) => x.makes === product.product);
-					if (!utilityInfo) {
-						if (state.debug) Log.Debug("No relevant utility found for product {@Product}", product.product);
-						continue;
-					}
 					const hasUtilites = world.get(levelId, HasUtilities);
 					if (!hasUtilites) {
 						Log.Error("Level {@LevelId} does not have a HasUtilities component", levelId);
 						continue;
 					}
-					const utility = getUtilityByName(hasUtilites, utilityInfo.utilityName);
+					const { product } = customer.wants;
+					const utility = hasUtilites.utilities.find(
+						(x) => (x.model as BaseUtility).Makes.Value === product.product,
+					);
 					if (!utility) {
-						Log.Error("Utility {@UtilityName} does not exist in level", utilityInfo.utilityName);
+						if (state.debug) Log.Debug("No relevant utility found for product {@Product}", product.product);
 						continue;
 					}
 
@@ -115,12 +102,9 @@ function employee(world: World, state: ServerState) {
 									world.remove(id, Speech);
 									const destination = (
 										levelModel.EmployeeAnchors.FindFirstChild(
-											`Destination${math.random(
-												1,
-												levelModel.EmployeeAnchors.GetChildren().size() - 1,
-											)}`,
-										)! as BasePart
-									).Position;
+											`Destination${"1"}`,
+										)! as ComputedAnchorPoint
+									).PrimaryPart!.Position;
 									world.insert(
 										id,
 										Holding({
