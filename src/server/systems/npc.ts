@@ -1,4 +1,4 @@
-import { Body, Customer, Employee, NPC, Renderable } from "shared/components";
+import { BelongsTo, Body, Customer, Employee, NPC, Pathfind, Renderable } from "shared/components";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState } from "server/index.server";
 import { World } from "@rbxts/matter";
@@ -6,13 +6,16 @@ import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
 
 function npc(world: World, _: ServerState) {
-	for (const [id, npc] of world.query(NPC).without(Body)) {
+	for (const [id, npc, belongsTo] of world.query(NPC, BelongsTo).without(Body)) {
 		let bodyModel = ReplicatedStorage.Assets.NPCs.FindFirstChild(npc.name) as BaseNPC;
+		const levelModel = world.get(belongsTo.levelId, Renderable)!.model as BaseLevel;
 		if (!bodyModel) {
 			Log.Error("NPC {@NPCName} does not have a representative asset", npc.name);
 			continue;
 		}
 
+		const employee = npc.type === "employee";
+		if (employee) bodyModel.Humanoid.WalkSpeed = belongsTo.level.employeePace;
 		bodyModel = bodyModel.Clone();
 		bodyModel.ID.Value = id;
 		New("BillboardGui")({
@@ -20,7 +23,7 @@ function npc(world: World, _: ServerState) {
 			Adornee: bodyModel.HumanoidRootPart,
 			AlwaysOnTop: true,
 			Enabled: true,
-			Size: new UDim2(npc.type === "employee" ? 1 : 4, 0, 1, 0),
+			Size: new UDim2(employee ? 1 : 4, 0, 1, 0),
 			SizeOffset: new Vector2(0, 2.5),
 			ZIndexBehavior: Enum.ZIndexBehavior.Global,
 			Name: "DialogGui",
@@ -64,6 +67,11 @@ function npc(world: World, _: ServerState) {
 			Adornee: bodyModel,
 			Visible: false,
 		});
+		bodyModel.PivotTo(
+			employee
+				? levelModel.EmployeeAnchors.Spawn.PrimaryPart!.CFrame
+				: levelModel.CustomerAnchors.Spawn.PrimaryPart!.CFrame,
+		);
 		bodyModel.Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Viewer;
 		bodyModel.Parent = Workspace.NPCs;
 
@@ -77,6 +85,11 @@ function npc(world: World, _: ServerState) {
 		setNPCCollisionGroup();
 
 		const employeeOrCustomer = npc.type === "employee" ? Employee() : Customer({ servedBy: undefined });
+		const destination = belongsTo.level.nextAvailableDestination(npc.type);
+		if (destination) {
+			world.insert(destination.destinationId, destination.destination.patch({ occupiedBy: id }));
+		}
+
 		world.insert(
 			id,
 			Body({
@@ -84,6 +97,14 @@ function npc(world: World, _: ServerState) {
 			}),
 			Renderable({
 				model: bodyModel,
+			}),
+			Pathfind({
+				destination:
+					destination?.destination.destination ??
+					(employee
+						? levelModel.EmployeeAnchors.Wait.PrimaryPart!.Position
+						: levelModel.CustomerAnchors.Wait.PrimaryPart!.Position),
+				running: false,
 			}),
 			employeeOrCustomer,
 		);

@@ -117,8 +117,11 @@ export class GameProvider {
 		);
 		task.delay(6, () => {
 			world.insert(playerEntity, Balance({ balance: playerData.money * 3 }));
+			world.insert(levelId, level.patch({ employeePace: 32 }));
 		});
-		this.beginGameplayLoop(world, state, client, playerEntity, level, levelId);
+		task.delay(1, () => {
+			this.beginGameplayLoop(world, state, client, playerEntity, level, levelId);
+		});
 	}
 
 	addEvent(player: Player, event: Event) {
@@ -176,20 +179,20 @@ export class GameProvider {
 			type: "newEmployee",
 			ran: false,
 		});
+		queue.push(openStore);
 		for (let i = 0; i < 18; i++) {
 			queue.push({
 				type: "newCustomer",
 				ran: false,
 			});
 		}
-		queue.push(openStore);
 
 		const runGameLoop = () => {
-			task.wait(1);
+			task.wait(level.eventRate);
 			const event = queue.pop();
 			if (!event) {
 				const openStatus = world.get(levelId, OpenStatus);
-				if (openStatus && openStatus.open) {
+				if (openStatus && openStatus.open && math.random(0, 100) <= level.spawnRate) {
 					queue.push({
 						type: math.random(1, 10) < 5 ? "newCustomer" : "newEmployee",
 						args: {
@@ -232,8 +235,13 @@ export class GameProvider {
 				case "newEmployee": {
 					if (event.ran) return;
 					if (state.verbose) Log.Debug("Spawning new employee");
-					const levelModel = world.get(levelId, Renderable)!.model as BaseLevel;
-					const destination = levelModel.EmployeeAnchors.Destination1.Position.add(
+					const levelRenderable = world.get(levelId, Renderable);
+					if (!levelRenderable || !levelRenderable.model) {
+						Log.Error("Level {@LevelName} could not be found from newEmployee", level.name);
+						return;
+					}
+					const levelModel = levelRenderable.model as BaseLevel;
+					const destination = levelModel.EmployeeAnchors.Destination1.PrimaryPart!.Position.add(
 						new Vector3(math.random(-0.5, 0.5), 0, math.random(-2, 2)),
 					);
 					const name = event.args?.employeeName ?? "Kenny";
@@ -244,6 +252,7 @@ export class GameProvider {
 						}),
 						BelongsTo({
 							level,
+							levelId,
 							client,
 						}),
 						Pathfind({
@@ -258,7 +267,7 @@ export class GameProvider {
 					if (event.ran) return;
 					if (state.verbose) Log.Debug("Spawning new customer");
 					const levelModel = world.get(levelId, Renderable)!.model as BaseLevel;
-					const destination = levelModel.CustomerAnchors.Destination1.Position.add(
+					const destination = levelModel.CustomerAnchors.Destination1.PrimaryPart!.Position.add(
 						new Vector3(math.random(-0.5, 0.5), 0, math.random(-2, 2)),
 					);
 					const name =
@@ -274,6 +283,7 @@ export class GameProvider {
 						}),
 						BelongsTo({
 							level,
+							levelId,
 							client,
 						}),
 						Pathfind({
@@ -313,9 +323,16 @@ export class GameProvider {
 		const levelId = world.spawn(
 			Level({
 				name: levelName,
-				maxCustomers: 2,
-				maxEmployees: 3,
-				spawnRate: 1.0,
+				maxCustomers: 20,
+				maxEmployees: 30,
+				eventRate: 0.1,
+				workRate: 6,
+				employeePace: 16,
+				spawnRate: 25,
+				destinations: [],
+				nextAvailableDestination: () => {
+					return undefined;
+				},
 			}),
 			OwnedBy({
 				player: client.player,
@@ -327,11 +344,11 @@ export class GameProvider {
 		task.delay(1, () => {
 			const levelRenderable = world.get(levelId, Renderable);
 			if (!levelRenderable || !levelRenderable.model) {
-				Log.Error("Level {@LevelName} could not be found", levelName);
+				Log.Error("Level {@LevelName} could not be found frmo levelRenderable", levelName);
 				return;
 			}
 			const levelModel = levelRenderable.model as BaseLevel;
-			character.PivotTo(levelModel.EmployeeAnchors.Spawn.CFrame.add(new Vector3(0, 5, 0)));
+			character.PivotTo(levelModel.EmployeeAnchors.Spawn.PrimaryPart!.CFrame.add(new Vector3(0, 5, 0)));
 			Log.Info("Teleported {@Name} to {@LevelName}", levelName, client.player.Name);
 		});
 

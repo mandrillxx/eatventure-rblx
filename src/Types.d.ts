@@ -113,6 +113,10 @@ type Products = {
 	Tea: BaseProduct;
 };
 
+type ComputedAnchorPoint = Model & {
+	[key: string]: BasePart;
+};
+
 type BaseLevel = Model & {
 	NPCs: Folder & {
 		Customers: Folder;
@@ -122,15 +126,13 @@ type BaseLevel = Model & {
 		[key: string]: BaseUtility;
 	};
 	CustomerAnchors: Folder & {
-		Spawn: BasePart;
-		[key: string]: BasePart & {
-			Occupied?: IntValue;
-		};
+		Spawn: ComputedAnchorPoint;
+		Wait: ComputedAnchorPoint;
+		[key: string]: ComputedAnchorPoint;
 	};
 	EmployeeAnchors: Folder & {
-		Spawn: BasePart;
-		[key: string]: BasePart & {
-			Occupied?: IntValue;
-		};
+		Spawn: ComputedAnchorPoint;
+		Wait: ComputedAnchorPoint;
+		[key: string]: ComputedAnchorPoint;
 	};
 };

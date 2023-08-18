@@ -9,12 +9,15 @@ import {
 	Utility,
 	Product,
 	HasUtilities,
+	Body,
+	Destination,
 } from "shared/components";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState, _Level } from "server/index.server";
-import { World } from "@rbxts/matter";
+import { AnyEntity, World } from "@rbxts/matter";
 import { makes } from "shared/components/level";
 import Log from "@rbxts/log";
+import { New } from "@rbxts/fusion";
 
 function level(world: World, state: ServerState) {
 	for (const [id, level, ownedBy] of world.query(Level, OwnedBy).without(Renderable)) {
@@ -23,6 +26,53 @@ function level(world: World, state: ServerState) {
 			Log.Error("Level {@LevelName} does not have a representative asset", level.name);
 			continue;
 		}
+
+		const destinations: { destinationId: AnyEntity; destination: Destination }[] = [];
+		for (const child of levelModel.CustomerAnchors.GetChildren()) {
+			const parent = New("Model")({
+				Name: child.Name,
+				Parent: child.Parent,
+				PrimaryPart: child as BasePart,
+			});
+			child.Parent = parent;
+			if (child.Name === "Spawn" || !child.IsA("BasePart")) continue;
+			const destination = Destination({
+				destination: child.Position,
+				instance: child,
+				type: "customer",
+			});
+			const destinationId = world.spawn(destination, Renderable({ model: parent }));
+			destinations.push({ destinationId, destination });
+		}
+		for (const child of levelModel.EmployeeAnchors.GetChildren()) {
+			const parent = New("Model")({
+				Name: child.Name,
+				Parent: child.Parent,
+				PrimaryPart: child as BasePart,
+			});
+			child.Parent = parent;
+			if (child.Name === "Spawn" || !child.IsA("BasePart")) continue;
+			const destination = Destination({
+				destination: child.Position,
+				instance: child,
+				type: "employee",
+			});
+			const destinationId = world.spawn(destination, Renderable({ model: parent }));
+			destinations.push({ destinationId, destination });
+		}
+		world.insert(
+			id,
+			level.patch({
+				destinations: [...level.destinations, ...destinations],
+				nextAvailableDestination(npcType) {
+					for (const destination of destinations) {
+						if (destination.destination.type === npcType && !destination.destination.occupiedBy) {
+							return destination;
+						}
+					}
+				},
+			}),
+		);
 
 		levelModel = levelModel.Clone();
 		levelModel.Name = `${level.name}_${ownedBy.player.UserId}`;
@@ -125,6 +175,18 @@ function level(world: World, state: ServerState) {
 		}
 	}
 
+	for (const [_id, level] of world.queryChanged(Level)) {
+		if (level.old && level.new && level.old.employeePace !== level.new.employeePace) {
+			Log.Warn("Employee pace changed from {@Old} to {@New}", level.old.employeePace, level.new.employeePace);
+			for (const [_id, npc, body, belongsTo] of world.query(NPC, Body, BelongsTo)) {
+				if (npc.type === "employee" && belongsTo.level.name === level.new.name) {
+					Log.Warn("Setting {@NPC} walk speed to {@WalkSpeed}", npc.type, level.new.employeePace);
+					body.model.Humanoid.WalkSpeed = level.new.employeePace;
+				}
+			}
+		}
+	}
+
 	for (const [id, openStatus] of world.queryChanged(OpenStatus)) {
 		if (openStatus.new && !openStatus.new.open) {
 			const level = world.get(id, Level);
@@ -136,7 +198,7 @@ function level(world: World, state: ServerState) {
 			for (const [id, npc, belongsTo] of world.query(NPC, BelongsTo)) {
 				if (belongsTo.client.player.UserId === ownedBy.player.UserId) {
 					if (state.verbose) Log.Debug("Npc {@NPC} belongs to {@BelongsTo}", npc, belongsTo.level.name);
-					if (world.contains(id)) world.despawn(id);
+					if (world.contains(id) && npc.type !== "employee") world.despawn(id);
 				}
 			}
 		}

@@ -21,6 +21,7 @@ export type Body = ReturnType<typeof Body>;
 
 export const BelongsTo = component<{
 	level: Level;
+	levelId: AnyEntity;
 	client: Client;
 }>("BelongsTo");
 export type BelongsTo = ReturnType<typeof BelongsTo>;
@@ -105,9 +106,24 @@ export const Level = component<{
 	name: keyof Levels;
 	maxEmployees: number;
 	maxCustomers: number;
+	eventRate: number;
+	workRate: number;
+	employeePace: number;
 	spawnRate: number;
+	destinations: { destinationId: AnyEntity; destination: Destination }[];
+	nextAvailableDestination: (
+		npcType: "employee" | "customer",
+	) => { destinationId: AnyEntity; destination: Destination } | undefined;
 }>("Level");
 export type Level = ReturnType<typeof Level>;
+
+export const Destination = component<{
+	destination: Vector3;
+	instance: BasePart;
+	occupiedBy?: AnyEntity;
+	type: "employee" | "customer";
+}>("Destination");
+export type Destination = ReturnType<typeof Destination>;
 
 export const OwnedBy = component<{
 	player: Player;
