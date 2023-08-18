@@ -112,7 +112,7 @@ function npc(world: World, _: ServerState) {
 
 	for (const [id, npc] of world.queryChanged(NPC)) {
 		if (npc.old && !npc.new) {
-			if (world.contains(id)) world.remove(id);
+			if (world.contains(id)) world.despawn(id);
 		}
 	}
 
