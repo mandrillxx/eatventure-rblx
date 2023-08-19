@@ -1,5 +1,6 @@
 import { Body, Pathfind } from "shared/components";
 import { ServerState } from "server/index.server";
+import { getOrError } from "shared/util";
 import { World } from "@rbxts/matter";
 import Simplepath from "@rbxts/simplepath";
 import Maid from "@rbxts/maid";
@@ -11,11 +12,7 @@ function pathfind(world: World, state: ServerState) {
 			if (!world.contains(id)) continue;
 			if (state.verbose) Log.Debug("Pathfind {@id} is moving to {@Destination}", id, pathfind.new.destination);
 			world.insert(id, pathfind.new.patch({ running: true }));
-			const body = world.get(id, Body);
-			if (!body) {
-				Log.Warn("NPC {@id} has no body", id);
-				continue;
-			}
+			const body = getOrError(world, id, Body, "Entity has pathfind component without a Body component");
 			const destination = pathfind.new.destination;
 			const watchdogAmount = 10;
 			const maid = new Maid();
@@ -26,7 +23,12 @@ function pathfind(world: World, state: ServerState) {
 
 				const isPathfinding = path.Run(destination);
 				if (!isPathfinding) {
-					Log.Warn("Pathfind {@id} failed to pathfind", id);
+					Log.Warn(
+						"Pathfind {@id} failed to pathfind to {@Destination} {@Error}",
+						id,
+						`${string.format("%.2f", destination.X)}, ${string.format("%.2f", destination.Z)}`,
+						path.LastError,
+					);
 					attemptPathfind();
 					return;
 				}

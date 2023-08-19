@@ -1,6 +1,7 @@
-import { BelongsTo, Body, Customer, Employee, Level, NPC, Pathfind, Renderable } from "shared/components";
+import { BelongsTo, Body, Customer, Employee, Level, NPC, Renderable } from "shared/components";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState } from "server/index.server";
+import { getOrError } from "shared/util";
 import { World } from "@rbxts/matter";
 import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
@@ -8,12 +9,24 @@ import Log from "@rbxts/log";
 function npc(world: World, state: ServerState) {
 	for (const [id, npc, belongsTo] of world.query(NPC, BelongsTo).without(Body)) {
 		let bodyModel = ReplicatedStorage.Assets.NPCs.FindFirstChild(npc.name) as BaseNPC;
-		const level = world.get(belongsTo.levelId, Level)!;
-		const levelModel = world.get(belongsTo.levelId, Renderable)!.model as BaseLevel;
 		if (!bodyModel) {
 			Log.Error("NPC {@NPCName} does not have a representative asset", npc.name);
 			continue;
 		}
+		const level = getOrError(
+			world,
+			belongsTo.levelId,
+			Level,
+			"Level could not be found by levelId {@LevelId}",
+			"error",
+			belongsTo.levelId,
+		);
+		const levelModel = getOrError(
+			world,
+			belongsTo.levelId,
+			Renderable,
+			"Level entity does not have Renderable component",
+		).model as BaseLevel;
 
 		const employee = npc.type === "employee";
 		bodyModel = bodyModel.Clone();
@@ -85,9 +98,12 @@ function npc(world: World, state: ServerState) {
 		setNPCCollisionGroup();
 
 		const employeeOrCustomer = npc.type === "employee" ? Employee() : Customer({ servedBy: undefined });
-		const destination = belongsTo.level.nextAvailableDestination(npc.type);
+		const destination = level.nextAvailableDestination();
 		if (destination) {
+			Log.Warn("NPC {@NPCName} has been spawned, setting destination to {@Destination}", npc.name, destination);
 			world.insert(destination.destinationId, destination.destination.patch({ occupiedBy: id }));
+		} else {
+			Log.Error("NPC {@NPCName} has no available destination", npc.name);
 		}
 		if (employee) {
 			if (state.verbose)
@@ -106,14 +122,6 @@ function npc(world: World, state: ServerState) {
 			}),
 			Renderable({
 				model: bodyModel,
-			}),
-			Pathfind({
-				destination:
-					destination?.destination.destination ??
-					(employee
-						? levelModel.EmployeeAnchors.Wait.PrimaryPart!.Position
-						: levelModel.CustomerAnchors.Wait.PrimaryPart!.Position),
-				running: false,
 			}),
 			belongsTo.patch({ level }),
 			employeeOrCustomer,

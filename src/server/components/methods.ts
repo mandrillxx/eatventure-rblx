@@ -1,8 +1,9 @@
-import Log from "@rbxts/log";
-import Maid from "@rbxts/maid";
 import { AnyEntity, World } from "@rbxts/matter";
-import { ServerState } from "server/index.server";
 import { Holding, Wants } from "shared/components";
+import { ServerState } from "server/index.server";
+import { getOrError } from "shared/util";
+import Maid from "@rbxts/maid";
+import Log from "@rbxts/log";
 
 interface GiveItem {
 	player?: Player;
@@ -29,11 +30,7 @@ export function giveItem({ player, entity, world, maid, id, wants, state }: Give
 	}
 
 	const entityId = player ? state.clients.get(player.UserId)! : entity!;
-	const entityHolding = world.get(entityId, Holding);
-	if (!entityHolding) {
-		if (state.verbose) Log.Info("Entity not holding anything, cannot provide for NPC");
-		return;
-	}
+	const entityHolding = getOrError(world, entityId, Holding, "Entity does not have Holding component");
 	const entityHoldingRequestedProduct = entityHolding.product.find(
 		(product) => product.product === currentWants.product.product,
 	);

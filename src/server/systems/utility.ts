@@ -1,6 +1,6 @@
-import { Holding, Renderable, Utility } from "shared/components";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
+import { Holding } from "shared/components";
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
 

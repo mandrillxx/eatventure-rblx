@@ -15,7 +15,7 @@ import {
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState, _Level } from "server/index.server";
 import { AnyEntity, World } from "@rbxts/matter";
-import { makes } from "shared/components/level";
+import { getOrError } from "shared/util";
 import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
 
@@ -29,6 +29,7 @@ function level(world: World, state: ServerState) {
 
 		const destinations: { destinationId: AnyEntity; destination: Destination }[] = [];
 		for (const child of levelModel.CustomerAnchors.GetChildren()) {
+			const destinationPos = (child as BasePart).Position;
 			const parent = New("Model")({
 				Name: child.Name,
 				Parent: child.Parent,
@@ -37,14 +38,16 @@ function level(world: World, state: ServerState) {
 			child.Parent = parent;
 			if (child.Name === "Spawn" || !child.IsA("BasePart")) continue;
 			const destination = Destination({
-				destination: child.Position,
+				destination: destinationPos,
 				instance: child,
 				type: "customer",
 			});
+			Log.Warn("Spawning {@Destination} at {@Position}", destination.type, destination.destination);
 			const destinationId = world.spawn(destination, Renderable({ model: parent }));
 			destinations.push({ destinationId, destination });
 		}
 		for (const child of levelModel.EmployeeAnchors.GetChildren()) {
+			const destinationPos = (child as BasePart).Position;
 			const parent = New("Model")({
 				Name: child.Name,
 				Parent: child.Parent,
@@ -53,25 +56,35 @@ function level(world: World, state: ServerState) {
 			child.Parent = parent;
 			if (child.Name === "Spawn" || !child.IsA("BasePart")) continue;
 			const destination = Destination({
-				destination: child.Position,
+				destination: destinationPos,
 				instance: child,
 				type: "employee",
 			});
 			const destinationId = world.spawn(destination, Renderable({ model: parent }));
 			destinations.push({ destinationId, destination });
 		}
-		world.insert(
-			id,
-			level.patch({
-				destinations: [...level.destinations, ...destinations],
-				nextAvailableDestination(npcType) {
-					for (const destination of destinations) {
-						if (destination.destination.type === npcType && !destination.destination.occupiedBy) {
-							return destination;
+		const newDestinations = level.patch({ destinations });
+		Log.Warn(
+			"New Destinations: {@NewDestinations}",
+			newDestinations.destinations.map(
+				(d) => `${d.destination.type} | ${d.destination.occupiedBy} | ${d.destinationId}`,
+			),
+		);
+		task.spawn(() =>
+			world.insert(
+				id,
+				level.patch({
+					destinations: newDestinations.destinations,
+					nextAvailableDestination() {
+						Log.Info("Finding next available destination");
+						for (const destination of destinations) {
+							if (destination.destination.type === "customer" && !destination.destination.occupiedBy) {
+								return destination;
+							}
 						}
-					}
-				},
-			}),
+					},
+				}),
+			),
 		);
 
 		levelModel = levelModel.Clone();
@@ -90,7 +103,7 @@ function level(world: World, state: ServerState) {
 			}),
 		);
 		if (!world.contains(id)) continue;
-		const model = world.get(id, Renderable);
+		const model = getOrError(world, id, Renderable, "Level does not have Renderable component");
 		if (!model) {
 			Log.Error("Level {@LevelName} encountered a fatal error", level.name);
 			continue;
@@ -136,11 +149,7 @@ function level(world: World, state: ServerState) {
 	for (const [id, npc] of world.queryChanged(NPC)) {
 		if (!npc.old && npc.new) {
 			if (!world.contains(id)) continue;
-			const belongsTo = world.get(id, BelongsTo);
-			if (!belongsTo) {
-				Log.Error("NPC {@NPC} could not be found, bypass check", npc);
-				continue;
-			}
+			const belongsTo = getOrError(world, id, BelongsTo, "NPC does not have BelongsTo component");
 			const { spawnRate, maxCustomers, maxEmployees } = belongsTo.level;
 			const npcType = npc.new.type;
 			let customers = 0,
@@ -190,12 +199,8 @@ function level(world: World, state: ServerState) {
 	for (const [id, openStatus] of world.queryChanged(OpenStatus)) {
 		if (openStatus.new && !openStatus.new.open) {
 			if (!world.contains(id)) continue;
-			const level = world.get(id, Level);
-			const ownedBy = world.get(id, OwnedBy);
-			if (!level || !ownedBy) {
-				Log.Error("Level could not be found");
-				continue;
-			}
+			const level = getOrError(world, id, Level, "OpenStatus has been set without Level component");
+			const ownedBy = getOrError(world, id, OwnedBy, "OwnedBy has been set without Level component");
 			for (const [id, npc, belongsTo] of world.query(NPC, BelongsTo)) {
 				if (belongsTo.client.player.UserId === ownedBy.player.UserId) {
 					if (state.verbose) Log.Debug("Npc {@NPC} belongs to {@BelongsTo}", npc, belongsTo.level.name);

@@ -2,7 +2,6 @@ import {
 	BelongsTo,
 	Client,
 	NPC,
-	Pathfind,
 	Product,
 	Renderable,
 	Wants,
@@ -13,6 +12,7 @@ import {
 } from "shared/components";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
+import { getOrError } from "shared/util";
 import { Provider } from "@rbxts/proton";
 import { Network } from "shared/network";
 import { Balance } from "shared/components";
@@ -91,16 +91,8 @@ export class GameProvider {
 	}
 
 	setup(playerEntity: AnyEntity, world: World, state: ServerState, character: Model) {
-		const client = world.get(playerEntity, Client);
-		if (!client) {
-			Log.Error("Client component not found on player entity");
-			return;
-		}
-		const balance = world.get(playerEntity, Balance);
-		if (!balance) {
-			Log.Error("Balance component not found on player entity");
-			return;
-		}
+		const client = getOrError(world, playerEntity, Client, "Client component not found on player entity");
+		const balance = getOrError(world, playerEntity, Client, "Balance component not found on player entity");
 		const playerData = this.loadPlayerData(client);
 		const playerInventory = this.loadPlayerInventory(client);
 		const levelId = this.loadLevel(world, client, playerData.level, character);
@@ -108,7 +100,7 @@ export class GameProvider {
 			Log.Error("Level {@LevelId} could not be found", levelId);
 			return;
 		}
-		const level = world.get(levelId, Level);
+		const level = getOrError(world, levelId, Level, "Level component not found on level entity");
 
 		world.insert(
 			playerEntity,
@@ -118,7 +110,6 @@ export class GameProvider {
 		);
 		task.delay(1, () => {
 			this.beginGameplayLoop(world, state, client, playerEntity, level, levelId);
-			world.insert(levelId, level.patch({ employeePace: 10 }));
 		});
 	}
 
@@ -136,11 +127,12 @@ export class GameProvider {
 		const { world } = session;
 		// const dataStore = DataStore.find<PlayerData>("playerData", tostring(player.UserId));
 		// dataStore?.Destroy();
-		const balance = world.get(entity, Balance);
-		if (!balance) {
-			Log.Error("Balance component not found for {@PlayerName}, cannot save data", player.Name);
-			return;
-		}
+		const balance = getOrError(
+			world,
+			entity,
+			Balance,
+			"Balance component not found on player entity, cannot save data",
+		);
 		Log.Debug("Saving data for {@PlayerName} with {@Balance} coins", player.Name, balance.balance);
 	}
 
@@ -233,14 +225,11 @@ export class GameProvider {
 				case "newEmployee": {
 					if (event.ran) return;
 					if (state.verbose) Log.Debug("Spawning new employee");
-					const levelRenderable = world.get(levelId, Renderable);
-					if (!levelRenderable || !levelRenderable.model) {
-						Log.Error("Level {@LevelName} could not be found from newEmployee", level.name);
-						return;
-					}
-					const levelModel = levelRenderable.model as BaseLevel;
-					const destination = levelModel.EmployeeAnchors.Destination1.PrimaryPart!.Position.add(
-						new Vector3(math.random(-0.5, 0.5), 0, math.random(-2, 2)),
+					const levelRenderable = getOrError(
+						world,
+						levelId,
+						Renderable,
+						"Level does not have Renderable component",
 					);
 					const name = event.args?.employeeName ?? "Kenny";
 					world.spawn(
@@ -253,10 +242,6 @@ export class GameProvider {
 							levelId,
 							client,
 						}),
-						Pathfind({
-							destination,
-							running: false,
-						}),
 					);
 					event.ran = true;
 					break;
@@ -264,21 +249,18 @@ export class GameProvider {
 				case "newCustomer": {
 					if (event.ran) return;
 					if (state.verbose) Log.Debug("Spawning new customer");
-					const levelModel = world.get(levelId, Renderable)!.model as BaseLevel;
-					const destination = levelModel.CustomerAnchors.Destination1.PrimaryPart!.Position.add(
-						new Vector3(math.random(-0.5, 0.5), 0, math.random(-2, 2)),
-					);
 					const name =
 						event.args?.customerName ?? math.random(1, 10) < 5
 							? "Erik"
 							: math.random(1, 10) < 5
 							? "Kendra"
 							: "Sophia";
-					const hasUtilities = world.get(levelId, HasUtilities);
-					if (!hasUtilities) {
-						Log.Error("Level {@LevelId} does not have a HasUtilities component", levelId);
-						return;
-					}
+					const hasUtilities = getOrError(
+						world,
+						levelId,
+						HasUtilities,
+						"Level does not have HasUtilities component",
+					);
 					const i = new Random().NextInteger(0, hasUtilities.utilities.size() - 1);
 					const product = hasUtilities.utilities[i];
 					if (!product) {
@@ -296,10 +278,6 @@ export class GameProvider {
 							level,
 							levelId,
 							client,
-						}),
-						Pathfind({
-							destination,
-							running: false,
 						}),
 						Wants({
 							product: Product({
@@ -335,9 +313,9 @@ export class GameProvider {
 				name: levelName,
 				maxCustomers: 5,
 				maxEmployees: 2,
-				eventRate: 0.1,
-				workRate: 6,
-				employeePace: 16,
+				eventRate: 1,
+				workRate: 1,
+				employeePace: 10,
 				spawnRate: 25,
 				destinations: [],
 				nextAvailableDestination: () => {
@@ -352,7 +330,7 @@ export class GameProvider {
 		Log.Info("Spawned level {@LevelName} for {@Name}", levelName, client.player.Name);
 
 		task.delay(1, () => {
-			const levelRenderable = world.get(levelId, Renderable);
+			const levelRenderable = getOrError(world, levelId, Renderable, "Level does not have Renderable component");
 			if (!levelRenderable || !levelRenderable.model) {
 				Log.Error("Level {@LevelName} could not be found frmo levelRenderable", levelName);
 				return;

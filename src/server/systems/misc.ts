@@ -1,13 +1,15 @@
-import { ServerState } from "server/index.server";
 import { radialObject } from "shared/radial";
 import { Body, Speech } from "shared/components";
+import { ServerState } from "server/index.server";
+import { getOrError } from "shared/util";
 import { World } from "@rbxts/matter";
 
 function misc(world: World, _: ServerState) {
 	for (const [id, speech] of world.queryChanged(Speech)) {
 		if (!speech.old && speech.new) {
 			if (!world.contains(id)) continue;
-			const body = world.get(id, Body)?.model as BaseNPC;
+			const body = getOrError(world, id, Body, "Entity has speech component without a Body component")
+				.model as BaseNPC;
 			if (!speech.new.specialType) {
 				body.DialogGui.DialogFrame.DialogText.Text = speech.new.text!;
 				body.DialogGui.DialogFrame.Visible = true;
@@ -26,15 +28,16 @@ function misc(world: World, _: ServerState) {
 		}
 		if (speech.old && !speech.new) {
 			if (!world.contains(id)) continue;
-			const body = world.get(id, Body)?.model as BaseNPC;
-			if (!world.contains(id)) return;
+			const body = getOrError(world, id, Body, "Entity has speech component without a Body component")
+				.model as BaseNPC;
 			body.DialogGui.DialogFrame.DialogText.Text = "";
 			body.DialogGui.DialogFrame.Visible = false;
 			body.DialogGui.Progress.Visible = false;
 		}
 		if (speech.old && speech.new) {
 			if (!world.contains(id)) continue;
-			const body = world.get(id, Body)?.model as BaseNPC;
+			const body = getOrError(world, id, Body, "Entity has speech component without a Body component")
+				.model as BaseNPC;
 			if (!speech.old.specialType) {
 				body.DialogGui.DialogFrame.DialogText.Text = speech.new.text!;
 			}

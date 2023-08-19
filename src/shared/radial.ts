@@ -1,6 +1,5 @@
-import { New } from "@rbxts/fusion";
-import Log from "@rbxts/log";
 import { RunService, TweenService } from "@rbxts/services";
+import { New } from "@rbxts/fusion";
 
 interface Config {
 	ImageColor: Color3;
