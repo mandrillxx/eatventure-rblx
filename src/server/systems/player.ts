@@ -8,7 +8,7 @@ import Log from "@rbxts/log";
 function player(world: World, state: ServerState) {
 	for (const [id, balance] of world.queryChanged(Balance)) {
 		if (balance.new && balance.new.balance) {
-			const client = getOrError(world, id, Client, "Entity has balance component without a Client component");
+			const client = getOrError(world, id, Client, "Player does not have Client component but updated Balance");
 			if (state.verbose)
 				Log.Info(
 					"Updating balance for player {@Name} {@NewBalance} {@OldBalance}",

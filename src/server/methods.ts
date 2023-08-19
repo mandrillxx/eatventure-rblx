@@ -30,7 +30,11 @@ export function giveItem({ player, entity, world, maid, id, wants, state }: Give
 	}
 
 	const entityId = player ? state.clients.get(player.UserId)! : entity!;
-	const entityHolding = getOrError(world, entityId, Holding, "Entity does not have Holding component");
+	const entityHolding = world.get(entityId, Holding);
+	if (!entityHolding) {
+		if (state.verbose) Log.Info("Entity not holding anything, cannot provide for NPC");
+		return;
+	}
 	const entityHoldingRequestedProduct = entityHolding.product.find(
 		(product) => product.product === currentWants.product.product,
 	);

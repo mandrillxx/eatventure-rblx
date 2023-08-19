@@ -12,7 +12,7 @@ function pathfind(world: World, state: ServerState) {
 			if (!world.contains(id)) continue;
 			if (state.verbose) Log.Debug("Pathfind {@id} is moving to {@Destination}", id, pathfind.new.destination);
 			world.insert(id, pathfind.new.patch({ running: true }));
-			const body = getOrError(world, id, Body, "Entity has pathfind component without a Body component");
+			const body = getOrError(world, id, Body, "NPC does not have Body component but has Pathfind component");
 			const destination = pathfind.new.destination;
 			const watchdogAmount = 10;
 			const maid = new Maid();

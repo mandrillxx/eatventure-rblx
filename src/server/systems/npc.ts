@@ -9,24 +9,16 @@ import Log from "@rbxts/log";
 function npc(world: World, state: ServerState) {
 	for (const [id, npc, belongsTo] of world.query(NPC, BelongsTo).without(Body)) {
 		let bodyModel = ReplicatedStorage.Assets.NPCs.FindFirstChild(npc.name) as BaseNPC;
-		if (!bodyModel) {
-			Log.Error("NPC {@NPCName} does not have a representative asset", npc.name);
-			continue;
-		}
-		const level = getOrError(
-			world,
-			belongsTo.levelId,
-			Level,
-			"Level could not be found by levelId {@LevelId}",
-			"error",
-			belongsTo.levelId,
-		);
-		const levelModel = getOrError(
+		const level = getOrError(world, belongsTo.levelId, Level, "Level {@LevelId} does not have a Level component");
+		const levelRenderable = getOrError(
 			world,
 			belongsTo.levelId,
 			Renderable,
-			"Level entity does not have Renderable component",
-		).model as BaseLevel;
+			"Level {@LevelId} does not have renderable",
+			"error",
+			belongsTo.levelId,
+		);
+		const levelModel = levelRenderable.model as BaseLevel;
 
 		const employee = npc.type === "employee";
 		bodyModel = bodyModel.Clone();
@@ -97,8 +89,6 @@ function npc(world: World, state: ServerState) {
 		};
 		setNPCCollisionGroup();
 
-		const employeeOrCustomer = npc.type === "employee" ? Employee() : Customer({ servedBy: undefined });
-
 		if (employee) {
 			if (state.verbose)
 				Log.Warn(
@@ -108,7 +98,7 @@ function npc(world: World, state: ServerState) {
 				);
 			bodyModel.Humanoid.WalkSpeed = level.employeePace;
 		}
-
+		const employeeOrCustomer = npc.type === "employee" ? Employee() : Customer();
 		world.insert(
 			id,
 			Body({

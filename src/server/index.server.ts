@@ -77,16 +77,16 @@ function bootstrap() {
 		function characterAdded(character: Model) {
 			promiseR15(character).andThen((model) => {
 				const playerEntity = world.spawn(
-					Renderable({ model }),
-					Balance({
-						balance: 35.2,
-					}),
 					Client({
 						player,
 						document: {
 							coinMultiplier: 1.0,
 						},
 					}),
+					Balance({
+						balance: 35.2,
+					}),
+					Renderable({ model }),
 				);
 
 				state.clients.set(player.UserId, playerEntity);

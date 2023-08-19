@@ -30,7 +30,6 @@ function level(world: World, state: ServerState) {
 
 		const destinations: { destinationId: AnyEntity; destination: Destination }[] = [];
 		for (const child of levelModel.CustomerAnchors.GetChildren()) {
-			const destinationPos = (child as BasePart).Position;
 			const parent = New("Model")({
 				Name: child.Name,
 				Parent: child.Parent,
@@ -39,7 +38,7 @@ function level(world: World, state: ServerState) {
 			child.Parent = parent;
 			if (child.Name === "Spawn" || !child.IsA("BasePart")) continue;
 			const destination = Destination({
-				destination: destinationPos,
+				destination: child.Position,
 				instance: child,
 				type: "customer",
 			});
@@ -47,7 +46,6 @@ function level(world: World, state: ServerState) {
 			destinations.push({ destinationId, destination });
 		}
 		for (const child of levelModel.EmployeeAnchors.GetChildren()) {
-			const destinationPos = (child as BasePart).Position;
 			const parent = New("Model")({
 				Name: child.Name,
 				Parent: child.Parent,
@@ -56,7 +54,7 @@ function level(world: World, state: ServerState) {
 			child.Parent = parent;
 			if (child.Name === "Spawn" || !child.IsA("BasePart")) continue;
 			const destination = Destination({
-				destination: destinationPos,
+				destination: child.Position,
 				instance: child,
 				type: "employee",
 			});
@@ -101,10 +99,6 @@ function level(world: World, state: ServerState) {
 		);
 		if (!world.contains(id)) continue;
 		const model = getOrError(world, id, Renderable, "Level does not have Renderable component");
-		if (!model) {
-			Log.Error("Level {@LevelName} encountered a fatal error", level.name);
-			continue;
-		}
 
 		const utilities: { utility: Utility; model: BaseUtility }[] = [];
 		for (const utility of levelModel.Utilities.GetChildren()) {
@@ -196,8 +190,7 @@ function level(world: World, state: ServerState) {
 	for (const [id, openStatus] of world.queryChanged(OpenStatus)) {
 		if (openStatus.new && !openStatus.new.open) {
 			if (!world.contains(id)) continue;
-			const level = getOrError(world, id, Level, "OpenStatus has been set without Level component");
-			const ownedBy = getOrError(world, id, OwnedBy, "OwnedBy has been set without Level component");
+			const ownedBy = getOrError(world, id, OwnedBy, "Level does not have OwnedBy component");
 			for (const [id, npc, belongsTo] of world.query(NPC, BelongsTo)) {
 				if (belongsTo.client.player.UserId === ownedBy.player.UserId) {
 					if (state.verbose) Log.Debug("Npc {@NPC} belongs to {@BelongsTo}", npc, belongsTo.level.name);

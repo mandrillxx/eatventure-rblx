@@ -1,19 +1,7 @@
-import {
-	BelongsTo,
-	Body,
-	Customer,
-	Destination,
-	Level,
-	NPC,
-	OccupiedBy,
-	Pathfind,
-	Renderable,
-	Speech,
-	Wants,
-} from "shared/components";
+import { BelongsTo, Body, Destination, NPC, OccupiedBy, Pathfind, Renderable, Speech, Wants } from "shared/components";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
-import { getOrError, randomIndex } from "shared/util";
+import { getOrError } from "shared/util";
 import { giveItem } from "server/methods";
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
@@ -23,7 +11,7 @@ function customer(world: World, state: ServerState) {
 
 	for (const [id, wants] of world.queryChanged(Wants)) {
 		if (wants.old && wants.new) {
-			if (!world.contains(id)) return;
+			if (!world.contains(id)) continue;
 			world.insert(id, Speech({ text: `${wants.new.product.amount}x ${wants.new.product.product}` }));
 		}
 		if (wants.old && !wants.new) {
@@ -34,13 +22,15 @@ function customer(world: World, state: ServerState) {
 				maids.delete(id);
 			}
 			const belongsTo = getOrError(world, id, BelongsTo, "NPC does not have BelongsTo component");
+
 			for (const [_id, destination, occupiedBy] of world.query(Destination, OccupiedBy)) {
 				if (destination.instance.Name !== "Wait" && occupiedBy.entityId === id) {
-					Log.Warn(
-						"Clear destination {@DestinationName} for customer {@CustomerId}",
-						destination.instance.Name,
-						id,
-					);
+					if (state.verbose)
+						Log.Warn(
+							"Clear destination {@DestinationName} for customer {@CustomerId}",
+							destination.instance.Name,
+							id,
+						);
 					world.remove(_id, OccupiedBy);
 
 					continue;
@@ -54,13 +44,11 @@ function customer(world: World, state: ServerState) {
 		}
 		if (!wants.old && wants.new) {
 			maids.set(id, new Maid());
-			const belongsTo = getOrError(world, id, BelongsTo, "NPC does not have BelongsTo component");
-			const level = getOrError(world, belongsTo.levelId, Level, "Level by belongsTo.levelId does not exist");
 
 			const getNextDestination = () => {
 				let waitDestination: { destinationId: AnyEntity; destination: Destination } | undefined;
 				let selectedDestination: { destinationId: AnyEntity; destination: Destination } | undefined;
-				for (const [_id, destination] of world.query(Destination).without(OccupiedBy)) {
+				for (const [_id, destination] of world.query(Destination).without(OccupiedBy, Pathfind)) {
 					if (destination.type !== "customer") continue;
 					if (destination.instance.Name === "Wait") {
 						waitDestination = { destinationId: _id, destination };
@@ -81,12 +69,13 @@ function customer(world: World, state: ServerState) {
 			world.insert(id, Pathfind({ destination: chosenDestination.destination.destination, running: false }));
 			task.delay(1, () => {
 				if (!world.contains(id)) return;
-				const body = getOrError(world, id, Body, "NPC does not have Body component").model as BaseNPC;
-				const maid = maids.get(id);
-				if (!maid) throw "Maid not found for customer";
+				const body = getOrError(world, id, Body, "Entity has Wants component but does not have Body component");
+				const bodyModel = body.model as BaseNPC;
+
+				const maid = maids.get(id)!;
 
 				maid.GiveTask(
-					body.ClickDetector.MouseClick.Connect((player) => {
+					bodyModel.ClickDetector.MouseClick.Connect((player) => {
 						giveItem({
 							player,
 							world,

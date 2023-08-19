@@ -33,14 +33,11 @@ function employee(world: World, state: ServerState) {
 			customer: Customer;
 		}[] = [];
 
-		for (const [_id, _npc, customer, body, wants, _belongsTo] of world
+		for (const [id, _npc, customer, body, wants, _belongsTo] of world
 			.query(NPC, Customer, Body, Wants, BelongsTo)
 			.without(Pathfind)) {
 			if (!customer.servedBy) {
-				for (const [id, destination, occupiedBy] of world.query(Destination, OccupiedBy)) {
-					if (occupiedBy.entityId !== id && destination.instance.Name !== "Wait")
-						customers.push({ npcId: _id, npc: _npc, npcModel: body.model as BaseNPC, wants, customer });
-				}
+				customers.push({ npcId: id, npc: _npc, npcModel: body.model as BaseNPC, wants, customer });
 			}
 		}
 
@@ -49,12 +46,26 @@ function employee(world: World, state: ServerState) {
 
 	if (useThrottle(math.random(2, 5))) {
 		for (const [id, _npc, _employee, belongsTo] of world
-			.query(NPC, Employee, BelongsTo)
+			.query(NPC, Employee, BelongsTo, Body)
 			.without(Pathfind, Serving)) {
 			const levelId = belongsTo.levelId;
-			const levelModel = getOrError(world, levelId, Renderable, "Level does not have a Renderable component")
-				.model as BaseLevel;
-			const level = getOrError(world, levelId, Level, "Level does not have Level component");
+			const levelRenderable = getOrError(
+				world,
+				levelId,
+				Renderable,
+				"Level {@LevelId} does not have renderable",
+				"error",
+				levelId,
+			);
+			const levelModel = levelRenderable.model as BaseLevel;
+			const level = getOrError(
+				world,
+				levelId,
+				Level,
+				"Level {@LevelId} does not have a Level component",
+				"error",
+				levelId,
+			);
 
 			const customers = getCustomers();
 

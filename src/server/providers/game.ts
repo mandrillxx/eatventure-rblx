@@ -9,6 +9,7 @@ import {
 	OpenStatus,
 	OwnedBy,
 	HasUtilities,
+	Pathfind,
 } from "shared/components";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
@@ -181,8 +182,13 @@ export class GameProvider {
 			task.wait(level.eventRate);
 			const event = queue.pop();
 			if (!event) {
-				const openStatus = world.get(levelId, OpenStatus);
-				if (openStatus && openStatus.open && math.random(0, 100) <= level.spawnRate) {
+				const openStatus = getOrError(
+					world,
+					levelId,
+					OpenStatus,
+					"Level does not have OpenStatus component for game tick",
+				);
+				if (openStatus.open && math.random(0, 100) <= level.spawnRate) {
 					queue.push({
 						type: math.random(1, 10) < 5 ? "newCustomer" : "newEmployee",
 						args: {
@@ -225,12 +231,6 @@ export class GameProvider {
 				case "newEmployee": {
 					if (event.ran) return;
 					if (state.verbose) Log.Debug("Spawning new employee");
-					const levelRenderable = getOrError(
-						world,
-						levelId,
-						Renderable,
-						"Level does not have Renderable component",
-					);
 					const name = event.args?.employeeName ?? "Kenny";
 					world.spawn(
 						NPC({
@@ -311,11 +311,11 @@ export class GameProvider {
 		const levelId = world.spawn(
 			Level({
 				name: levelName,
-				maxCustomers: 3,
+				maxCustomers: 5,
 				maxEmployees: 2,
-				eventRate: 0.5,
+				eventRate: 0.25,
 				workRate: 3,
-				employeePace: 10,
+				employeePace: 16,
 				spawnRate: 25,
 				destinations: [],
 				nextAvailableDestination: () => {
@@ -331,10 +331,6 @@ export class GameProvider {
 
 		task.delay(1, () => {
 			const levelRenderable = getOrError(world, levelId, Renderable, "Level does not have Renderable component");
-			if (!levelRenderable || !levelRenderable.model) {
-				Log.Error("Level {@LevelName} could not be found frmo levelRenderable", levelName);
-				return;
-			}
 			const levelModel = levelRenderable.model as BaseLevel;
 			character.PivotTo(levelModel.EmployeeAnchors.Spawn.PrimaryPart!.CFrame.add(new Vector3(0, 5, 0)));
 			Log.Info("Teleported {@Name} to {@LevelName}", levelName, client.player.Name);
