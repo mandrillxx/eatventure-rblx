@@ -14,7 +14,6 @@ import {
 	Renderable,
 	Serving,
 	Speech,
-	Utility,
 	Wants,
 } from "shared/components";
 import { AnyEntity, World, useThrottle } from "@rbxts/matter";
@@ -37,7 +36,15 @@ function employee(world: World, state: ServerState) {
 			.query(NPC, Customer, Body, Wants, BelongsTo)
 			.without(Pathfind)) {
 			if (!customer.servedBy) {
-				customers.push({ npcId: id, npc: _npc, npcModel: body.model as BaseNPC, wants, customer });
+				let isOccupying = false;
+				for (const [_id, _destination, occupiedBy] of world.query(Destination, OccupiedBy)) {
+					if (occupiedBy.entityId === id) {
+						isOccupying = true;
+						break;
+					}
+				}
+				if (isOccupying)
+					customers.push({ npcId: id, npc: _npc, npcModel: body.model as BaseNPC, wants, customer });
 			}
 		}
 
@@ -67,7 +74,7 @@ function employee(world: World, state: ServerState) {
 				levelId,
 			);
 
-			const customers = getCustomers();
+			const customers = getCustomers()!;
 
 			for (const customer of customers) {
 				if (!customer.customer.servedBy) {

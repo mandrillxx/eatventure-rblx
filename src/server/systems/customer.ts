@@ -1,10 +1,45 @@
-import { BelongsTo, Body, Destination, NPC, OccupiedBy, Pathfind, Renderable, Speech, Wants } from "shared/components";
+import { BelongsTo, Body, Customer, Destination, NPC, OccupiedBy, Pathfind, Speech, Wants } from "shared/components";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
 import { getOrError } from "shared/util";
 import { giveItem } from "server/methods";
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
+
+const getNextDestination = (world: World, fallbackWait: boolean = true) => {
+	let waitDestination: { destinationId: AnyEntity; destination: Destination } | undefined;
+	let selectedDestination: { destinationId: AnyEntity; destination: Destination } | undefined;
+	for (const [_id, destination] of world.query(Destination).without(OccupiedBy)) {
+		if (destination.type !== "customer") continue;
+		if (destination.instance.Name === "Wait" && fallbackWait) {
+			waitDestination = { destinationId: _id, destination };
+		} else {
+			selectedDestination = { destinationId: _id, destination };
+		}
+	}
+	return selectedDestination || waitDestination;
+};
+
+const moveWaitingCustomer = (world: World) => {
+	for (const [_id, _npc, _customer, belongsTo] of world.query(NPC, Customer, BelongsTo).without(Pathfind)) {
+		for (const destination of belongsTo.level.destinations) {
+			if (destination.destination.type === "customer" && destination.destination.instance.Name !== "Wait") {
+				const occupiedBy = world.get(destination.destinationId, OccupiedBy);
+				if (occupiedBy && occupiedBy.entityId === _id) {
+					return;
+				}
+			}
+		}
+		const destination = getNextDestination(world, false);
+		if (!destination) {
+			Log.Error("No destination found for customer {@CustomerId}", _id);
+			continue;
+		}
+		if (destination.destination.instance.Name !== "Wait")
+			world.insert(destination.destinationId, OccupiedBy({ entityId: _id }));
+		world.insert(_id, Pathfind({ destination: destination.destination.destination, running: false }));
+	}
+};
 
 function customer(world: World, state: ServerState) {
 	const maids = new Map<AnyEntity, Maid>();
@@ -31,9 +66,11 @@ function customer(world: World, state: ServerState) {
 							destination.instance.Name,
 							id,
 						);
-					world.remove(_id, OccupiedBy);
-
-					continue;
+					task.delay(2.05, () => {
+						world.remove(_id, OccupiedBy);
+						moveWaitingCustomer(world);
+					});
+					break;
 				}
 			}
 			world.remove(id, Pathfind);
@@ -45,23 +82,9 @@ function customer(world: World, state: ServerState) {
 		if (!wants.old && wants.new) {
 			maids.set(id, new Maid());
 
-			const getNextDestination = () => {
-				let waitDestination: { destinationId: AnyEntity; destination: Destination } | undefined;
-				let selectedDestination: { destinationId: AnyEntity; destination: Destination } | undefined;
-				for (const [_id, destination] of world.query(Destination).without(OccupiedBy, Pathfind)) {
-					if (destination.type !== "customer") continue;
-					if (destination.instance.Name === "Wait") {
-						waitDestination = { destinationId: _id, destination };
-					} else {
-						selectedDestination = { destinationId: _id, destination };
-					}
-				}
-				return selectedDestination || waitDestination!;
-			};
-
-			const chosenDestination = getNextDestination();
+			const chosenDestination = getNextDestination(world);
 			if (!chosenDestination) {
-				Log.Error("No destination found for customer {@CustomerId}", id);
+				Log.Error("aaaahhhhhh No destination found for customer {@CustomerId}", id);
 				continue;
 			}
 			if (chosenDestination.destination.instance.Name !== "Wait")
