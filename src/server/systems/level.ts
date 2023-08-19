@@ -11,6 +11,7 @@ import {
 	HasUtilities,
 	Body,
 	Destination,
+	OccupiedBy,
 } from "shared/components";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState, _Level } from "server/index.server";
@@ -42,7 +43,6 @@ function level(world: World, state: ServerState) {
 				instance: child,
 				type: "customer",
 			});
-			Log.Warn("Spawning {@Destination} at {@Position}", destination.type, destination.destination);
 			const destinationId = world.spawn(destination, Renderable({ model: parent }));
 			destinations.push({ destinationId, destination });
 		}
@@ -64,12 +64,7 @@ function level(world: World, state: ServerState) {
 			destinations.push({ destinationId, destination });
 		}
 		const newDestinations = level.patch({ destinations });
-		Log.Warn(
-			"New Destinations: {@NewDestinations}",
-			newDestinations.destinations.map(
-				(d) => `${d.destination.type} | ${d.destination.occupiedBy} | ${d.destinationId}`,
-			),
-		);
+
 		task.spawn(() =>
 			world.insert(
 				id,
@@ -78,7 +73,9 @@ function level(world: World, state: ServerState) {
 					nextAvailableDestination() {
 						Log.Info("Finding next available destination");
 						for (const destination of destinations) {
-							if (destination.destination.type === "customer" && !destination.destination.occupiedBy) {
+							if (!world.contains(destination.destinationId)) continue;
+							const occupiedBy = world.get(destination.destinationId, OccupiedBy);
+							if (destination.destination.type === "customer" && !occupiedBy) {
 								return destination;
 							}
 						}

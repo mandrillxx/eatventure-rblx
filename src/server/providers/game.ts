@@ -311,10 +311,10 @@ export class GameProvider {
 		const levelId = world.spawn(
 			Level({
 				name: levelName,
-				maxCustomers: 5,
+				maxCustomers: 3,
 				maxEmployees: 2,
-				eventRate: 1,
-				workRate: 1,
+				eventRate: 0.5,
+				workRate: 3,
 				employeePace: 10,
 				spawnRate: 25,
 				destinations: [],

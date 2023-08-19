@@ -98,13 +98,7 @@ function npc(world: World, state: ServerState) {
 		setNPCCollisionGroup();
 
 		const employeeOrCustomer = npc.type === "employee" ? Employee() : Customer({ servedBy: undefined });
-		const destination = level.nextAvailableDestination();
-		if (destination) {
-			Log.Warn("NPC {@NPCName} has been spawned, setting destination to {@Destination}", npc.name, destination);
-			world.insert(destination.destinationId, destination.destination.patch({ occupiedBy: id }));
-		} else {
-			Log.Error("NPC {@NPCName} has no available destination", npc.name);
-		}
+
 		if (employee) {
 			if (state.verbose)
 				Log.Warn(

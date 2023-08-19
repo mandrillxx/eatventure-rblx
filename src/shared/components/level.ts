@@ -1,6 +1,21 @@
 import { AnyEntity, component } from "@rbxts/matter";
 import { Utility } from ".";
 
+/*
+	Destination
+		- position: Vector3
+		- instance: BasePart
+	
+	OccupiedBy
+		- npcId: AnyEntity
+
+	world.spawn(
+		Destination(),
+		Level(),
+	)
+
+*/
+
 export const Level = component<{
 	name: keyof Levels;
 	maxEmployees: number;
@@ -22,10 +37,14 @@ export type HasUtilities = ReturnType<typeof HasUtilities>;
 export const Destination = component<{
 	destination: Vector3;
 	instance: BasePart;
-	occupiedBy?: AnyEntity;
 	type: NPCType;
 }>("Destination");
 export type Destination = ReturnType<typeof Destination>;
+
+export const OccupiedBy = component<{
+	entityId: AnyEntity;
+}>("OccupiedBy");
+export type OccupiedBy = ReturnType<typeof OccupiedBy>;
 
 export const OwnedBy = component<{
 	player: Player;

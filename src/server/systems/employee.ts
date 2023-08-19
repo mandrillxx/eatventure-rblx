@@ -2,11 +2,13 @@ import {
 	BelongsTo,
 	Body,
 	Customer,
+	Destination,
 	Employee,
 	HasUtilities,
 	Holding,
 	Level,
 	NPC,
+	OccupiedBy,
 	Pathfind,
 	Product,
 	Renderable,
@@ -18,7 +20,7 @@ import {
 import { AnyEntity, World, useThrottle } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
 import { getOrError } from "shared/util";
-import { giveItem } from "server/components/methods";
+import { giveItem } from "server/methods";
 import Log from "@rbxts/log";
 
 function employee(world: World, state: ServerState) {
@@ -34,8 +36,12 @@ function employee(world: World, state: ServerState) {
 		for (const [_id, _npc, customer, body, wants, _belongsTo] of world
 			.query(NPC, Customer, Body, Wants, BelongsTo)
 			.without(Pathfind)) {
-			if (!customer.servedBy)
-				customers.push({ npcId: _id, npc: _npc, npcModel: body.model as BaseNPC, wants, customer });
+			if (!customer.servedBy) {
+				for (const [id, destination, occupiedBy] of world.query(Destination, OccupiedBy)) {
+					if (occupiedBy.entityId !== id && destination.instance.Name !== "Wait")
+						customers.push({ npcId: _id, npc: _npc, npcModel: body.model as BaseNPC, wants, customer });
+				}
+			}
 		}
 
 		return customers;
