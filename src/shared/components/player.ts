@@ -1,6 +1,7 @@
-import { AnyEntity, component } from "@rbxts/matter";
+import { component } from "@rbxts/matter";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Level } from ".";
+import { ComponentInfo } from "shared/util";
 
 export const Client = component<{
 	player: Player;
@@ -21,8 +22,7 @@ export const Body = component<{
 export type Body = ReturnType<typeof Body>;
 
 export const BelongsTo = component<{
-	level: Level;
-	levelId: AnyEntity;
+	level: ComponentInfo<typeof Level>;
 	client: Client;
 }>("BelongsTo");
 export type BelongsTo = ReturnType<typeof BelongsTo>;

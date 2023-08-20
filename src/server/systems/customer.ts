@@ -1,43 +1,67 @@
-import { BelongsTo, Body, Customer, Destination, NPC, OccupiedBy, Pathfind, Speech, Wants } from "shared/components";
+import {
+	BelongsTo,
+	Body,
+	Customer,
+	Destination,
+	Level,
+	NPC,
+	OccupiedBy,
+	Pathfind,
+	Speech,
+	Wants,
+} from "shared/components";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
-import { getOrError } from "shared/util";
+import { ComponentInfo, getOrError } from "shared/util";
 import { giveItem } from "server/methods";
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
 
 const getNextDestination = (world: World, fallbackWait: boolean = true) => {
-	let waitDestination: { destinationId: AnyEntity; destination: Destination } | undefined;
-	let selectedDestination: { destinationId: AnyEntity; destination: Destination } | undefined;
+	let waitDestination: ComponentInfo<typeof Destination> | undefined;
+	let selectedDestination: ComponentInfo<typeof Destination> | undefined;
 	for (const [_id, destination] of world.query(Destination).without(OccupiedBy)) {
 		if (destination.type !== "customer") continue;
 		if (destination.instance.Name === "Wait" && fallbackWait) {
-			waitDestination = { destinationId: _id, destination };
+			waitDestination = { componentId: _id, component: destination };
 		} else {
-			selectedDestination = { destinationId: _id, destination };
+			selectedDestination = { componentId: _id, component: destination };
 		}
 	}
-	return selectedDestination || waitDestination;
+	return selectedDestination ?? waitDestination;
+};
+
+const isCustomerOccupying = (world: World, levelId: AnyEntity, customer: AnyEntity) => {
+	const level = getOrError(world, levelId, Level, "Level does not have Level component");
+	const destinations = level.destinations;
+	for (const dest of destinations) {
+		if (dest.component.type === "customer" && dest.component.instance.Name !== "Wait") {
+			const occupiedBy = world.get(dest.componentId, OccupiedBy);
+			if (occupiedBy && occupiedBy.entityId === customer) {
+				return dest;
+			}
+		}
+	}
+	return undefined;
+};
+
+const moveCustomer = (world: World, customer: AnyEntity, destination: ComponentInfo<typeof Destination>) => {
+	if (destination.component.instance.Name !== "Wait")
+		world.insert(destination.componentId, OccupiedBy({ entityId: customer }));
+	world.insert(customer, Pathfind({ destination: destination.component.destination, running: false }));
 };
 
 const moveWaitingCustomer = (world: World) => {
-	for (const [_id, _npc, _customer, belongsTo] of world.query(NPC, Customer, BelongsTo).without(Pathfind)) {
-		for (const destination of belongsTo.level.destinations) {
-			if (destination.destination.type === "customer" && destination.destination.instance.Name !== "Wait") {
-				const occupiedBy = world.get(destination.destinationId, OccupiedBy);
-				if (occupiedBy && occupiedBy.entityId === _id) {
-					return;
-				}
-			}
+	for (const [id, _npc, _customer, belongsTo] of world.query(NPC, Customer, BelongsTo).without(Pathfind)) {
+		if (isCustomerOccupying(world, belongsTo.level.componentId, id)) {
+			continue;
 		}
 		const destination = getNextDestination(world, false);
 		if (!destination) {
-			Log.Error("No destination found for customer {@CustomerId}", _id);
+			Log.Error("No destination found for customer {@CustomerId}", id);
 			continue;
 		}
-		if (destination.destination.instance.Name !== "Wait")
-			world.insert(destination.destinationId, OccupiedBy({ entityId: _id }));
-		world.insert(_id, Pathfind({ destination: destination.destination.destination, running: false }));
+		moveCustomer(world, id, destination);
 	}
 };
 
@@ -57,6 +81,7 @@ function customer(world: World, state: ServerState) {
 				maids.delete(id);
 			}
 			const belongsTo = getOrError(world, id, BelongsTo, "NPC does not have BelongsTo component");
+			world.remove(id, Pathfind);
 
 			for (const [_id, destination, occupiedBy] of world.query(Destination, OccupiedBy)) {
 				if (destination.instance.Name !== "Wait" && occupiedBy.entityId === id) {
@@ -70,10 +95,10 @@ function customer(world: World, state: ServerState) {
 						world.remove(_id, OccupiedBy);
 						moveWaitingCustomer(world);
 					});
-					break;
+					continue;
 				}
 			}
-			world.remove(id, Pathfind);
+
 			world.insert(id, Speech({ text: "Thanks!" }));
 			if (state.playerStatisticsProvider.areStatisticsLoadedForPlayer(belongsTo.client.player))
 				state.playerStatisticsProvider.recordEvent(belongsTo.client.player, "customersServed", 1);
@@ -84,12 +109,33 @@ function customer(world: World, state: ServerState) {
 
 			const chosenDestination = getNextDestination(world);
 			if (!chosenDestination) {
-				Log.Error("aaaahhhhhh No destination found for customer {@CustomerId}", id);
+				Log.Warn("No available destination found for customer {@CustomerId}", id);
 				continue;
 			}
-			if (chosenDestination.destination.instance.Name !== "Wait")
-				world.insert(chosenDestination.destinationId, OccupiedBy({ entityId: id }));
-			world.insert(id, Pathfind({ destination: chosenDestination.destination.destination, running: false }));
+			if (chosenDestination.component.instance.Name !== "Wait")
+				world.insert(chosenDestination.componentId, OccupiedBy({ entityId: id }));
+			world.insert(
+				id,
+				Pathfind({
+					destination: chosenDestination.component.destination,
+					running: false,
+					finished: () => {
+						const isCloserDestinationAvailable = getNextDestination(world, false);
+						if (
+							isCloserDestinationAvailable &&
+							isCloserDestinationAvailable.component.instance.Name !== "Wait"
+						) {
+							if (state.debug)
+								Log.Debug(
+									"Closer destination available, moving customer {@CustomerId} to {@DestinationName}",
+									id,
+									isCloserDestinationAvailable.component.instance.Name,
+								);
+							moveCustomer(world, id, isCloserDestinationAvailable);
+						}
+					},
+				}),
+			);
 			task.delay(1, () => {
 				if (!world.contains(id)) return;
 				const body = getOrError(world, id, Body, "Entity has Wants component but does not have Body component");

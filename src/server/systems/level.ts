@@ -16,7 +16,7 @@ import {
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState, _Level } from "server/index.server";
 import { AnyEntity, World } from "@rbxts/matter";
-import { getOrError } from "shared/util";
+import { ComponentInfo, getOrError } from "shared/util";
 import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
 
@@ -28,7 +28,7 @@ function level(world: World, state: ServerState) {
 			continue;
 		}
 
-		const destinations: { destinationId: AnyEntity; destination: Destination }[] = [];
+		const destinations: ComponentInfo<typeof Destination>[] = [];
 		for (const child of levelModel.CustomerAnchors.GetChildren()) {
 			const parent = New("Model")({
 				Name: child.Name,
@@ -42,8 +42,8 @@ function level(world: World, state: ServerState) {
 				instance: child,
 				type: "customer",
 			});
-			const destinationId = world.spawn(destination, Renderable({ model: parent }));
-			destinations.push({ destinationId, destination });
+			const componentId = world.spawn(destination, Renderable({ model: parent }));
+			destinations.push({ componentId, component: destination });
 		}
 		for (const child of levelModel.EmployeeAnchors.GetChildren()) {
 			const parent = New("Model")({
@@ -58,8 +58,8 @@ function level(world: World, state: ServerState) {
 				instance: child,
 				type: "employee",
 			});
-			const destinationId = world.spawn(destination, Renderable({ model: parent }));
-			destinations.push({ destinationId, destination });
+			const componentId = world.spawn(destination, Renderable({ model: parent }));
+			destinations.push({ componentId, component: destination });
 		}
 		const newDestinations = level.patch({ destinations });
 
@@ -71,9 +71,9 @@ function level(world: World, state: ServerState) {
 					nextAvailableDestination() {
 						Log.Info("Finding next available destination");
 						for (const destination of destinations) {
-							if (!world.contains(destination.destinationId)) continue;
-							const occupiedBy = world.get(destination.destinationId, OccupiedBy);
-							if (destination.destination.type === "customer" && !occupiedBy) {
+							if (!world.contains(destination.componentId)) continue;
+							const occupiedBy = world.get(destination.componentId, OccupiedBy);
+							if (destination.component.type === "customer" && !occupiedBy) {
 								return destination;
 							}
 						}
@@ -102,17 +102,20 @@ function level(world: World, state: ServerState) {
 
 		const utilities: { utility: Utility; model: BaseUtility }[] = [];
 		for (const utility of levelModel.Utilities.GetChildren()) {
-			const product = (utility as BaseUtility).Makes.Value as keyof Products;
-			const amount = (utility as BaseUtility).Amount.Value;
-			const every = (utility as BaseUtility).Every.Value;
+			const utilModel = utility as BaseUtility;
+			const product = utilModel.Makes.Value as keyof Products;
+			const amount = utilModel.Amount.Value;
+			const every = utilModel.Every.Value;
+			const orderDelay = utilModel.OrderDelay.Value;
 			const utilityComponent = Utility({
 				type: utility.Name,
 				unlocked: true,
 				makes: Product({ product, amount }),
 				every,
 				level,
+				orderDelay,
 			});
-			const utilityId = world.spawn(
+			world.spawn(
 				utilityComponent,
 				Renderable({
 					model: utility as BaseUtility,
@@ -141,12 +144,12 @@ function level(world: World, state: ServerState) {
 		if (!npc.old && npc.new) {
 			if (!world.contains(id)) continue;
 			const belongsTo = getOrError(world, id, BelongsTo, "NPC does not have BelongsTo component");
-			const { spawnRate, maxCustomers, maxEmployees } = belongsTo.level;
+			const { spawnRate, maxCustomers, maxEmployees } = belongsTo.level.component;
 			const npcType = npc.new.type;
 			let customers = 0,
 				employees = 0;
 			for (const [_id, _npc, _belongsTo] of world.query(NPC, BelongsTo)) {
-				if (belongsTo.level.name === _belongsTo.level.name) {
+				if (belongsTo.level.component.name === _belongsTo.level.component.name) {
 					if (_npc.type === "customer") customers++;
 					if (_npc.type === "employee") employees++;
 				}
@@ -179,7 +182,7 @@ function level(world: World, state: ServerState) {
 			if (state.verbose)
 				Log.Warn("Employee pace changed from {@Old} to {@New}", level.old.employeePace, level.new.employeePace);
 			for (const [_id, npc, body, belongsTo] of world.query(NPC, Body, BelongsTo)) {
-				if (npc.type === "employee" && belongsTo.level.name === level.new.name) {
+				if (npc.type === "employee" && belongsTo.level.component.name === level.new.name) {
 					Log.Warn("Setting {@NPC} walk speed to {@WalkSpeed}", npc.type, level.new.employeePace);
 					body.model.Humanoid.WalkSpeed = level.new.employeePace;
 				}
@@ -193,7 +196,8 @@ function level(world: World, state: ServerState) {
 			const ownedBy = getOrError(world, id, OwnedBy, "Level does not have OwnedBy component");
 			for (const [id, npc, belongsTo] of world.query(NPC, BelongsTo)) {
 				if (belongsTo.client.player.UserId === ownedBy.player.UserId) {
-					if (state.verbose) Log.Debug("Npc {@NPC} belongs to {@BelongsTo}", npc, belongsTo.level.name);
+					if (state.verbose)
+						Log.Debug("Npc {@NPC} belongs to {@BelongsTo}", npc, belongsTo.level.component.name);
 					if (world.contains(id) && npc.type !== "employee") world.despawn(id);
 				}
 			}

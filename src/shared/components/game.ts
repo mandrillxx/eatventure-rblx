@@ -13,6 +13,7 @@ export const Utility = component<{
 	level: Level;
 	makes: Product;
 	every: number;
+	orderDelay: number;
 }>("Utility");
 export type Utility = ReturnType<typeof Utility>;
 

@@ -13,7 +13,7 @@ import {
 } from "shared/components";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
-import { getOrError } from "shared/util";
+import { fetchComponent, getOrError } from "shared/util";
 import { Provider } from "@rbxts/proton";
 import { Network } from "shared/network";
 import { Balance } from "shared/components";
@@ -238,8 +238,7 @@ export class GameProvider {
 							type: "employee",
 						}),
 						BelongsTo({
-							level,
-							levelId,
+							level: fetchComponent(world, levelId, Level),
 							client,
 						}),
 					);
@@ -275,8 +274,7 @@ export class GameProvider {
 							type: "customer",
 						}),
 						BelongsTo({
-							level,
-							levelId,
+							level: fetchComponent(world, levelId, Level),
 							client,
 						}),
 						Wants({

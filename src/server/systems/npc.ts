@@ -9,14 +9,19 @@ import Log from "@rbxts/log";
 function npc(world: World, state: ServerState) {
 	for (const [id, npc, belongsTo] of world.query(NPC, BelongsTo).without(Body)) {
 		let bodyModel = ReplicatedStorage.Assets.NPCs.FindFirstChild(npc.name) as BaseNPC;
-		const level = getOrError(world, belongsTo.levelId, Level, "Level {@LevelId} does not have a Level component");
+		const level = getOrError(
+			world,
+			belongsTo.level.componentId,
+			Level,
+			"Level {@LevelId} does not have a Level component",
+		);
 		const levelRenderable = getOrError(
 			world,
-			belongsTo.levelId,
+			belongsTo.level.componentId,
 			Renderable,
 			"Level {@LevelId} does not have renderable",
 			"error",
-			belongsTo.levelId,
+			belongsTo.level.componentId,
 		);
 		const levelModel = levelRenderable.model as BaseLevel;
 
@@ -107,7 +112,7 @@ function npc(world: World, state: ServerState) {
 			Renderable({
 				model: bodyModel,
 			}),
-			belongsTo.patch({ level }),
+			belongsTo.patch({ level: { component: level, componentId: belongsTo.level.componentId } }),
 			employeeOrCustomer,
 		);
 	}

@@ -44,6 +44,7 @@ type BaseUtility = Model & {
 	Makes: StringValue;
 	Amount: IntValue;
 	Every: IntValue;
+	OrderDelay: IntValue;
 };
 
 type Levels = {

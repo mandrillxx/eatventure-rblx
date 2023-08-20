@@ -22,8 +22,18 @@ import { getOrError } from "shared/util";
 import { giveItem } from "server/methods";
 import Log from "@rbxts/log";
 
+const isEmployeeServingCustomer = (world: World, employee: AnyEntity) => {
+	const serving = world.get(employee, Serving);
+	if (serving) return true;
+
+	for (const [_id, customer] of world.query(Customer)) {
+		if (customer.servedBy === employee) return true;
+	}
+	return false;
+};
+
 function employee(world: World, state: ServerState) {
-	const getCustomers = () => {
+	const getCustomers = (world: World) => {
 		const customers: {
 			npcId: AnyEntity;
 			npc: NPC;
@@ -32,19 +42,21 @@ function employee(world: World, state: ServerState) {
 			customer: Customer;
 		}[] = [];
 
-		for (const [id, _npc, customer, body, wants, _belongsTo] of world
-			.query(NPC, Customer, Body, Wants, BelongsTo)
-			.without(Pathfind)) {
+		if (state.verbose) Log.Debug("Getting customers");
+		for (const [npcId, npc, customer, body, wants] of world.query(NPC, Customer, Body, Wants)) {
 			if (!customer.servedBy) {
-				let isOccupying = false;
+				if (state.verbose)
+					Log.Warn(
+						"Customer {@CustomerId} is not being served, checking if they are occupying destination",
+						npcId,
+					);
 				for (const [_id, _destination, occupiedBy] of world.query(Destination, OccupiedBy)) {
-					if (occupiedBy.entityId === id) {
-						isOccupying = true;
+					if (occupiedBy.entityId === npcId) {
+						customers.push({ npcId, npc, npcModel: body.model as BaseNPC, wants, customer });
+						if (state.verbose) Log.Warn("Customer {@CustomerId} is occupying destination", npcId);
 						break;
 					}
 				}
-				if (isOccupying)
-					customers.push({ npcId: id, npc: _npc, npcModel: body.model as BaseNPC, wants, customer });
 			}
 		}
 
@@ -55,7 +67,8 @@ function employee(world: World, state: ServerState) {
 		for (const [id, _npc, _employee, belongsTo] of world
 			.query(NPC, Employee, BelongsTo, Body)
 			.without(Pathfind, Serving)) {
-			const levelId = belongsTo.levelId;
+			if (state.verbose) Log.Info("Employee {@EmployeeId} is looking for customers", id);
+			const levelId = belongsTo.level.componentId;
 			const levelRenderable = getOrError(
 				world,
 				levelId,
@@ -74,7 +87,8 @@ function employee(world: World, state: ServerState) {
 				levelId,
 			);
 
-			const customers = getCustomers()!;
+			const customers = getCustomers(world);
+			if (state.verbose) Log.Info("Found {@CustomerCount} customers", customers.size());
 
 			for (const customer of customers) {
 				if (!customer.customer.servedBy) {
@@ -100,69 +114,87 @@ function employee(world: World, state: ServerState) {
 					if (state.verbose)
 						Log.Warn("========================== EMPLOYEE PATHFIND STARTING ==========================");
 
+					if (isEmployeeServingCustomer(world, id)) {
+						Log.Warn("Employee {@EmployeeId} has already started serving another customer", id);
+						continue;
+					}
+
 					world.insert(customer.npcId, customer.customer.patch({ servedBy: id }));
 					world.insert(customer.npcId, customer.wants.patch({ display: false }));
 
+					const timeToTakeOrder = utility.utility.orderDelay / level.workRate;
 					world.insert(
 						id,
-						Pathfind({
-							destination,
-							running: false,
-							finished: () => {
-								world.insert(
-									id,
-									Speech({
-										specialType: {
-											type: "meter",
-											time: utility.utility.every / level.workRate,
-										},
-									}),
-								);
-								task.delay(utility.utility.every / level.workRate, () => {
-									world.remove(id, Speech);
-									const destination = (
-										levelModel.EmployeeAnchors.FindFirstChild(
-											`Destination${"1"}`,
-										)! as ComputedAnchorPoint
-									).PrimaryPart!.Position;
+						Speech({
+							specialType: {
+								type: "meter",
+								time: timeToTakeOrder,
+							},
+						}),
+					);
+					task.delay(timeToTakeOrder, () => {
+						world.insert(
+							id,
+							Pathfind({
+								destination,
+								running: false,
+								finished: () => {
 									world.insert(
 										id,
-										Holding({
-											product: [
-												Product({
-													product: product.product,
-													amount: utility.utility.makes.amount,
-												}),
-											],
-										}),
-										Pathfind({
-											destination,
-											running: false,
-											finished: () => {
-												world.remove(id, Serving, Speech);
-												if (!world.contains(customer.npcId)) return;
-												world.insert(
-													customer.npcId,
-													customer.customer.patch({ servedBy: undefined }),
-												);
-												giveItem({
-													entity: id,
-													world,
-													wants: customer.wants,
-													state,
-													id: customer.npcId,
-												});
+										Speech({
+											specialType: {
+												type: "meter",
+												time: utility.utility.every / level.workRate,
 											},
 										}),
 									);
-								});
-							},
-						}),
-						Serving({
-							serving: customer.npc,
-							wants: customer.wants,
-						}),
-					);
+									task.delay(utility.utility.every / level.workRate, () => {
+										world.remove(id, Speech);
+										const destination = (
+											levelModel.EmployeeAnchors.FindFirstChild(
+												`Destination${"1"}`,
+											)! as ComputedAnchorPoint
+										).PrimaryPart!.Position;
+										world.insert(
+											id,
+											Holding({
+												product: [
+													Product({
+														product: product.product,
+														amount: utility.utility.makes.amount,
+													}),
+												],
+											}),
+											Pathfind({
+												destination,
+												running: false,
+												finished: () => {
+													world.remove(id, Serving, Speech);
+													if (!world.contains(customer.npcId)) return;
+													world.insert(
+														customer.npcId,
+														customer.customer.patch({ servedBy: undefined }),
+													);
+													giveItem({
+														entity: id,
+														world,
+														wants: customer.wants,
+														state,
+														id: customer.npcId,
+													});
+												},
+											}),
+										);
+									});
+								},
+							}),
+							Serving({
+								serving: customer.npc,
+								wants: customer.wants,
+							}),
+						);
+					});
+
 					continue;
 				}
 			}

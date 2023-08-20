@@ -1,5 +1,6 @@
 import { AnyEntity, component } from "@rbxts/matter";
 import { Utility } from ".";
+import { ComponentInfo } from "shared/util";
 
 /*
 	Destination
@@ -24,8 +25,8 @@ export const Level = component<{
 	workRate: number;
 	employeePace: number;
 	spawnRate: number;
-	destinations: { destinationId: AnyEntity; destination: Destination }[];
-	nextAvailableDestination: () => { destinationId: AnyEntity; destination: Destination } | undefined;
+	destinations: ComponentInfo<typeof Destination>[];
+	nextAvailableDestination: () => ComponentInfo<typeof Destination> | undefined;
 }>("Level");
 export type Level = ReturnType<typeof Level>;
 
