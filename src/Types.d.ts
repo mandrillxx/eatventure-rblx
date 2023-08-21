@@ -45,6 +45,7 @@ type BaseUtility = Model & {
 	Amount: IntValue;
 	Every: IntValue;
 	OrderDelay: IntValue;
+	Reward: NumberValue;
 };
 
 type Levels = {
@@ -118,7 +119,9 @@ type Products = {
 };
 
 type ComputedAnchorPoint = Model & {
-	[key: string]: BasePart;
+	[key: string]: BasePart & {
+		Attachment: Attachment;
+	};
 };
 
 type BaseLevel = Model & {
@@ -138,5 +141,11 @@ type BaseLevel = Model & {
 		Spawn: ComputedAnchorPoint;
 		Wait: ComputedAnchorPoint;
 		[key: string]: ComputedAnchorPoint;
+	};
+};
+
+type BasePlayer = Player & {
+	leaderstats: Folder & {
+		Money: NumberValue;
 	};
 };

@@ -36,6 +36,7 @@
     "@rbxts/net": "^3.0.7",
     "@rbxts/objecat": "^1.1.1",
     "@rbxts/object-utils": "^1.0.4",
+    "@rbxts/persist": "^1.0.9",
     "@rbxts/plasma": "0.4.1-ts.1",
     "@rbxts/player-statistics": "^1.0.4",
     "@rbxts/pretty-roact-hooks": "^3.1.1",

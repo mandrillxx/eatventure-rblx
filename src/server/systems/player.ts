@@ -4,6 +4,7 @@ import { Balance } from "shared/components";
 import { Client } from "shared/components";
 import { World } from "@rbxts/matter";
 import Log from "@rbxts/log";
+import { store } from "server/data/PlayerData";
 
 function player(world: World, state: ServerState) {
 	for (const [id, balance] of world.queryChanged(Balance)) {
@@ -16,6 +17,7 @@ function player(world: World, state: ServerState) {
 					balance.new.balance,
 					balance.old?.balance,
 				);
+			(client.player as BasePlayer).leaderstats.Money.Value = balance.new.balance;
 		}
 	}
 }

@@ -17,6 +17,7 @@ import { Proton } from "@rbxts/proton";
 import { start } from "shared/start";
 import Log, { Logger } from "@rbxts/log";
 import promiseR15 from "@rbxts/promise-character";
+import { New } from "@rbxts/fusion";
 
 Proton.awaitStart();
 
@@ -36,18 +37,18 @@ export interface ServerState {
 	verbose: boolean;
 }
 
-const state: ServerState = {
+export const state: ServerState = {
 	levels: new Map(),
 	clients: new Map(),
 	playerStatisticsProvider: undefined as unknown as IPlayerStatisticsProvider<
 		StatisticsDefinition,
 		EventsDefinition<StatisticsDefinition>
 	>,
-	debug: true,
+	debug: false,
 	verbose: false,
 };
 
-const world = start([script.systems, ReplicatedStorage.Shared.systems], state)(setupTags);
+export const world = start([script.systems, ReplicatedStorage.Shared.systems], state)(setupTags);
 const gameProvider = Proton.get(GameProvider);
 
 function statistics() {
@@ -80,11 +81,11 @@ function bootstrap() {
 					Client({
 						player,
 						document: {
-							coinMultiplier: 1.0,
+							coinMultiplier: 10.0,
 						},
 					}),
 					Balance({
-						balance: 35.2,
+						balance: 0,
 					}),
 					Renderable({ model }),
 				);
@@ -94,6 +95,19 @@ function bootstrap() {
 				character.SetAttribute("entityId", playerEntity);
 			});
 		}
+
+		task.spawn(() => {
+			const leaderstats = New("Folder")({
+				Name: "leaderstats",
+				Parent: player,
+			});
+
+			New("NumberValue")({
+				Value: 0,
+				Name: "Money",
+				Parent: leaderstats,
+			});
+		});
 
 		if (player.Character) characterAdded(player.Character);
 		player.CharacterAdded.Connect(characterAdded);

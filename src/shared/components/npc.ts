@@ -41,6 +41,7 @@ export type Wants = ReturnType<typeof Wants>;
 export const Pathfind = component<{
 	destination: Vector3;
 	running: boolean;
+	cf?: boolean;
 	finished?: Callback;
 }>("Pathfind");
 export type Pathfind = ReturnType<typeof Pathfind>;

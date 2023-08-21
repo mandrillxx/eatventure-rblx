@@ -1,5 +1,5 @@
 import { AnyEntity, World } from "@rbxts/matter";
-import { Holding, Wants } from "shared/components";
+import { Balance, BelongsTo, Client, Holding, Utility, Wants } from "shared/components";
 import { ServerState } from "server/index.server";
 import { getOrError } from "shared/util";
 import Maid from "@rbxts/maid";
@@ -13,9 +13,10 @@ interface GiveItem {
 	id: AnyEntity;
 	wants: Wants;
 	state: ServerState;
+	utility: Utility;
 }
 
-export function giveItem({ player, entity, world, maid, id, wants, state }: GiveItem) {
+export function giveItem({ player, entity, world, maid, id, wants, state, utility }: GiveItem) {
 	if (!world.contains(id) || !wants) return;
 	const currentWants = world.get(id, Wants);
 	if (!currentWants) {
@@ -53,6 +54,15 @@ export function giveItem({ player, entity, world, maid, id, wants, state }: Give
 				},
 			],
 		}),
+	);
+	const benefitingPlayer = player
+		? state.clients.get(player.UserId)!
+		: state.clients.get(getOrError(world, entity!, BelongsTo).client.player.UserId)!;
+	const client = getOrError(world, benefitingPlayer, Client);
+	const balance = getOrError(world, benefitingPlayer, Balance);
+	world.insert(
+		benefitingPlayer,
+		balance.patch({ balance: balance.balance + utility.reward * client.document.coinMultiplier }),
 	);
 	if (currentWants.product.amount === 1) {
 		if (state.verbose) Log.Info("NPC {@NPC} got what they wanted", id);

@@ -202,6 +202,7 @@ function employee(world: World, state: ServerState) {
 																	wants: customer.wants,
 																	state,
 																	id: customer.npcId,
+																	utility: utility.utility,
 																});
 															},
 														}),

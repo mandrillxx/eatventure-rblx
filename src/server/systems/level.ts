@@ -107,6 +107,7 @@ function level(world: World, state: ServerState) {
 			const amount = utilModel.Amount.Value;
 			const every = utilModel.Every.Value;
 			const orderDelay = utilModel.OrderDelay.Value;
+			const reward = utilModel.Reward.Value;
 			const utilityComponent = Utility({
 				type: utility.Name,
 				unlocked: true,
@@ -114,6 +115,7 @@ function level(world: World, state: ServerState) {
 				every,
 				level,
 				orderDelay,
+				reward,
 			});
 			world.spawn(
 				utilityComponent,

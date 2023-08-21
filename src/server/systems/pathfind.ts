@@ -43,12 +43,13 @@ function pathfind(world: World, state: ServerState) {
 					} else {
 						pathfindErrors.set(id, 1);
 					}
-					Log.Warn(
-						"Pathfind {@id} failed to pathfind to {@Destination} {@Error}",
-						id,
-						`${string.format("%.2f", destination.X)}, ${string.format("%.2f", destination.Z)}`,
-						path.LastError,
-					);
+					if (state.debug)
+						Log.Warn(
+							"Pathfind {@id} failed to pathfind to {@Destination} {@Error}",
+							id,
+							`${string.format("%.2f", destination.X)}, ${string.format("%.2f", destination.Z)}`,
+							path.LastError,
+						);
 					attemptPathfind();
 					return;
 				}

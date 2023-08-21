@@ -61,6 +61,7 @@ const moveCustomer = (world: World, customer: AnyEntity, destination: ComponentI
 		Pathfind({
 			destination: destination.component.destination,
 			running: false,
+			cf: true,
 			finished: () => {
 				const body = getOrError(
 					world,
@@ -147,6 +148,7 @@ function customer(world: World, state: ServerState) {
 				id,
 				Pathfind({
 					destination: chosenDestination.component.destination,
+					cf: true,
 					running: false,
 					finished: () => {
 						if (chosenDestination.component.instance.Name === "Wait") return;
@@ -162,23 +164,6 @@ function customer(world: World, state: ServerState) {
 			);
 			task.delay(1, () => {
 				if (!world.contains(id)) return;
-				const body = getOrError(world, id, Body, "Entity has Wants component but does not have Body component");
-				const bodyModel = body.model as BaseNPC;
-
-				const maid = maids.get(id)!;
-
-				maid.GiveTask(
-					bodyModel.ClickDetector.MouseClick.Connect((player) => {
-						giveItem({
-							player,
-							world,
-							maid,
-							id,
-							wants: wants.new!,
-							state,
-						});
-					}),
-				);
 				world.insert(id, Speech({ text: `${wants.new!.product.amount}x ${wants.new!.product.product}` }));
 			});
 		}

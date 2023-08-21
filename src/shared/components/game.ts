@@ -14,6 +14,7 @@ export const Utility = component<{
 	makes: Product;
 	every: number;
 	orderDelay: number;
+	reward: number;
 }>("Utility");
 export type Utility = ReturnType<typeof Utility>;
 

@@ -40,6 +40,9 @@ dependencies:
   '@rbxts/object-utils':
     specifier: ^1.0.4
     version: 1.0.4
+  '@rbxts/persist':
+    specifier: ^1.0.9
+    version: 1.0.9
   '@rbxts/plasma':
     specifier: 0.4.1-ts.1
     version: 0.4.1-ts.1
@@ -326,6 +329,12 @@ packages:
 
   /@rbxts/object-utils@1.0.4:
     resolution: {integrity: sha512-dLLhf022ipV+9i910sOE7kl9losKHoon0WgeerHqVMQA5EYsLUsVT2AxhJuhk8MiDn5oJ2GiFofE/LadY9TpJQ==}
+    dev: false
+
+  /@rbxts/persist@1.0.9:
+    resolution: {integrity: sha512-GGSfuW/8mum40SZPgWC/gM2MQWxg/mC96tNNKnXZHUt+Tz9ebAUEdfq/p5lLcU/Vd01V8kx64MW1Q6wxA6CDCg==}
+    dependencies:
+      '@rbxts/beacon': 2.1.1
     dev: false
 
   /@rbxts/plasma@0.4.1-ts.1:

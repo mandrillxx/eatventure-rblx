@@ -9,17 +9,19 @@ import {
 	OpenStatus,
 	OwnedBy,
 	HasUtilities,
-	Pathfind,
 } from "shared/components";
+import { fetchComponent, getOrError } from "shared/util";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
-import { fetchComponent, getOrError } from "shared/util";
 import { Provider } from "@rbxts/proton";
 import { Network } from "shared/network";
 import { Balance } from "shared/components";
 import { Queue } from "@rbxts/stacks-and-queues";
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
+import { store } from "server/data/PlayerData";
+import { Players } from "@rbxts/services";
+import { New } from "@rbxts/fusion";
 
 interface PlayerData {
 	level: number;
@@ -94,7 +96,12 @@ export class GameProvider {
 	setup(playerEntity: AnyEntity, world: World, state: ServerState, character: Model) {
 		const client = getOrError(world, playerEntity, Client, "Client component not found on player entity");
 		const balance = getOrError(world, playerEntity, Client, "Balance component not found on player entity");
-		const playerData = this.loadPlayerData(client);
+		const [success, playerData] = this.loadPlayerData(client).await();
+		if (!success || !playerData) {
+			Log.Fatal("Player data could not be loaded for {@Name}", client.player.Name);
+			return;
+		}
+		Log.Info("Setting up {@Name} with {@PlayerData}", client.player.Name, playerData);
 		const playerInventory = this.loadPlayerInventory(client);
 		const levelId = this.loadLevel(world, client, playerData.level, character);
 		if (!world.contains(levelId)) {
@@ -124,17 +131,11 @@ export class GameProvider {
 	}
 
 	private savePlayerData(session: PlayerSession) {
-		const { player, client, entity } = session.player;
-		const { world } = session;
-		// const dataStore = DataStore.find<PlayerData>("playerData", tostring(player.UserId));
-		// dataStore?.Destroy();
-		const balance = getOrError(
-			world,
-			entity,
-			Balance,
-			"Balance component not found on player entity, cannot save data",
-		);
-		Log.Debug("Saving data for {@PlayerName} with {@Balance} coins", player.Name, balance.balance);
+		const { player } = session.player;
+		const dataSession = store.getSession(player as BasePlayer);
+		if (dataSession) {
+			dataSession.release();
+		}
 	}
 
 	private beginGameplayLoop(
@@ -337,18 +338,25 @@ export class GameProvider {
 		return levelId;
 	}
 
-	private loadPlayerData(client: Client) {
-		const playerData: PlayerData = {
-			level: 1,
-			money: 1000,
-		};
+	private async loadPlayerData(client: Client) {
+		const data = await store.load(client.player as BasePlayer).catch((err) => Log.Warn(err));
+		if (!data) {
+			Log.Fatal("Failed to load data for {@Name} {@Error}", client.player.Name, data);
+			client.player.Kick("Data failed to load");
+			return;
+		}
 
-		// const dataStore = new DataStore<PlayerData>("playerData", tostring(client.player.UserId));
-		// const [success, data] = dataStore.Open(playerData);
-		// if (success !== "Success") {
-		// 	Log.Error("Could not load player data for {@Name} {@Return} {@Data}", client.player.Name, success, data);
-		// }
-		return playerData;
+		if (!client.player.IsDescendantOf(Players)) {
+			data.release();
+			return;
+		}
+
+		(client.player as BasePlayer).leaderstats.Money.Value = data.data.money;
+
+		return {
+			level: 1,
+			money: data.data.money,
+		};
 	}
 
 	private loadPlayerInventory(client: Client) {
