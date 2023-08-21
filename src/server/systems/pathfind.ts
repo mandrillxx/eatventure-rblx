@@ -1,12 +1,14 @@
 import { Body, Pathfind } from "shared/components";
 import { ServerState } from "server/index.server";
 import { getOrError } from "shared/util";
-import { World } from "@rbxts/matter";
+import { AnyEntity, World } from "@rbxts/matter";
 import Simplepath from "@rbxts/simplepath";
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
 
 function pathfind(world: World, state: ServerState) {
+	const pathfindErrors = new Map<AnyEntity, number>();
+
 	for (const [id, pathfind] of world.queryChanged(Pathfind)) {
 		if (!pathfind.old && pathfind.new && pathfind.new.destination && !pathfind.new.running) {
 			if (!world.contains(id)) continue;
@@ -18,11 +20,29 @@ function pathfind(world: World, state: ServerState) {
 			const maid = new Maid();
 
 			const attemptPathfind = () => {
+				if (pathfindErrors.has(id) && pathfindErrors.get(id)! >= 10) {
+					Log.Error("Pathfind {@id} has errored too many times, removing", id);
+					pathfindErrors.delete(id);
+					body.model.PivotTo(new CFrame(pathfind.new!.destination));
+					world.remove(id, Pathfind);
+					if (pathfind.new && pathfind.new?.finished) {
+						if (state.verbose)
+							Log.Debug("Pathfind {@id} has finished abruptly, running finished callback", id);
+						task.spawn(pathfind.new.finished);
+					}
+					return;
+				}
+
 				const path = new Simplepath(body.model);
 				path.Visualize = state.debug;
 
 				const isPathfinding = path.Run(destination);
 				if (!isPathfinding) {
+					if (pathfindErrors.has(id)) {
+						pathfindErrors.set(id, pathfindErrors.get(id)! + 1);
+					} else {
+						pathfindErrors.set(id, 1);
+					}
 					Log.Warn(
 						"Pathfind {@id} failed to pathfind to {@Destination} {@Error}",
 						id,
@@ -36,6 +56,7 @@ function pathfind(world: World, state: ServerState) {
 				function endPath(retry: boolean = false) {
 					maid.DoCleaning();
 					path.Destroy();
+
 					if (retry) {
 						task.spawn(attemptPathfind);
 						return;
@@ -50,6 +71,11 @@ function pathfind(world: World, state: ServerState) {
 
 				maid.GiveTask(
 					path.Error.Connect((errorType) => {
+						if (pathfindErrors.has(id)) {
+							pathfindErrors.set(id, pathfindErrors.get(id)! + 1);
+						} else {
+							pathfindErrors.set(id, 1);
+						}
 						if (state.debug) Log.Error("Pathfind {@id} has errored: {@Error}", id, errorType);
 						endPath(true);
 					}),

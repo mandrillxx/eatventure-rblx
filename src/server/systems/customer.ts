@@ -10,12 +10,19 @@ import {
 	Speech,
 	Wants,
 } from "shared/components";
-import { AnyEntity, World } from "@rbxts/matter";
+import { AnyEntity, World, useThrottle } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
 import { ComponentInfo, getOrError } from "shared/util";
 import { giveItem } from "server/methods";
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
+
+const moveCustomerIfOpen = (world: World, customer: AnyEntity) => {
+	const isCloserDestinationAvailable = getNextDestination(world, false);
+	if (isCloserDestinationAvailable && isCloserDestinationAvailable.component.instance.Name !== "Wait") {
+		moveCustomer(world, customer, isCloserDestinationAvailable);
+	}
+};
 
 const getNextDestination = (world: World, fallbackWait: boolean = true) => {
 	let waitDestination: ComponentInfo<typeof Destination> | undefined;
@@ -46,9 +53,25 @@ const isCustomerOccupying = (world: World, levelId: AnyEntity, customer: AnyEnti
 };
 
 const moveCustomer = (world: World, customer: AnyEntity, destination: ComponentInfo<typeof Destination>) => {
-	if (destination.component.instance.Name !== "Wait")
+	if (destination.component.instance.Name !== "Wait") {
 		world.insert(destination.componentId, OccupiedBy({ entityId: customer }));
-	world.insert(customer, Pathfind({ destination: destination.component.destination, running: false }));
+	}
+	world.insert(
+		customer,
+		Pathfind({
+			destination: destination.component.destination,
+			running: false,
+			finished: () => {
+				const body = getOrError(
+					world,
+					customer,
+					Body,
+					"Entity has Wants component but does not have Body component",
+				).model as BaseNPC;
+				if (destination.component.instance.Name !== "Wait") body.DialogGui.DialogFrame.Visible = true;
+			},
+		}),
+	);
 };
 
 const moveWaitingCustomer = (world: World) => {
@@ -67,6 +90,12 @@ const moveWaitingCustomer = (world: World) => {
 
 function customer(world: World, state: ServerState) {
 	const maids = new Map<AnyEntity, Maid>();
+
+	if (useThrottle(1)) {
+		for (const [id, customer] of world.query(Customer).without(Pathfind)) {
+			moveCustomerIfOpen(world, id);
+		}
+	}
 
 	for (const [id, wants] of world.queryChanged(Wants)) {
 		if (wants.old && wants.new) {
@@ -120,19 +149,14 @@ function customer(world: World, state: ServerState) {
 					destination: chosenDestination.component.destination,
 					running: false,
 					finished: () => {
-						const isCloserDestinationAvailable = getNextDestination(world, false);
-						if (
-							isCloserDestinationAvailable &&
-							isCloserDestinationAvailable.component.instance.Name !== "Wait"
-						) {
-							if (state.debug)
-								Log.Debug(
-									"Closer destination available, moving customer {@CustomerId} to {@DestinationName}",
-									id,
-									isCloserDestinationAvailable.component.instance.Name,
-								);
-							moveCustomer(world, id, isCloserDestinationAvailable);
-						}
+						if (chosenDestination.component.instance.Name === "Wait") return;
+						const body = getOrError(
+							world,
+							id,
+							Body,
+							"Entity has Wants component but does not have Body component",
+						).model as BaseNPC;
+						body.DialogGui.DialogFrame.Visible = true;
 					},
 				}),
 			);

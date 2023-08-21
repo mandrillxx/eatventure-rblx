@@ -13,7 +13,7 @@ function misc(world: World, _: ServerState) {
 			const bodyModel = body.model as BaseNPC;
 			if (!speech.new.specialType) {
 				bodyModel.DialogGui.DialogFrame.DialogText.Text = speech.new.text!;
-				bodyModel.DialogGui.DialogFrame.Visible = true;
+				// bodyModel.DialogGui.DialogFrame.Visible = true;
 				bodyModel.DialogGui.Progress.Visible = false;
 				continue;
 			} else if (speech.new.specialType.type === "meter") {

@@ -32,6 +32,17 @@ const isEmployeeServingCustomer = (world: World, employee: AnyEntity) => {
 	return false;
 };
 
+const getDestinationByCustomer = (world: World, customer: AnyEntity) => {
+	for (const [_id, destination, occupiedBy] of world.query(Destination, OccupiedBy)) {
+		if (destination.type === "customer") {
+			if (occupiedBy && occupiedBy.entityId === customer) {
+				return destination;
+			}
+		}
+	}
+	return undefined;
+};
+
 function employee(world: World, state: ServerState) {
 	const getCustomers = (world: World) => {
 		const customers: {
@@ -109,13 +120,15 @@ function employee(world: World, state: ServerState) {
 						continue;
 					}
 
-					const destination = utility.model.PrimaryPart!.FindFirstChildWhichIsA("Attachment")!.WorldPosition;
+					const utilityDestination =
+						utility.model.PrimaryPart!.FindFirstChildWhichIsA("Attachment")!.WorldPosition;
 					if (world.get(id, Pathfind)) return;
 					if (state.verbose)
 						Log.Warn("========================== EMPLOYEE PATHFIND STARTING ==========================");
 
 					if (isEmployeeServingCustomer(world, id)) {
-						Log.Warn("Employee {@EmployeeId} has already started serving another customer", id);
+						if (state.verbose)
+							Log.Warn("Employee {@EmployeeId} has already started serving another customer", id);
 						continue;
 					}
 
@@ -123,77 +136,88 @@ function employee(world: World, state: ServerState) {
 					world.insert(customer.npcId, customer.wants.patch({ display: false }));
 
 					const timeToTakeOrder = utility.utility.orderDelay / level.workRate;
+					const destinationIndex = getDestinationByCustomer(world, customer.npcId)!.instance.Name.sub(-1, -1);
+					const destination = (
+						levelModel.EmployeeAnchors.FindFirstChild(
+							`Destination${destinationIndex}`,
+						)! as ComputedAnchorPoint
+					).PrimaryPart!.Position;
 					world.insert(
 						id,
-						Speech({
-							specialType: {
-								type: "meter",
-								time: timeToTakeOrder,
+						Pathfind({
+							destination,
+							running: false,
+							finished: () => {
+								world.insert(
+									id,
+									Speech({
+										specialType: {
+											type: "meter",
+											time: timeToTakeOrder,
+										},
+									}),
+								);
+
+								task.delay(timeToTakeOrder, () => {
+									world.insert(
+										id,
+										Pathfind({
+											destination: utilityDestination,
+											running: false,
+											finished: () => {
+												world.insert(
+													id,
+													Speech({
+														specialType: {
+															type: "meter",
+															time: utility.utility.every / level.workRate,
+														},
+													}),
+												);
+												task.delay(utility.utility.every / level.workRate, () => {
+													world.remove(id, Speech);
+													world.insert(
+														id,
+														Holding({
+															product: [
+																Product({
+																	product: product.product,
+																	amount: utility.utility.makes.amount,
+																}),
+															],
+														}),
+														Pathfind({
+															destination,
+															running: false,
+															finished: () => {
+																world.remove(id, Serving, Speech);
+																if (!world.contains(customer.npcId)) return;
+																world.insert(
+																	customer.npcId,
+																	customer.customer.patch({ servedBy: undefined }),
+																);
+																giveItem({
+																	entity: id,
+																	world,
+																	wants: customer.wants,
+																	state,
+																	id: customer.npcId,
+																});
+															},
+														}),
+													);
+												});
+											},
+										}),
+										Serving({
+											serving: customer.npc,
+											wants: customer.wants,
+										}),
+									);
+								});
 							},
 						}),
 					);
-					task.delay(timeToTakeOrder, () => {
-						world.insert(
-							id,
-							Pathfind({
-								destination,
-								running: false,
-								finished: () => {
-									world.insert(
-										id,
-										Speech({
-											specialType: {
-												type: "meter",
-												time: utility.utility.every / level.workRate,
-											},
-										}),
-									);
-									task.delay(utility.utility.every / level.workRate, () => {
-										world.remove(id, Speech);
-										const destination = (
-											levelModel.EmployeeAnchors.FindFirstChild(
-												`Destination${"1"}`,
-											)! as ComputedAnchorPoint
-										).PrimaryPart!.Position;
-										world.insert(
-											id,
-											Holding({
-												product: [
-													Product({
-														product: product.product,
-														amount: utility.utility.makes.amount,
-													}),
-												],
-											}),
-											Pathfind({
-												destination,
-												running: false,
-												finished: () => {
-													world.remove(id, Serving, Speech);
-													if (!world.contains(customer.npcId)) return;
-													world.insert(
-														customer.npcId,
-														customer.customer.patch({ servedBy: undefined }),
-													);
-													giveItem({
-														entity: id,
-														world,
-														wants: customer.wants,
-														state,
-														id: customer.npcId,
-													});
-												},
-											}),
-										);
-									});
-								},
-							}),
-							Serving({
-								serving: customer.npc,
-								wants: customer.wants,
-							}),
-						);
-					});
 
 					continue;
 				}
