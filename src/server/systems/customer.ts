@@ -53,6 +53,11 @@ const isCustomerOccupying = (world: World, levelId: AnyEntity, customer: AnyEnti
 
 const moveCustomer = (world: World, customer: AnyEntity, destination: ComponentInfo<typeof Destination>) => {
 	if (destination.component.instance.Name !== "Wait") {
+		for (const [_id, _destination, occupiedBy] of world.query(Destination, OccupiedBy)) {
+			if (occupiedBy.entityId === customer) {
+				return;
+			}
+		}
 		world.insert(destination.componentId, OccupiedBy({ entityId: customer }));
 	}
 	world.insert(
@@ -92,7 +97,7 @@ function customer(world: World, state: ServerState) {
 	const maids = new Map<AnyEntity, Maid>();
 
 	if (useThrottle(1)) {
-		for (const [id, customer] of world.query(Customer).without(Pathfind)) {
+		for (const [id, _customer] of world.query(Customer).without(Pathfind)) {
 			moveCustomerIfOpen(world, id);
 		}
 	}

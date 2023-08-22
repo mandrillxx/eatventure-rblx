@@ -15,7 +15,7 @@ import {
 } from "shared/components";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState, _Level } from "server/index.server";
-import { AnyEntity, World } from "@rbxts/matter";
+import { AnyEntity, World, useThrottle } from "@rbxts/matter";
 import { ComponentInfo, getOrError } from "shared/util";
 import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
@@ -140,6 +140,19 @@ function level(world: World, state: ServerState) {
 			levelId: id,
 		};
 		state.levels.set(ownedBy.player.UserId, _level);
+	}
+
+	if (useThrottle(2)) {
+		for (const [id, occupiedBy] of world.query(OccupiedBy)) {
+			if (!world.contains(occupiedBy.entityId)) {
+				if (state.debug)
+					Log.Warn(
+						"OccupiedBy entity {@OccupiedBy} does not exist but was occupying, clearing destination",
+						occupiedBy.entityId,
+					);
+				world.remove(id, OccupiedBy);
+			}
+		}
 	}
 
 	for (const [id, npc] of world.queryChanged(NPC)) {
