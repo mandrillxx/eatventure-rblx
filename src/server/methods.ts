@@ -61,12 +61,11 @@ export function giveItem({ player, entity, world, maid, id, wants, state, utilit
 	const client = getOrError(world, benefitingPlayer, Client);
 	const balance = getOrError(world, benefitingPlayer, Balance);
 	const utility = getOrError(world, utilityId, Utility);
-	// calculate reward and take utility.reward as a base and multiply it by the level of the utility and the coin multiplier
 	const reward =
 		utility.xpLevel <= 1
 			? utility.reward * client.document.coinMultiplier
 			: utility.reward * utility.upgradeMulti ** utility.xpLevel * client.document.coinMultiplier;
-	if (state.debug)
+	if (state.verbose)
 		Log.Info(
 			"Reward: {@Reward} {@RewardBase} * {@UtilityUpgradeMulti} ** {@UtilityXPLevel} * {@CoinMultiplier}",
 			reward,

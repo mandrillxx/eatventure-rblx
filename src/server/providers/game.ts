@@ -92,16 +92,9 @@ export class GameProvider {
 		this.savePlayerData(session);
 	}
 
-	async setup(playerEntity: AnyEntity, world: World, state: ServerState, character: Model) {
+	setup(playerEntity: AnyEntity, world: World, state: ServerState, character: Model) {
 		const client = getOrError(world, playerEntity, Client, "Client component not found on player entity");
-		const playerData = await this.loadPlayerData(client).catch((err) => {
-			Log.Warn(
-				"Failed to load player data for {@Name}, using backup data {@BackupData}",
-				client.player.Name,
-				err,
-			);
-			return err as unknown as PlayerData;
-		});
+		const playerData = this.loadPlayerData(client, state);
 		if (!playerData) {
 			Log.Fatal("Player data could not be loaded for {@Name}", client.player.Name);
 			return;
@@ -136,10 +129,6 @@ export class GameProvider {
 
 	private savePlayerData(session: PlayerSession) {
 		const { player } = session.player;
-		const dataSession = store.getSession(player as BasePlayer);
-		if (dataSession) {
-			dataSession.release();
-		}
 	}
 
 	private beginGameplayLoop(
@@ -337,51 +326,37 @@ export class GameProvider {
 		return levelId;
 	}
 
-	private async loadPlayerData(client: Client): Promise<PlayerData | undefined> {
-		const utilityLevels = new Map<string, number>();
-		utilityLevels.set("DrinkFountain", 8);
-		New("IntValue")({
-			Name: "DrinkFountain",
-			Value: 8,
-			Parent: (client.player as BasePlayer).Utilities,
-		});
-
-		const data = await store
-			.load(client.player as BasePlayer)
-			.catch((err) => Log.Warn(err))
-			.timeout(2, {
-				level: 1,
-				money: 50,
-				utilityLevels,
-			});
-		if (!data) {
-			Log.Fatal("Failed to load data for {@Name} {@Error}", client.player.Name, data);
-			client.player.Kick("Data failed to load");
-			return;
-		}
-
-		if (!client.player.IsDescendantOf(Players)) {
-			Log.Debug("{@Name} is not a descendant of Players, releasing data", client.player.Name);
-			data.release();
-			return;
-		}
+	private loadPlayerData(client: Client, state: ServerState): PlayerData | undefined {
 		const player = client.player as BasePlayer;
-		player.leaderstats.Money.Value = data.data.money;
+		const profile = state.profiles.get(player);
+		if (!profile) {
+			Log.Warn("No profile found for {@Name}", player.Name);
+			return;
+		}
+		Log.Info("Loaded profile for {@Name}: {@Profile}", player.Name, profile.Data);
 
-		data.data.utilityLevels.forEach((level, utility) => {
-			Log.Warn("Setting utility {@Utility} to level {@Level}", utility, level);
+		if (!player.IsDescendantOf(Players)) {
+			Log.Debug("{@Name} is not a descendant of Players, releasing data", player.Name);
+			profile.Release();
+			return;
+		}
+		player.leaderstats.Money.Value = profile.Data.money;
+
+		Log.Info("547847");
+		profile.Data.utilityLevels.forEach((level, utility) => {
 			New("IntValue")({
 				Name: utility,
 				Value: level,
 				Parent: player.Utilities,
 			});
 		});
-		Log.Warn("Loaded data for {@Name}", client.player.Name);
+		Log.Info("5478473");
+		Log.Warn("Loaded data for {@Name}", player.Name);
 
 		return {
 			level: 1,
-			money: data.data.money,
-			utilityLevels: data.data.utilityLevels,
+			money: profile.Data.money,
+			utilityLevels: profile.Data.utilityLevels,
 		};
 	}
 

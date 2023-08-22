@@ -18,6 +18,8 @@ import { start } from "shared/start";
 import { New } from "@rbxts/fusion";
 import Log, { Logger } from "@rbxts/log";
 import promiseR15 from "@rbxts/promise-character";
+import ProfileService from "@rbxts/profileservice";
+import { Profile } from "@rbxts/profileservice/globals";
 
 Proton.awaitStart();
 
@@ -32,14 +34,29 @@ declare const script: { systems: Folder };
 export interface ServerState {
 	levels: Map<number, _Level>;
 	clients: Map<number, AnyEntity>;
+	profiles: Map<Player, Profile<IProfile, unknown>>;
 	playerStatisticsProvider: IPlayerStatisticsProvider<StatisticsDefinition, EventsDefinition<StatisticsDefinition>>;
 	debug: boolean;
 	verbose: boolean;
 }
 
+interface IProfile {
+	level: number;
+	money: number;
+	logInTimes: number;
+	utilityLevels: Map<string, number>;
+}
+const ProfileTemplate: IProfile = {
+	level: 1,
+	money: 0,
+	logInTimes: 0,
+	utilityLevels: new Map<string, number>(),
+};
+
 const state: ServerState = {
 	levels: new Map(),
 	clients: new Map(),
+	profiles: new Map(),
 	playerStatisticsProvider: undefined as unknown as IPlayerStatisticsProvider<
 		StatisticsDefinition,
 		EventsDefinition<StatisticsDefinition>
@@ -50,6 +67,8 @@ const state: ServerState = {
 
 const world = start([script.systems, ReplicatedStorage.Shared.systems], state)(setupTags);
 const gameProvider = Proton.get(GameProvider);
+
+const GameProfileStore = ProfileService.GetProfileStore("PlayerData", ProfileTemplate);
 
 function statistics() {
 	const playerStatisticsDataStore = DataStoreService.GetDataStore("PlayerStatistics");
@@ -71,10 +90,31 @@ function collision() {
 async function bootstrap() {
 	function playerRemoving(player: Player) {
 		state.clients.delete(player.UserId);
+		const profile = state.profiles.get(player);
+		if (profile) {
+			profile.Release();
+		}
 		gameProvider.saveAndCleanup(player);
 	}
 
 	function playerAdded(player: Player) {
+		function handleData() {
+			const profile = GameProfileStore.LoadProfileAsync("Player_" + player.UserId);
+			if (!profile) {
+				return player.Kick("Failed to load profile");
+			}
+			profile.AddUserId(player.UserId);
+			profile.Reconcile();
+			profile.ListenToRelease(() => {
+				state.profiles.delete(player);
+				player.Kick("Session was terminated");
+			});
+			if (player.IsDescendantOf(Players)) {
+				return state.profiles.set(player, profile);
+			}
+			return profile.Release();
+		}
+
 		function characterAdded(character: Model) {
 			promiseR15(character).andThen(async (model) => {
 				const playerEntity = world.spawn(
@@ -90,7 +130,7 @@ async function bootstrap() {
 					Renderable({ model }),
 				);
 				state.clients.set(player.UserId, playerEntity);
-				await gameProvider.setup(playerEntity, world, state, model);
+				gameProvider.setup(playerEntity, world, state, model);
 				character.SetAttribute("entityId", playerEntity);
 			});
 		}
@@ -100,11 +140,10 @@ async function bootstrap() {
 				Name: "leaderstats",
 				Parent: player,
 			});
-			const utilities = New("Folder")({
+			New("Folder")({
 				Name: "Utilities",
 				Parent: player,
 			});
-
 			New("NumberValue")({
 				Value: 0,
 				Name: "Money",
@@ -112,6 +151,7 @@ async function bootstrap() {
 			});
 		});
 
+		handleData();
 		if (player.Character) characterAdded(player.Character);
 		player.CharacterAdded.Connect(characterAdded);
 	}

@@ -55,6 +55,9 @@ dependencies:
   '@rbxts/pretty-roact-hooks':
     specifier: ^3.1.1
     version: 3.1.1(@rbxts/flipper@2.0.1)(@rbxts/roact-hooked@2.6.0)(@rbxts/roact@1.4.4-ts.0)
+  '@rbxts/profileservice':
+    specifier: ^1.4.1
+    version: 1.4.1
   '@rbxts/promise-character':
     specifier: ^1.0.3
     version: 1.0.3
@@ -372,6 +375,10 @@ packages:
       '@rbxts/roact-hooked': 2.6.0(@rbxts/roact@1.4.4-ts.0)
       '@rbxts/services': 1.5.1
       '@rbxts/set-timeout': 1.1.2
+    dev: false
+
+  /@rbxts/profileservice@1.4.1:
+    resolution: {integrity: sha512-cB9+hz7EOaqMKMDLrYE/aSzN2+hNlOBgmJTRdFwbZJ/EsJVqXVwaNx4REh+b6doqlnkPv6O2VIKP9LC2WypeYA==}
     dev: false
 
   /@rbxts/promise-character@1.0.3:

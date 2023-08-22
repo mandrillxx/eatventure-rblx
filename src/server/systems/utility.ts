@@ -53,35 +53,6 @@ function utility(world: World, state: ServerState) {
 				maid.DoCleaning();
 			}
 		}
-		if (utility.old && utility.new && utility.old.xpLevel !== utility.new.xpLevel) {
-			if (state.verbose)
-				Log.Warn(
-					"Utility {@ID} level changed from {@Old} to {@New}",
-					id,
-					utility.old.xpLevel,
-					utility.new.xpLevel,
-				);
-			const ownedBy = getOrError(world, utility.new.level.componentId, OwnedBy);
-			const player = ownedBy.player;
-			const utilitiesFolder = player.FindFirstChild("Utilities") as Folder;
-			const utilityLevel = utilitiesFolder.FindFirstChild(utility.new.type) as IntValue | undefined;
-			if (!utilityLevel) {
-				if (state.verbose) Log.Info("Creating new utility level intvalue for {@Utility}", utility.new.type);
-				New("IntValue")({
-					Name: utility.new.type,
-					Value: utility.new.xpLevel,
-					Parent: utilitiesFolder,
-				});
-			} else {
-				if (state.verbose)
-					Log.Info(
-						"Updating utility level intvalue to {@Level} for {@Utility}",
-						utility.new.xpLevel,
-						utility.new.type,
-					);
-				utilityLevel.Value = utility.new.xpLevel;
-			}
-		}
 	}
 
 	for (const [id, holding] of world.queryChanged(Holding)) {
