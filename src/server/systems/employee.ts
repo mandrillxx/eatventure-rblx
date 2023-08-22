@@ -1,20 +1,20 @@
 import {
-	BelongsTo,
-	Body,
-	Customer,
-	Destination,
-	Employee,
 	HasUtilities,
-	Holding,
-	Level,
-	NPC,
+	Destination,
 	OccupiedBy,
-	Pathfind,
-	Product,
 	Renderable,
+	BelongsTo,
+	Customer,
+	Employee,
+	Pathfind,
 	Serving,
+	Holding,
+	Product,
 	Speech,
+	Level,
 	Wants,
+	Body,
+	NPC,
 } from "shared/components";
 import { AnyEntity, World, useThrottle } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
@@ -54,7 +54,7 @@ function employee(world: World, state: ServerState) {
 		}[] = [];
 
 		if (state.verbose) Log.Debug("Getting customers");
-		for (const [npcId, npc, customer, body, wants] of world.query(NPC, Customer, Body, Wants)) {
+		for (const [npcId, npc, customer, body, wants] of world.query(NPC, Customer, Body, Wants).without(Pathfind)) {
 			if (!customer.servedBy) {
 				if (state.verbose)
 					Log.Warn(
@@ -79,7 +79,7 @@ function employee(world: World, state: ServerState) {
 			.query(NPC, Employee, BelongsTo, Body)
 			.without(Pathfind, Serving)) {
 			if (state.verbose) Log.Info("Employee {@EmployeeId} is looking for customers", id);
-			const levelId = belongsTo.level.componentId;
+			const levelId = belongsTo.levelId;
 			const levelRenderable = getOrError(
 				world,
 				levelId,

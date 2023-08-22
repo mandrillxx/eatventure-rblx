@@ -24,3 +24,8 @@ export interface ClientState {
 	};
 	promptKeyboardKeyCode: Enum.KeyCode;
 }
+
+export interface InferencedServerState {
+	debug: boolean;
+	verbose: boolean;
+}

@@ -1,15 +1,7 @@
 import { ClientState } from "shared/clientState";
 import { Widgets } from "@rbxts/plasma";
 import { World } from "@rbxts/matter";
-import Log from "@rbxts/log";
 
-function development(_world: World, _: ClientState, ui: Widgets) {
-	const npcs: NPCNames[] = ["Erik", "Kendra", "Kenny", "Sophia"];
-	for (const npc of npcs) {
-		if (ui.button(`Spawn ${npc}`).clicked()) {
-			Log.Debug("Spawning NPC {@NPC}", npc);
-		}
-	}
-}
+function development(_world: World, _: ClientState, ui: Widgets) {}
 
 export = development;

@@ -3,7 +3,6 @@ import { Body, Speech } from "shared/components";
 import { ServerState } from "server/index.server";
 import { getOrError } from "shared/util";
 import { World } from "@rbxts/matter";
-import Log from "@rbxts/log";
 
 function misc(world: World, _: ServerState) {
 	for (const [id, speech] of world.queryChanged(Speech)) {

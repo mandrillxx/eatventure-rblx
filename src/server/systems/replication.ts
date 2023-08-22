@@ -1,4 +1,15 @@
-import { Balance, Body, Client, Level, NPC, OpenStatus, Renderable, Utility, Wants } from "shared/components";
+import {
+	OpenStatus,
+	Renderable,
+	BelongsTo,
+	Balance,
+	Utility,
+	Client,
+	Level,
+	Wants,
+	Body,
+	NPC,
+} from "shared/components";
 import { AnyComponent, useEvent, World } from "@rbxts/matter";
 import { Players, ReplicatedStorage } from "@rbxts/services";
 import { ComponentNames } from "shared/types";
@@ -15,6 +26,7 @@ const REPLICATED_COMPONENTS = new Set<ComponentCtor>([
 	Renderable,
 	Balance,
 	NPC,
+	BelongsTo,
 	Body,
 	Wants,
 	Level,

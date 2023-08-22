@@ -1,10 +1,13 @@
+import { AnyEntity, World } from "@rbxts/matter";
+import { CharacterRigR15 } from "@rbxts/promise-character";
 import { Body, Pathfind } from "shared/components";
 import { ServerState } from "server/index.server";
 import { getOrError } from "shared/util";
-import { AnyEntity, World } from "@rbxts/matter";
 import Simplepath from "@rbxts/simplepath";
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
+
+function attemptFix(body: CharacterRigR15) {}
 
 function pathfind(world: World, state: ServerState) {
 	const pathfindErrors = new Map<AnyEntity, number>();
@@ -21,19 +24,28 @@ function pathfind(world: World, state: ServerState) {
 
 			const attemptPathfind = () => {
 				if (pathfindErrors.has(id) && pathfindErrors.get(id)! >= 10) {
-					Log.Error("Pathfind {@id} has errored too many times, removing", id);
+					Log.Error("Pathfind {@id} has errored too many times, trying to fix", id);
 					pathfindErrors.delete(id);
-					body.model.PivotTo(new CFrame(pathfind.new!.destination));
-					world.remove(id, Pathfind);
-					if (pathfind.new && pathfind.new?.finished) {
-						if (state.verbose)
-							Log.Debug("Pathfind {@id} has finished abruptly, running finished callback", id);
-						task.spawn(pathfind.new.finished);
-					}
+					attemptFix(body.model as CharacterRigR15);
+				}
+
+				if (!body.model.IsA("Model") || !body.model.PrimaryPart) {
+					if (state.debug) Log.Warn("Pathfind {@id} has no model, retrying", id);
+					attemptPathfind();
 					return;
 				}
 
-				const path = new Simplepath(body.model);
+				const path = new Simplepath(
+					body.model,
+					{
+						AgentRadius: 1,
+						AgentHeight: 4,
+						AgentCanJump: true,
+					},
+					{
+						JUMP_WHEN_STUCK: true,
+					},
+				);
 				path.Visualize = state.debug;
 
 				const isPathfinding = path.Run(destination);

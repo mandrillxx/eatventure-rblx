@@ -1,27 +1,26 @@
 import {
-	BelongsTo,
-	Client,
-	NPC,
-	Product,
-	Renderable,
-	Wants,
-	Level,
-	OpenStatus,
-	OwnedBy,
 	HasUtilities,
+	Renderable,
+	OpenStatus,
+	BelongsTo,
+	OwnedBy,
+	Product,
+	Client,
+	Level,
+	Wants,
+	NPC,
 } from "shared/components";
-import { fetchComponent, getOrError } from "shared/util";
+import { NPCDisplayNames, getOrError, npcMaleNames, randomIndex, randomNpcName } from "shared/util";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
 import { Provider } from "@rbxts/proton";
 import { Network } from "shared/network";
+import { Players } from "@rbxts/services";
 import { Balance } from "shared/components";
 import { Queue } from "@rbxts/stacks-and-queues";
+import { store } from "server/data/PlayerData";
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
-import { store } from "server/data/PlayerData";
-import { Players } from "@rbxts/services";
-import { New } from "@rbxts/fusion";
 
 interface PlayerData {
 	level: number;
@@ -53,8 +52,7 @@ interface Event {
 	type: "newCustomer" | "newEmployee" | "closeStore" | "openStore" | "setLevel";
 	args?: {
 		level?: number;
-		customerName?: CustomerNames;
-		employeeName?: EmployeeNames;
+		npc?: NPCDisplayNames;
 	};
 	ran: boolean;
 }
@@ -93,15 +91,21 @@ export class GameProvider {
 		this.savePlayerData(session);
 	}
 
-	setup(playerEntity: AnyEntity, world: World, state: ServerState, character: Model) {
+	async setup(playerEntity: AnyEntity, world: World, state: ServerState, character: Model) {
 		const client = getOrError(world, playerEntity, Client, "Client component not found on player entity");
-		const balance = getOrError(world, playerEntity, Client, "Balance component not found on player entity");
-		const [success, playerData] = this.loadPlayerData(client).await();
-		if (!success || !playerData) {
+		let backupPlayerData: PlayerData | undefined;
+		const playerData = await this.loadPlayerData(client).catch((err) => {
+			Log.Warn(
+				"Failed to load player data for {@Name}, using backup data {@BackupData}",
+				client.player.Name,
+				err,
+			);
+			return err as unknown as PlayerData;
+		});
+		if (!playerData) {
 			Log.Fatal("Player data could not be loaded for {@Name}", client.player.Name);
 			return;
 		}
-		Log.Info("Setting up {@Name} with {@PlayerData}", client.player.Name, playerData);
 		const playerInventory = this.loadPlayerInventory(client);
 		const levelId = this.loadLevel(world, client, playerData.level, character);
 		if (!world.contains(levelId)) {
@@ -193,8 +197,7 @@ export class GameProvider {
 					queue.push({
 						type: math.random(1, 10) < 5 ? "newCustomer" : "newEmployee",
 						args: {
-							customerName:
-								math.random(1, 10) < 5 ? "Erik" : math.random(1, 10) < 5 ? "Kendra" : "Sophia",
+							npc: randomNpcName(math.random(0, 10) < 5 ? "Male" : "Female"),
 						},
 						ran: false,
 					});
@@ -232,14 +235,16 @@ export class GameProvider {
 				case "newEmployee": {
 					if (event.ran) return;
 					if (state.verbose) Log.Debug("Spawning new employee");
-					const name = event.args?.employeeName ?? "Kenny";
+					const gender = math.random(0, 10) < 5 ? "Male" : "Female";
+					const name = event.args?.npc ?? randomNpcName(gender);
 					world.spawn(
 						NPC({
 							name,
+							gender,
 							type: "employee",
 						}),
 						BelongsTo({
-							level: fetchComponent(world, levelId, Level),
+							levelId,
 							client,
 						}),
 					);
@@ -249,22 +254,17 @@ export class GameProvider {
 				case "newCustomer": {
 					if (event.ran) return;
 					if (state.verbose) Log.Debug("Spawning new customer");
-					const name =
-						event.args?.customerName ?? math.random(1, 10) < 5
-							? "Erik"
-							: math.random(1, 10) < 5
-							? "Kendra"
-							: "Sophia";
+					const gender = math.random(0, 10) < 5 ? "Male" : "Female";
+					const name = event.args?.npc ?? randomNpcName(gender);
 					const hasUtilities = getOrError(
 						world,
 						levelId,
 						HasUtilities,
 						"Level does not have HasUtilities component",
 					);
-					const i = new Random().NextInteger(0, hasUtilities.utilities.size() - 1);
-					const product = hasUtilities.utilities[i];
+					const product = randomIndex(hasUtilities.utilities);
 					if (!product) {
-						Log.Error("No product found for customer {@CustomerName} index: {@Index}", name, i);
+						Log.Error("No product found for customer {@CustomerName}", name);
 						return;
 					}
 					const productName = product.model.Makes.Value as keyof Products;
@@ -272,10 +272,11 @@ export class GameProvider {
 					world.spawn(
 						NPC({
 							name,
+							gender,
 							type: "customer",
 						}),
 						BelongsTo({
-							level: fetchComponent(world, levelId, Level),
+							levelId,
 							client,
 						}),
 						Wants({
@@ -326,20 +327,24 @@ export class GameProvider {
 			}),
 		);
 
-		Log.Info("Spawned level {@LevelName} for {@Name}", levelName, client.player.Name);
-
 		task.delay(1, () => {
 			const levelRenderable = getOrError(world, levelId, Renderable, "Level does not have Renderable component");
 			const levelModel = levelRenderable.model as BaseLevel;
-			character.PivotTo(levelModel.EmployeeAnchors.Spawn.PrimaryPart!.CFrame.add(new Vector3(0, 5, 0)));
+			character.PivotTo(levelModel.EmployeeAnchors.Spawn.PrimaryPart!.CFrame.add(new Vector3(0, 3, 0)));
 			Log.Info("Teleported {@Name} to {@LevelName}", levelName, client.player.Name);
 		});
 
 		return levelId;
 	}
 
-	private async loadPlayerData(client: Client) {
-		const data = await store.load(client.player as BasePlayer).catch((err) => Log.Warn(err));
+	private async loadPlayerData(client: Client): Promise<PlayerData | undefined> {
+		const data = await store
+			.load(client.player as BasePlayer)
+			.catch((err) => Log.Warn(err))
+			.timeout(2, {
+				level: 1,
+				money: 50,
+			});
 		if (!data) {
 			Log.Fatal("Failed to load data for {@Name} {@Error}", client.player.Name, data);
 			client.player.Kick("Data failed to load");
@@ -347,11 +352,13 @@ export class GameProvider {
 		}
 
 		if (!client.player.IsDescendantOf(Players)) {
+			Log.Debug("{@Name} is not a descendant of Players, releasing data", client.player.Name);
 			data.release();
 			return;
 		}
 
 		(client.player as BasePlayer).leaderstats.Money.Value = data.data.money;
+		Log.Warn("Loaded data for {@Name}", client.player.Name);
 
 		return {
 			level: 1,

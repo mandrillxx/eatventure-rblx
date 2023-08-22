@@ -1,19 +1,18 @@
 import {
-	BelongsTo,
-	Body,
-	Customer,
 	Destination,
-	Level,
-	NPC,
 	OccupiedBy,
+	BelongsTo,
+	Customer,
 	Pathfind,
 	Speech,
+	Level,
 	Wants,
+	Body,
+	NPC,
 } from "shared/components";
 import { AnyEntity, World, useThrottle } from "@rbxts/matter";
-import { ServerState } from "server/index.server";
 import { ComponentInfo, getOrError } from "shared/util";
-import { giveItem } from "server/methods";
+import { ServerState } from "server/index.server";
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
 
@@ -77,7 +76,7 @@ const moveCustomer = (world: World, customer: AnyEntity, destination: ComponentI
 
 const moveWaitingCustomer = (world: World) => {
 	for (const [id, _npc, _customer, belongsTo] of world.query(NPC, Customer, BelongsTo).without(Pathfind)) {
-		if (isCustomerOccupying(world, belongsTo.level.componentId, id)) {
+		if (isCustomerOccupying(world, belongsTo.levelId, id)) {
 			continue;
 		}
 		const destination = getNextDestination(world, false);

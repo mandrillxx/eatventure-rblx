@@ -49,6 +49,15 @@ function bootstrap() {
 		task.wait(1);
 	}
 
+	task.delay(1, () => {
+		const money = (player as BasePlayer).leaderstats.Money;
+		const update = (value?: number) => state.update("balance", value ?? money.Value);
+		update();
+		money.Changed.Connect((newValue) => {
+			update(newValue);
+		});
+	});
+
 	Roact.mount(<Menu state={state} />, player.FindFirstChildOfClass("PlayerGui")!);
 	// Roact.mount(<Npc state={state} npc={{ name: "Erik" }} />, player.FindFirstChildOfClass("PlayerGui")!);
 

@@ -1,5 +1,5 @@
-import { AnyEntity, World } from "@rbxts/matter";
 import { Balance, BelongsTo, Client, Holding, Utility, Wants } from "shared/components";
+import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
 import { getOrError } from "shared/util";
 import Maid from "@rbxts/maid";

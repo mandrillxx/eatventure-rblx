@@ -1,4 +1,3 @@
-import Log from "@rbxts/log";
 import Persist from "@rbxts/persist";
 
 export const store = new Persist.Store("PlayerData", {

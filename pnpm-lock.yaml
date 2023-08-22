@@ -10,6 +10,9 @@ dependencies:
   '@rbxts/flipper':
     specifier: ^2.0.1
     version: 2.0.1
+  '@rbxts/format-number':
+    specifier: 3.0.9-b3
+    version: 3.0.9-b3
   '@rbxts/fusion':
     specifier: 0.1.1-ts.beta.1
     version: 0.1.1-ts.beta.1
@@ -279,6 +282,10 @@ packages:
 
   /@rbxts/flipper@2.0.1:
     resolution: {integrity: sha512-kxb5AZizP05XSmo3waS/QkcfNMD5b6HX4gGwyHOyBow260R5MIT4L/ZUPLvleXXyb9b67X4NVmHoac1tPXOLNA==}
+    dev: false
+
+  /@rbxts/format-number@3.0.9-b3:
+    resolution: {integrity: sha512-sNZLtcM9kXLcLJYe4Ev+o+yJcdYas08bOCpMLkyZmG4trVb4OJCacePNIXNVrl4oSMDCJ3GJN6DQZRkZdJ/QFw==}
     dev: false
 
   /@rbxts/fusion@0.1.1-ts.beta.1:

@@ -1,7 +1,7 @@
 import { Renderable, Utility } from "shared/components";
 import { ClientState } from "shared/clientState";
-import { World } from "@rbxts/matter";
 import { getOrError } from "shared/util";
+import { World } from "@rbxts/matter";
 import Maid from "@rbxts/maid";
 
 function utility(world: World, _: ClientState) {
@@ -12,16 +12,15 @@ function utility(world: World, _: ClientState) {
 			const renderable = getOrError(world, id, Renderable, "Utility {@ID} does not have a Renderable component");
 			const model = renderable.model as BaseUtility;
 			maid.GiveTask(
-				model.ClickDetector.MouseHoverEnter.Connect((player) => {
+				model.ClickDetector.MouseHoverEnter.Connect(() => {
 					model.SelectionBox.Visible = true;
 				}),
 			);
 			maid.GiveTask(
-				model.ClickDetector.MouseHoverLeave.Connect((player) => {
+				model.ClickDetector.MouseHoverLeave.Connect(() => {
 					model.SelectionBox.Visible = false;
 				}),
 			);
-			maid.GiveTask(model.ClickDetector.MouseClick.Connect((player) => {}));
 		}
 		if (utility.old && !utility.new) {
 			maid.DoCleaning();

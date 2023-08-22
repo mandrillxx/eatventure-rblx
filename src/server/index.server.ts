@@ -1,9 +1,9 @@
 import {
 	DataStorePlayerStatisticsPersistenceLayer,
-	EventsDefinition,
 	IPlayerStatisticsProvider,
 	PlayerStatisticsProvider,
 	StatisticsDefinition,
+	EventsDefinition,
 } from "@rbxts/player-statistics";
 import { DataStoreService, PhysicsService, Players, ReplicatedStorage } from "@rbxts/services";
 import { PlayerStatisticEventsDefinition, PlayerStatisticsDefinition } from "./data/PlayerStatisticsDefinition";
@@ -15,9 +15,9 @@ import { Network } from "shared/network";
 import { Balance } from "shared/components";
 import { Proton } from "@rbxts/proton";
 import { start } from "shared/start";
+import { New } from "@rbxts/fusion";
 import Log, { Logger } from "@rbxts/log";
 import promiseR15 from "@rbxts/promise-character";
-import { New } from "@rbxts/fusion";
 
 Proton.awaitStart();
 
@@ -37,18 +37,18 @@ export interface ServerState {
 	verbose: boolean;
 }
 
-export const state: ServerState = {
+const state: ServerState = {
 	levels: new Map(),
 	clients: new Map(),
 	playerStatisticsProvider: undefined as unknown as IPlayerStatisticsProvider<
 		StatisticsDefinition,
 		EventsDefinition<StatisticsDefinition>
 	>,
-	debug: false,
+	debug: true,
 	verbose: false,
 };
 
-export const world = start([script.systems, ReplicatedStorage.Shared.systems], state)(setupTags);
+const world = start([script.systems, ReplicatedStorage.Shared.systems], state)(setupTags);
 const gameProvider = Proton.get(GameProvider);
 
 function statistics() {
@@ -68,7 +68,7 @@ function collision() {
 	PhysicsService.CollisionGroupSetCollidable("NPCs", "Default", true);
 }
 
-function bootstrap() {
+async function bootstrap() {
 	function playerRemoving(player: Player) {
 		state.clients.delete(player.UserId);
 		gameProvider.saveAndCleanup(player);
@@ -76,12 +76,12 @@ function bootstrap() {
 
 	function playerAdded(player: Player) {
 		function characterAdded(character: Model) {
-			promiseR15(character).andThen((model) => {
+			promiseR15(character).andThen(async (model) => {
 				const playerEntity = world.spawn(
 					Client({
 						player,
 						document: {
-							coinMultiplier: 10.0,
+							coinMultiplier: 1.0,
 						},
 					}),
 					Balance({
@@ -89,9 +89,8 @@ function bootstrap() {
 					}),
 					Renderable({ model }),
 				);
-
 				state.clients.set(player.UserId, playerEntity);
-				gameProvider.setup(playerEntity, world, state, model);
+				await gameProvider.setup(playerEntity, world, state, model);
 				character.SetAttribute("entityId", playerEntity);
 			});
 		}
@@ -135,4 +134,6 @@ function bootstrap() {
 	});
 }
 
-bootstrap();
+bootstrap().done((status) => {
+	Log.Info("Bootstrap complete with status {@Status}", status);
+});

@@ -1,9 +1,11 @@
 import { AnyEntity, component } from "@rbxts/matter";
+import { NPCDisplayNames } from "shared/util";
 import { Product } from ".";
 
 export const NPC = component<{
-	name: NPCNames;
+	name: NPCDisplayNames;
 	type: NPCType;
+	gender: "Male" | "Female";
 }>("NPC");
 export type NPC = ReturnType<typeof NPC>;
 

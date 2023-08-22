@@ -1,17 +1,17 @@
 import {
-	BelongsTo,
-	NPC,
+	HasUtilities,
+	Destination,
+	OccupiedBy,
 	Renderable,
-	Transform,
-	Level,
 	OpenStatus,
+	BelongsTo,
+	Transform,
 	OwnedBy,
 	Utility,
 	Product,
-	HasUtilities,
+	Level,
 	Body,
-	Destination,
-	OccupiedBy,
+	NPC,
 } from "shared/components";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ServerState, _Level } from "server/index.server";
@@ -146,12 +146,14 @@ function level(world: World, state: ServerState) {
 		if (!npc.old && npc.new) {
 			if (!world.contains(id)) continue;
 			const belongsTo = getOrError(world, id, BelongsTo, "NPC does not have BelongsTo component");
-			const { spawnRate, maxCustomers, maxEmployees } = belongsTo.level.component;
+			const level = getOrError(world, belongsTo.levelId, Level);
+			const { spawnRate, maxCustomers, maxEmployees } = level;
 			const npcType = npc.new.type;
 			let customers = 0,
 				employees = 0;
 			for (const [_id, _npc, _belongsTo] of world.query(NPC, BelongsTo)) {
-				if (belongsTo.level.component.name === _belongsTo.level.component.name) {
+				const _level = getOrError(world, _belongsTo.levelId, Level);
+				if (level.name === _level.name) {
 					if (_npc.type === "customer") customers++;
 					if (_npc.type === "employee") employees++;
 				}
@@ -184,7 +186,8 @@ function level(world: World, state: ServerState) {
 			if (state.verbose)
 				Log.Warn("Employee pace changed from {@Old} to {@New}", level.old.employeePace, level.new.employeePace);
 			for (const [_id, npc, body, belongsTo] of world.query(NPC, Body, BelongsTo)) {
-				if (npc.type === "employee" && belongsTo.level.component.name === level.new.name) {
+				const _level = getOrError(world, belongsTo.levelId, Level);
+				if (npc.type === "employee" && _level.name === level.new.name) {
 					Log.Warn("Setting {@NPC} walk speed to {@WalkSpeed}", npc.type, level.new.employeePace);
 					body.model.Humanoid.WalkSpeed = level.new.employeePace;
 				}
@@ -198,8 +201,7 @@ function level(world: World, state: ServerState) {
 			const ownedBy = getOrError(world, id, OwnedBy, "Level does not have OwnedBy component");
 			for (const [id, npc, belongsTo] of world.query(NPC, BelongsTo)) {
 				if (belongsTo.client.player.UserId === ownedBy.player.UserId) {
-					if (state.verbose)
-						Log.Debug("Npc {@NPC} belongs to {@BelongsTo}", npc, belongsTo.level.component.name);
+					if (state.verbose) Log.Debug("Npc {@NPC} belongs to {@BelongsTo}", npc, belongsTo.levelId);
 					if (world.contains(id) && npc.type !== "employee") world.despawn(id);
 				}
 			}

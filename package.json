@@ -26,6 +26,7 @@
     "@rbxts/beacon": "^2.1.1",
     "@rbxts/dumpster": "^1.0.8",
     "@rbxts/flipper": "^2.0.1",
+    "@rbxts/format-number": "3.0.9-b3",
     "@rbxts/fusion": "0.1.1-ts.beta.1",
     "@rbxts/inspect": "^1.0.1",
     "@rbxts/linked-lists": "^1.0.4",
