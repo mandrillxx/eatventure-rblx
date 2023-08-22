@@ -13,10 +13,10 @@ interface GiveItem {
 	id: AnyEntity;
 	wants: Wants;
 	state: ServerState;
-	utility: Utility;
+	utilityId: AnyEntity;
 }
 
-export function giveItem({ player, entity, world, maid, id, wants, state, utility }: GiveItem) {
+export function giveItem({ player, entity, world, maid, id, wants, state, utilityId }: GiveItem) {
 	if (!world.contains(id) || !wants) return;
 	const currentWants = world.get(id, Wants);
 	if (!currentWants) {
@@ -57,13 +57,25 @@ export function giveItem({ player, entity, world, maid, id, wants, state, utilit
 	);
 	const benefitingPlayer = player
 		? state.clients.get(player.UserId)!
-		: state.clients.get(getOrError(world, entity!, BelongsTo).client.player.UserId)!;
+		: state.clients.get(getOrError(world, entity!, BelongsTo).client.component.player.UserId)!;
 	const client = getOrError(world, benefitingPlayer, Client);
 	const balance = getOrError(world, benefitingPlayer, Balance);
-	world.insert(
-		benefitingPlayer,
-		balance.patch({ balance: balance.balance + utility.reward * client.document.coinMultiplier }),
-	);
+	const utility = getOrError(world, utilityId, Utility);
+	// calculate reward and take utility.reward as a base and multiply it by the level of the utility and the coin multiplier
+	const reward =
+		utility.xpLevel <= 1
+			? utility.reward * client.document.coinMultiplier
+			: utility.reward * utility.upgradeMulti ** utility.xpLevel * client.document.coinMultiplier;
+	if (state.debug)
+		Log.Info(
+			"Reward: {@Reward} {@RewardBase} * {@UtilityUpgradeMulti} ** {@UtilityXPLevel} * {@CoinMultiplier}",
+			reward,
+			utility.reward,
+			utility.upgradeMulti,
+			utility.xpLevel,
+			client.document.coinMultiplier,
+		);
+	world.insert(benefitingPlayer, balance.patch({ balance: balance.balance + reward }));
 	if (currentWants.product.amount === 1) {
 		if (state.verbose) Log.Info("NPC {@NPC} got what they wanted", id);
 		world.remove(id, Wants);

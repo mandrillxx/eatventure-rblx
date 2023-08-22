@@ -1,21 +1,6 @@
 import { AnyEntity, component } from "@rbxts/matter";
-import { Utility } from ".";
 import { ComponentInfo } from "shared/util";
-
-/*
-	Destination
-		- position: Vector3
-		- instance: BasePart
-	
-	OccupiedBy
-		- npcId: AnyEntity
-
-	world.spawn(
-		Destination(),
-		Level(),
-	)
-
-*/
+import { Utility } from ".";
 
 export const Level = component<{
 	name: keyof Levels;

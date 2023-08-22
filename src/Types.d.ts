@@ -50,6 +50,8 @@ type BaseUtility = Model & {
 	Every: IntValue;
 	OrderDelay: IntValue;
 	Reward: NumberValue;
+	UpgradeMulti: NumberValue;
+	BaseUpgrade: NumberValue;
 };
 
 type Levels = {
@@ -163,5 +165,8 @@ type BaseLevel = Model & {
 type BasePlayer = Player & {
 	leaderstats: Folder & {
 		Money: NumberValue;
+	};
+	Utilities: Folder & {
+		[utilName: string]: IntValue;
 	};
 };

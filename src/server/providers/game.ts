@@ -10,7 +10,7 @@ import {
 	Wants,
 	NPC,
 } from "shared/components";
-import { NPCDisplayNames, getOrError, npcMaleNames, randomIndex, randomNpcName } from "shared/util";
+import { NPCDisplayNames, getOrError, randomIndex, randomNpcName } from "shared/util";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
 import { Provider } from "@rbxts/proton";
@@ -21,6 +21,7 @@ import { Queue } from "@rbxts/stacks-and-queues";
 import { store } from "server/data/PlayerData";
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
+import { New } from "@rbxts/fusion";
 
 interface PlayerData {
 	level: number;
@@ -93,7 +94,6 @@ export class GameProvider {
 
 	async setup(playerEntity: AnyEntity, world: World, state: ServerState, character: Model) {
 		const client = getOrError(world, playerEntity, Client, "Client component not found on player entity");
-		let backupPlayerData: PlayerData | undefined;
 		const playerData = await this.loadPlayerData(client).catch((err) => {
 			Log.Warn(
 				"Failed to load player data for {@Name}, using backup data {@BackupData}",
@@ -245,7 +245,7 @@ export class GameProvider {
 						}),
 						BelongsTo({
 							levelId,
-							client,
+							client: { componentId: entity, component: client },
 						}),
 					);
 					event.ran = true;
@@ -277,7 +277,7 @@ export class GameProvider {
 						}),
 						BelongsTo({
 							levelId,
-							client,
+							client: { componentId: entity, component: client },
 						}),
 						Wants({
 							product: Product({
@@ -338,12 +338,21 @@ export class GameProvider {
 	}
 
 	private async loadPlayerData(client: Client): Promise<PlayerData | undefined> {
+		const utilityLevels = new Map<string, number>();
+		utilityLevels.set("DrinkFountain", 8);
+		New("IntValue")({
+			Name: "DrinkFountain",
+			Value: 8,
+			Parent: (client.player as BasePlayer).Utilities,
+		});
+
 		const data = await store
 			.load(client.player as BasePlayer)
 			.catch((err) => Log.Warn(err))
 			.timeout(2, {
 				level: 1,
 				money: 50,
+				utilityLevels,
 			});
 		if (!data) {
 			Log.Fatal("Failed to load data for {@Name} {@Error}", client.player.Name, data);
@@ -356,13 +365,23 @@ export class GameProvider {
 			data.release();
 			return;
 		}
+		const player = client.player as BasePlayer;
+		player.leaderstats.Money.Value = data.data.money;
 
-		(client.player as BasePlayer).leaderstats.Money.Value = data.data.money;
+		data.data.utilityLevels.forEach((level, utility) => {
+			Log.Warn("Setting utility {@Utility} to level {@Level}", utility, level);
+			New("IntValue")({
+				Name: utility,
+				Value: level,
+				Parent: player.Utilities,
+			});
+		});
 		Log.Warn("Loaded data for {@Name}", client.player.Name);
 
 		return {
 			level: 1,
 			money: data.data.money,
+			utilityLevels: data.data.utilityLevels,
 		};
 	}
 

@@ -100,6 +100,10 @@ async function bootstrap() {
 				Name: "leaderstats",
 				Parent: player,
 			});
+			const utilities = New("Folder")({
+				Name: "Utilities",
+				Parent: player,
+			});
 
 			New("NumberValue")({
 				Value: 0,

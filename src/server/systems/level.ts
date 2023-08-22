@@ -14,14 +14,15 @@ import {
 	NPC,
 } from "shared/components";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
-import { ServerState, _Level } from "server/index.server";
-import { AnyEntity, World, useThrottle } from "@rbxts/matter";
 import { ComponentInfo, getOrError } from "shared/util";
+import { ServerState, _Level } from "server/index.server";
+import { World, useThrottle } from "@rbxts/matter";
 import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
 
 function level(world: World, state: ServerState) {
 	for (const [id, level, ownedBy] of world.query(Level, OwnedBy).without(Renderable)) {
+		const player = ownedBy.player as BasePlayer;
 		let levelModel = ReplicatedStorage.Assets.Levels.FindFirstChild(level.name) as BaseLevel;
 		if (!levelModel) {
 			Log.Error("Level {@LevelName} does not have a representative asset", level.name);
@@ -83,8 +84,8 @@ function level(world: World, state: ServerState) {
 		);
 
 		levelModel = levelModel.Clone();
-		levelModel.Name = `${level.name}_${ownedBy.player.UserId}`;
-		levelModel.SetAttribute("Owner", ownedBy.player.UserId);
+		levelModel.Name = `${level.name}_${player.UserId}`;
+		levelModel.SetAttribute("Owner", player.UserId);
 		levelModel.Parent = Workspace.Levels;
 
 		world.insert(
@@ -108,12 +109,25 @@ function level(world: World, state: ServerState) {
 			const every = utilModel.Every.Value;
 			const orderDelay = utilModel.OrderDelay.Value;
 			const reward = utilModel.Reward.Value;
+			const upgradeMulti = utilModel.UpgradeMulti.Value;
+			const baseUpgradeCost = utilModel.BaseUpgrade.Value;
+			const utilLevel = player.Utilities.FindFirstChild(utility.Name) as IntValue | undefined;
+			const xpLevel = utilLevel
+				? utilLevel.Value
+				: New("IntValue")({
+						Name: "XPLevel",
+						Value: 1,
+						Parent: utilModel,
+				  }).Value;
 			const utilityComponent = Utility({
 				type: utility.Name,
 				unlocked: true,
 				makes: Product({ product, amount }),
 				every,
-				level,
+				level: { componentId: id, component: level },
+				xpLevel,
+				baseUpgradeCost,
+				upgradeMulti,
 				orderDelay,
 				reward,
 			});
@@ -139,7 +153,7 @@ function level(world: World, state: ServerState) {
 			model,
 			levelId: id,
 		};
-		state.levels.set(ownedBy.player.UserId, _level);
+		state.levels.set(player.UserId, _level);
 	}
 
 	if (useThrottle(2)) {
@@ -213,7 +227,7 @@ function level(world: World, state: ServerState) {
 			if (!world.contains(id)) continue;
 			const ownedBy = getOrError(world, id, OwnedBy, "Level does not have OwnedBy component");
 			for (const [id, npc, belongsTo] of world.query(NPC, BelongsTo)) {
-				if (belongsTo.client.player.UserId === ownedBy.player.UserId) {
+				if (belongsTo.client.component.player.UserId === ownedBy.player.UserId) {
 					if (state.verbose) Log.Debug("Npc {@NPC} belongs to {@BelongsTo}", npc, belongsTo.levelId);
 					if (world.contains(id) && npc.type !== "employee") world.despawn(id);
 				}

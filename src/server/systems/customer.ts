@@ -134,8 +134,8 @@ function customer(world: World, state: ServerState) {
 			}
 
 			world.insert(id, Speech({ text: "Thanks!" }));
-			if (state.playerStatisticsProvider.areStatisticsLoadedForPlayer(belongsTo.client.player))
-				state.playerStatisticsProvider.recordEvent(belongsTo.client.player, "customersServed", 1);
+			if (state.playerStatisticsProvider.areStatisticsLoadedForPlayer(belongsTo.client.component.player))
+				state.playerStatisticsProvider.recordEvent(belongsTo.client.component.player, "customersServed", 1);
 			task.delay(2, () => world.despawn(id));
 		}
 		if (!wants.old && wants.new) {

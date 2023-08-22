@@ -115,6 +115,11 @@ function employee(world: World, state: ServerState) {
 					const utility = hasUtilities.utilities.find(
 						(x) => (x.model as BaseUtility).Makes.Value === product.product,
 					);
+					const serverEntityId = utility?.model.GetAttribute("serverEntityId") as AnyEntity | undefined;
+					if (!serverEntityId) {
+						Log.Error("No serverEntityId found for utility {@Utility}", utility);
+						continue;
+					}
 					if (!utility) {
 						if (state.debug) Log.Debug("No relevant utility found for product {@Product}", product.product);
 						continue;
@@ -202,7 +207,7 @@ function employee(world: World, state: ServerState) {
 																	wants: customer.wants,
 																	state,
 																	id: customer.npcId,
-																	utility: utility.utility,
+																	utilityId: serverEntityId,
 																});
 															},
 														}),

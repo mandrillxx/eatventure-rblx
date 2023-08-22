@@ -1,5 +1,6 @@
 import { component } from "@rbxts/matter";
 import { Level } from ".";
+import { ComponentInfo } from "shared/util";
 
 export const Product = component<{
 	amount: number;
@@ -10,7 +11,10 @@ export type Product = ReturnType<typeof Product>;
 export const Utility = component<{
 	type: string; //"Oven" | "IceCreamMaker" | "Fryer" | "DrinkMaker";
 	unlocked: boolean;
-	level: Level;
+	level: ComponentInfo<typeof Level>;
+	xpLevel: number;
+	baseUpgradeCost: number;
+	upgradeMulti: number;
 	makes: Product;
 	every: number;
 	orderDelay: number;
