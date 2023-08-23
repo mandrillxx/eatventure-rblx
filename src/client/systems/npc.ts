@@ -1,11 +1,15 @@
+import { BelongsTo, Body, NPC } from "shared/components";
 import { ClientState } from "shared/clientState";
-import { Body, NPC } from "shared/components";
 import { World } from "@rbxts/matter";
 import Maid from "@rbxts/maid";
 
-function npc(world: World, _: ClientState) {
+function npc(world: World, state: ClientState) {
 	const maid = new Maid();
 	for (const [id, body] of world.queryChanged(Body)) {
+		if (!world.contains(id)) continue;
+		const belongsTo = world.get(id, BelongsTo);
+		if (!belongsTo || belongsTo.client.componentId !== state.playerId) continue;
+
 		if (!body.old && body.new) {
 			const npc = world.get(id, NPC);
 			if (!npc || npc.type !== "customer") continue;

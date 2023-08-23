@@ -36,6 +36,7 @@ export interface ServerState {
 	clients: Map<number, AnyEntity>;
 	profiles: Map<Player, Profile<IProfile, unknown>>;
 	playerStatisticsProvider: IPlayerStatisticsProvider<StatisticsDefinition, EventsDefinition<StatisticsDefinition>>;
+	playerIndex: number;
 	debug: boolean;
 	verbose: boolean;
 }
@@ -61,6 +62,7 @@ const state: ServerState = {
 		StatisticsDefinition,
 		EventsDefinition<StatisticsDefinition>
 	>,
+	playerIndex: 0,
 	debug: true,
 	verbose: false,
 };
@@ -117,6 +119,7 @@ async function bootstrap() {
 
 		function characterAdded(character: Model) {
 			promiseR15(character).andThen(async (model) => {
+				state.playerIndex++;
 				const playerEntity = world.spawn(
 					Client({
 						player,

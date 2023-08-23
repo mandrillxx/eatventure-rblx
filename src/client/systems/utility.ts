@@ -1,5 +1,5 @@
+import { Balance, BelongsTo, Renderable, Utility } from "shared/components";
 import { getNextLevelCost, updateUtilityInfo } from "client/methods";
-import { Balance, Renderable, Utility } from "shared/components";
 import { fetchComponent, getOrError } from "shared/util";
 import { ClientState } from "shared/clientState";
 import { Players } from "@rbxts/services";
@@ -12,6 +12,9 @@ function utility(world: World, state: ClientState) {
 	const maid = new Maid();
 
 	for (const [id, utility] of world.queryChanged(Utility)) {
+		const belongsTo = getOrError(world, id, BelongsTo);
+		if (belongsTo.client.componentId !== state.playerId) continue;
+
 		if (!utility.old && utility.new) {
 			const renderable = getOrError(world, id, Renderable, "Utility {@ID} does not have a Renderable component");
 			const model = renderable.model as BaseUtility;

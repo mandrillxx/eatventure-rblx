@@ -14,7 +14,7 @@ import {
 	NPC,
 	Client,
 } from "shared/components";
-import { ReplicatedStorage, Workspace } from "@rbxts/services";
+import { Players, ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ComponentInfo, fetchComponent, getOrError } from "shared/util";
 import { ServerState, _Level } from "server/index.server";
 import { World, useThrottle } from "@rbxts/matter";
@@ -30,6 +30,7 @@ function level(world: World, state: ServerState) {
 			continue;
 		}
 		levelModel = levelModel.Clone();
+		levelModel.PivotTo(levelModel.GetPivot().add(new Vector3(0, 0, state.playerIndex * 100)));
 
 		const destinations: ComponentInfo<typeof Destination>[] = [];
 		for (const child of levelModel.CustomerAnchors.GetChildren()) {
@@ -140,6 +141,10 @@ function level(world: World, state: ServerState) {
 			});
 			world.spawn(
 				utilityComponent,
+				BelongsTo({
+					client: fetchComponent(world, ownedBy.playerId, Client),
+					levelId: id,
+				}),
 				Renderable({
 					model: utility as BaseUtility,
 				}),
