@@ -1,8 +1,12 @@
 import { Renderable, Utility } from "shared/components";
+import { updateUtilityInfo } from "client/methods";
 import { ClientState } from "shared/clientState";
 import { getOrError } from "shared/util";
+import { Players } from "@rbxts/services";
 import { World } from "@rbxts/matter";
 import Maid from "@rbxts/maid";
+
+const player = Players.LocalPlayer;
 
 function utility(world: World, _: ClientState) {
 	const maid = new Maid();
@@ -19,6 +23,17 @@ function utility(world: World, _: ClientState) {
 			maid.GiveTask(
 				model.ClickDetector.MouseHoverLeave.Connect(() => {
 					model.SelectionBox.Visible = false;
+				}),
+			);
+			maid.GiveTask(
+				model.ClickDetector.MouseClick.Connect(() => {
+					const utilInfo = player
+						.FindFirstChildOfClass("PlayerGui")!
+						.FindFirstChild("UtilityInfo")! as UtilityInfoInstance;
+					const utility = getOrError(world, id, Utility, "Utility {@ID} no longer exists");
+					updateUtilityInfo(utilInfo, utility, world, id);
+					utilInfo.Adornee = utilInfo.Adornee === model ? undefined : model;
+					utilInfo.Enabled = utilInfo.Adornee === model;
 				}),
 			);
 		}

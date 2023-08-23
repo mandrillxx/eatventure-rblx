@@ -26,6 +26,7 @@ type Assets = Folder & {
 	Levels: Folder & Levels;
 	Products: Folder & Products;
 	Progress: RadialInstance;
+	UtilityInfo: UtilityInfoInstance;
 	Animate: Script;
 };
 
@@ -38,6 +39,40 @@ type RadialInstance = Frame & {
 	Frame2: Frame & {
 		ImageLabel: ImageLabel & {
 			UIGradient: UIGradient;
+		};
+	};
+};
+
+type UtilityInfoInstance = BillboardGui & {
+	Background: Frame & {
+		UICorner: UICorner;
+		Progress: Frame & {
+			UICorner: UICorner;
+			Unlocked: Frame & {
+				UICorner: UICorner;
+			};
+		};
+		Upgrade: TextButton & {
+			UICorner: UICorner;
+			UIPadding: UIPadding;
+		};
+		Level: TextLabel & {
+			UIPadding: UIPadding;
+		};
+		Every: TextLabel & {
+			UIPadding: UIPadding;
+		};
+		Min: TextLabel & {
+			UIPadding: UIPadding;
+		};
+		Max: TextLabel & {
+			UIPadding: UIPadding;
+		};
+		Type: TextLabel & {
+			UIPadding: UIPadding;
+		};
+		Reward: TextLabel & {
+			UIPadding: UIPadding;
 		};
 	};
 };

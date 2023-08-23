@@ -11,6 +11,7 @@ import { Client, Renderable } from "shared/components";
 import { GameProvider } from "./providers/game";
 import { AnyEntity } from "@rbxts/matter";
 import { setupTags } from "shared/setupTags";
+import { Profile } from "@rbxts/profileservice/globals";
 import { Network } from "shared/network";
 import { Balance } from "shared/components";
 import { Proton } from "@rbxts/proton";
@@ -19,7 +20,6 @@ import { New } from "@rbxts/fusion";
 import Log, { Logger } from "@rbxts/log";
 import promiseR15 from "@rbxts/promise-character";
 import ProfileService from "@rbxts/profileservice";
-import { Profile } from "@rbxts/profileservice/globals";
 
 Proton.awaitStart();
 
@@ -149,6 +149,8 @@ async function bootstrap() {
 				Name: "Money",
 				Parent: leaderstats,
 			});
+			const utilityInfo = ReplicatedStorage.Assets.UtilityInfo.Clone();
+			utilityInfo.Parent = player.FindFirstChildOfClass("PlayerGui")!;
 		});
 
 		handleData();

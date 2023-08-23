@@ -56,6 +56,11 @@ function bootstrap() {
 		money.Changed.Connect((newValue) => {
 			update(newValue);
 		});
+		const playerGui = player.FindFirstChildOfClass("PlayerGui")!;
+		const utilityInfo = playerGui.WaitForChild("UtilityInfo")! as UtilityInfoInstance;
+		utilityInfo.Background.Upgrade.MouseButton1Click.Connect(() => {
+			Network.upgradeUtility.client.fire(utilityInfo.Adornee! as Model);
+		});
 	});
 
 	Roact.mount(<Menu state={state} />, player.FindFirstChildOfClass("PlayerGui")!);

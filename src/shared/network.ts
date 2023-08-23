@@ -5,5 +5,6 @@ import { ClientState } from "./clientState";
 export namespace Network {
 	export const setStoreStatus = new NetEvent<[open: boolean], NetEventType.ClientToServer>();
 	export const setState = new NetEvent<[state: Partial<ClientState>], NetEventType.ServerToClient>();
+	export const upgradeUtility = new NetEvent<[adornee: Model], NetEventType.ClientToServer>();
 	export const retrieveStatistics = new NetFunction<[], [statistics: StatisticsSnapshot<StatisticsDefinition>]>();
 }
