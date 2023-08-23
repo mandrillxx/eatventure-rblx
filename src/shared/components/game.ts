@@ -32,3 +32,8 @@ export const Transform = component<{
 	doNotReconcile?: boolean;
 }>("Transform");
 export type Transform = ReturnType<typeof Transform>;
+
+export const SoundEffect = component<{
+	sound: keyof Sounds;
+}>("SoundEffect");
+export type SoundEffect = ReturnType<typeof SoundEffect>;

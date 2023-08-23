@@ -99,7 +99,7 @@ export class GameProvider {
 			return;
 		}
 		const playerInventory = this.loadPlayerInventory(client);
-		const levelId = this.loadLevel(world, client, playerData.level, character);
+		const levelId = this.loadLevel(world, playerEntity, client, playerData.level, character);
 		if (!world.contains(levelId)) {
 			Log.Error("Level {@LevelId} could not be found", levelId);
 			return;
@@ -294,16 +294,16 @@ export class GameProvider {
 		);
 	}
 
-	private loadLevel(world: World, client: Client, level: number, character: Model) {
+	private loadLevel(world: World, playerId: AnyEntity, client: Client, level: number, character: Model) {
 		const levelName = `Level${level}` as keyof Levels;
 		const levelId = world.spawn(
 			Level({
 				name: levelName,
 				maxCustomers: 6,
 				maxEmployees: 3,
-				eventRate: 0.25,
-				workRate: 3,
-				employeePace: 16,
+				eventRate: 1,
+				workRate: 1,
+				employeePace: 13,
 				spawnRate: 25,
 				destinations: [],
 				nextAvailableDestination: () => {
@@ -312,6 +312,7 @@ export class GameProvider {
 			}),
 			OwnedBy({
 				player: client.player,
+				playerId,
 			}),
 		);
 

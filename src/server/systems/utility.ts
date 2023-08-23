@@ -1,4 +1,4 @@
-import { Balance, Holding, OwnedBy, Renderable, Utility } from "shared/components";
+import { Balance, Holding, OwnedBy, Renderable, SoundEffect, Utility } from "shared/components";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
 import { getOrError } from "shared/util";
@@ -14,12 +14,13 @@ const handleUpgrade = (world: World, player: Player, state: ServerState, id: Any
 	const nextLevelCost = baseUpgradeCost * (1.2 ** xpLevel - 1);
 	if (state.verbose) Log.Info("Next level cost: {@Cost} | {@Balance}", nextLevelCost, balance.balance);
 	if (balance.balance < nextLevelCost) {
+		world.insert(id, SoundEffect({ sound: "Fail" }));
 		Log.Warn("Player {@ID} does not have enough money to upgrade utility {@UtilityID}", playerId, id);
 		return;
 	}
 	Log.Warn("Upgrading utility {@UtilityID} for player {@ID}", id, playerId);
 	world.insert(playerId, balance.patch({ balance: balance.balance - nextLevelCost }));
-	world.insert(id, newUtility.patch({ xpLevel: newUtility.xpLevel + 1 }));
+	world.insert(id, newUtility.patch({ xpLevel: newUtility.xpLevel + 1 }), SoundEffect({ sound: "Upgrade" }));
 };
 
 function utility(world: World, state: ServerState) {

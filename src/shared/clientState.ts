@@ -1,6 +1,6 @@
 import { CharacterRigR15 } from "@rbxts/promise-character";
-import { AnyEntity } from "@rbxts/matter";
 import { ComponentInfo } from "./util";
+import { AnyEntity } from "@rbxts/matter";
 import { Utility } from "./components";
 
 export enum PlayerState {

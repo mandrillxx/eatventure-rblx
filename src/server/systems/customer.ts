@@ -16,18 +16,20 @@ import { ServerState } from "server/index.server";
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
 
-const moveCustomerIfOpen = (world: World, customer: AnyEntity) => {
-	const isCloserDestinationAvailable = getNextDestination(world, false);
+const moveCustomerIfOpen = (world: World, player: AnyEntity, customer: AnyEntity) => {
+	const isCloserDestinationAvailable = getNextDestination(world, player, false);
 	if (isCloserDestinationAvailable && isCloserDestinationAvailable.component.instance.Name !== "Wait") {
 		moveCustomer(world, customer, isCloserDestinationAvailable);
 	}
 };
 
-const getNextDestination = (world: World, fallbackWait: boolean = true) => {
+const getNextDestination = (world: World, player: AnyEntity, fallbackWait: boolean = true) => {
 	let waitDestination: ComponentInfo<typeof Destination> | undefined;
 	let selectedDestination: ComponentInfo<typeof Destination> | undefined;
 	for (const [_id, destination] of world.query(Destination).without(OccupiedBy)) {
 		if (destination.type !== "customer") continue;
+		const belongsTo = getOrError(world, _id, BelongsTo, "Destination does not have BelongsTo component");
+		if (belongsTo.client.componentId !== player) continue;
 		if (destination.instance.Name === "Wait" && fallbackWait) {
 			waitDestination = { componentId: _id, component: destination };
 		} else {
@@ -84,7 +86,7 @@ const moveWaitingCustomer = (world: World) => {
 		if (isCustomerOccupying(world, belongsTo.levelId, id)) {
 			continue;
 		}
-		const destination = getNextDestination(world, false);
+		const destination = getNextDestination(world, belongsTo.client.componentId, false);
 		if (!destination) {
 			Log.Error("No destination found for customer {@CustomerId}", id);
 			continue;
@@ -98,7 +100,8 @@ function customer(world: World, state: ServerState) {
 
 	if (useThrottle(1)) {
 		for (const [id, _customer] of world.query(Customer).without(Pathfind)) {
-			moveCustomerIfOpen(world, id);
+			const belongsTo = getOrError(world, id, BelongsTo, "NPC does not have BelongsTo component");
+			moveCustomerIfOpen(world, belongsTo.client.componentId, id);
 		}
 	}
 
@@ -141,7 +144,8 @@ function customer(world: World, state: ServerState) {
 		if (!wants.old && wants.new) {
 			maids.set(id, new Maid());
 
-			const chosenDestination = getNextDestination(world);
+			const belongsTo = getOrError(world, id, BelongsTo, "NPC does not have BelongsTo component");
+			const chosenDestination = getNextDestination(world, belongsTo.client.componentId);
 			if (!chosenDestination) {
 				Log.Warn("No available destination found for customer {@CustomerId}", id);
 				continue;

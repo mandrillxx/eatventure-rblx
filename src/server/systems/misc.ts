@@ -1,10 +1,40 @@
+import { Body, Renderable, SoundEffect, Speech } from "shared/components";
+import { ReplicatedStorage } from "@rbxts/services";
 import { radialObject } from "shared/radial";
-import { Body, Speech } from "shared/components";
 import { ServerState } from "server/index.server";
 import { getOrError } from "shared/util";
 import { World } from "@rbxts/matter";
+import Log from "@rbxts/log";
 
-function misc(world: World, _: ServerState) {
+function misc(world: World, state: ServerState) {
+	for (const [id, sound] of world.queryChanged(SoundEffect)) {
+		const playSound = (sound: SoundEffect) => {
+			if (!world.contains(id)) return;
+			const soundInstance = ReplicatedStorage.Assets.Sounds.FindFirstChild(sound.sound) as Sound;
+			if (!soundInstance) {
+				if (state.debug) Log.Warn("Sound {@Sound} does not exist", sound.sound);
+				world.despawn(id);
+				return;
+			}
+			const soundModel = getOrError(world, id, Renderable, "Sound component was added to unrenderable entity");
+			const soundInstanceClone = soundInstance.Clone();
+			soundInstanceClone.Parent = soundModel.model;
+			soundInstanceClone.Play();
+			soundInstanceClone.Ended.Connect(() => {
+				soundInstanceClone.Destroy();
+				world.remove(id, SoundEffect);
+			});
+		};
+		if (sound.old && sound.new) {
+			playSound(sound.new);
+			continue;
+		}
+		if (!sound.old && sound.new) {
+			playSound(sound.new);
+			continue;
+		}
+	}
+
 	for (const [id, speech] of world.queryChanged(Speech)) {
 		if (!speech.old && speech.new) {
 			if (!world.contains(id)) continue;

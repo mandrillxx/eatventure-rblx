@@ -34,6 +34,7 @@ export type OccupiedBy = ReturnType<typeof OccupiedBy>;
 
 export const OwnedBy = component<{
 	player: Player;
+	playerId: AnyEntity;
 }>("OwnedBy");
 export type OwnedBy = ReturnType<typeof OwnedBy>;
 

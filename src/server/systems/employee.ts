@@ -15,6 +15,7 @@ import {
 	Wants,
 	Body,
 	NPC,
+	SoundEffect,
 } from "shared/components";
 import { AnyEntity, World, useThrottle } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
@@ -44,7 +45,7 @@ const getDestinationByCustomer = (world: World, customer: AnyEntity) => {
 };
 
 function employee(world: World, state: ServerState) {
-	const getCustomers = (world: World) => {
+	const getCustomers = (world: World, levelId: AnyEntity) => {
 		const customers: {
 			npcId: AnyEntity;
 			npc: NPC;
@@ -54,7 +55,10 @@ function employee(world: World, state: ServerState) {
 		}[] = [];
 
 		if (state.verbose) Log.Debug("Getting customers");
-		for (const [npcId, npc, customer, body, wants] of world.query(NPC, Customer, Body, Wants).without(Pathfind)) {
+		for (const [npcId, npc, belongsTo, customer, body, wants] of world
+			.query(NPC, BelongsTo, Customer, Body, Wants)
+			.without(Pathfind)) {
+			if (belongsTo.levelId !== levelId) continue;
 			if (!customer.servedBy) {
 				if (state.verbose)
 					Log.Warn(
@@ -98,7 +102,7 @@ function employee(world: World, state: ServerState) {
 				levelId,
 			);
 
-			const customers = getCustomers(world);
+			const customers = getCustomers(world, levelId);
 			if (state.verbose) Log.Info("Found {@CustomerCount} customers", customers.size());
 
 			for (const customer of customers) {
@@ -209,6 +213,7 @@ function employee(world: World, state: ServerState) {
 																	id: customer.npcId,
 																	utilityId: serverEntityId,
 																});
+																world.insert(id, SoundEffect({ sound: "MoneyPickup" }));
 															},
 														}),
 													);

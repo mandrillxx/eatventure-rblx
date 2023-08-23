@@ -21,9 +21,16 @@ interface ReplicatedStorage extends Instance {
 type EmployeesFolder = Folder & Employees;
 type CustomersFolder = Folder & Customers;
 
+type Sounds = {
+	MoneyPickup: Sound;
+	Upgrade: Sound;
+	Fail: Sound;
+};
+
 type Assets = Folder & {
 	NPCs: Folder & EmployeesFolder & CustomersFolder;
 	Levels: Folder & Levels;
+	Sounds: Folder & Sounds;
 	Products: Folder & Products;
 	Progress: RadialInstance;
 	UtilityInfo: UtilityInfoInstance;
@@ -46,7 +53,7 @@ type RadialInstance = Frame & {
 type UtilityInfoInstance = BillboardGui & {
 	Background: Frame & {
 		UICorner: UICorner;
-		Progress: Frame & {
+		Progress: CanvasGroup & {
 			UICorner: UICorner;
 			Unlocked: Frame & {
 				UICorner: UICorner;

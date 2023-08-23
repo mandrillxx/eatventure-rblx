@@ -30,8 +30,8 @@ function Menu({ state }: MenuProps) {
 				<Div className="flex w-full justify-between items-center p-3">
 					<Text className="text-white font-bold text-4xl" Text="Balance: " />
 					<Text
-						className="text-yellow-500 font-bold text-4xl"
-						Text={`${FormatCompact(balance, balance > 1_000_000 ? 1 : 2)} coins`}
+						className="text-green-500 font-bold text-4xl"
+						Text={`$${FormatCompact(balance, balance > 1_000_000 ? 1 : 2)}`}
 					/>
 					<Div className="flex gap-4 px-12 items-center">
 						<Text className="text-white font-bold text-4xl" Text={`Store Open: ${open}`} />

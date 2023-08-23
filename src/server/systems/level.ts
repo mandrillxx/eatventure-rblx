@@ -12,9 +12,10 @@ import {
 	Level,
 	Body,
 	NPC,
+	Client,
 } from "shared/components";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
-import { ComponentInfo, getOrError } from "shared/util";
+import { ComponentInfo, fetchComponent, getOrError } from "shared/util";
 import { ServerState, _Level } from "server/index.server";
 import { World, useThrottle } from "@rbxts/matter";
 import { New } from "@rbxts/fusion";
@@ -28,38 +29,47 @@ function level(world: World, state: ServerState) {
 			Log.Error("Level {@LevelName} does not have a representative asset", level.name);
 			continue;
 		}
+		levelModel = levelModel.Clone();
 
 		const destinations: ComponentInfo<typeof Destination>[] = [];
 		for (const child of levelModel.CustomerAnchors.GetChildren()) {
 			const parent = New("Model")({
 				Name: child.Name,
 				Parent: child.Parent,
-				PrimaryPart: child as BasePart,
 			});
 			child.Parent = parent;
+			parent.PrimaryPart = child as BasePart;
 			if (child.Name === "Spawn" || !child.IsA("BasePart")) continue;
 			const destination = Destination({
 				destination: child.Position,
 				instance: child,
 				type: "customer",
 			});
-			const componentId = world.spawn(destination, Renderable({ model: parent }));
+			const componentId = world.spawn(
+				destination,
+				BelongsTo({ client: fetchComponent(world, ownedBy.playerId, Client), levelId: id }),
+				Renderable({ model: parent }),
+			);
 			destinations.push({ componentId, component: destination });
 		}
 		for (const child of levelModel.EmployeeAnchors.GetChildren()) {
 			const parent = New("Model")({
 				Name: child.Name,
 				Parent: child.Parent,
-				PrimaryPart: child as BasePart,
 			});
 			child.Parent = parent;
+			parent.PrimaryPart = child as BasePart;
 			if (child.Name === "Spawn" || !child.IsA("BasePart")) continue;
 			const destination = Destination({
 				destination: child.Position,
 				instance: child,
 				type: "employee",
 			});
-			const componentId = world.spawn(destination, Renderable({ model: parent }));
+			const componentId = world.spawn(
+				destination,
+				BelongsTo({ client: fetchComponent(world, ownedBy.playerId, Client), levelId: id }),
+				Renderable({ model: parent }),
+			);
 			destinations.push({ componentId, component: destination });
 		}
 		const newDestinations = level.patch({ destinations });
@@ -83,7 +93,6 @@ function level(world: World, state: ServerState) {
 			),
 		);
 
-		levelModel = levelModel.Clone();
 		levelModel.Name = `${level.name}_${player.UserId}`;
 		levelModel.SetAttribute("Owner", player.UserId);
 		levelModel.Parent = Workspace.Levels;
@@ -177,6 +186,7 @@ function level(world: World, state: ServerState) {
 			let customers = 0,
 				employees = 0;
 			for (const [_id, _npc, _belongsTo] of world.query(NPC, BelongsTo)) {
+				if (_belongsTo.levelId !== belongsTo.levelId) continue;
 				const _level = getOrError(world, _belongsTo.levelId, Level);
 				if (level.name === _level.name) {
 					if (_npc.type === "customer") customers++;
@@ -211,9 +221,9 @@ function level(world: World, state: ServerState) {
 			if (state.verbose)
 				Log.Warn("Employee pace changed from {@Old} to {@New}", level.old.employeePace, level.new.employeePace);
 			for (const [_id, npc, body, belongsTo] of world.query(NPC, Body, BelongsTo)) {
-				const _level = getOrError(world, belongsTo.levelId, Level);
-				if (npc.type === "employee" && _level.name === level.new.name) {
-					Log.Warn("Setting {@NPC} walk speed to {@WalkSpeed}", npc.type, level.new.employeePace);
+				if (npc.type === "employee" && belongsTo.levelId === _id) {
+					if (state.verbose)
+						Log.Warn("Setting {@NPC} walk speed to {@WalkSpeed}", npc.type, level.new.employeePace);
 					body.model.Humanoid.WalkSpeed = level.new.employeePace;
 				}
 			}
@@ -225,7 +235,7 @@ function level(world: World, state: ServerState) {
 			if (!world.contains(id)) continue;
 			const ownedBy = getOrError(world, id, OwnedBy, "Level does not have OwnedBy component");
 			for (const [id, npc, belongsTo] of world.query(NPC, BelongsTo)) {
-				if (belongsTo.client.component.player.UserId === ownedBy.player.UserId) {
+				if (belongsTo.client.componentId === ownedBy.playerId) {
 					if (state.verbose) Log.Debug("Npc {@NPC} belongs to {@BelongsTo}", npc, belongsTo.levelId);
 					if (world.contains(id) && npc.type !== "employee") world.despawn(id);
 				}
