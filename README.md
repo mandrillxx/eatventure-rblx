@@ -9,7 +9,7 @@ A ROBLOX recreation of the popular mobile game Eatventure
 ## Demo
 
 A playable demo is available here
-https://www.roblox.com/games/14364945067/Eatventure
+https://www.roblox.com/games/14452121035/Tuesday
 
 ## Deployment
 
@@ -26,6 +26,8 @@ and connect rojo through ROBLOX Studio
 Contributions are always welcome!
 
 See `CONTRIBUTING.md` for ways to get started.
+
+Join the [Discord](https://discord.gg/FCQHb6jHr4) for assistance
 
 ## Authors
 
