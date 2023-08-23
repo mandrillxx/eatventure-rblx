@@ -64,13 +64,12 @@ export function giveItem({ player, entity, world, maid, id, wants, state, utilit
 	const reward =
 		utility.xpLevel <= 1
 			? utility.reward * client.document.coinMultiplier
-			: utility.reward * utility.upgradeMulti ** utility.xpLevel * client.document.coinMultiplier;
+			: utility.reward * (1.2 ** utility.xpLevel - 1) * 5 * 0.2 * client.document.coinMultiplier;
 	if (state.verbose)
 		Log.Info(
-			"Reward: {@Reward} {@RewardBase} * {@UtilityUpgradeMulti} ** {@UtilityXPLevel} * {@CoinMultiplier}",
+			"Reward: {@Reward} {@RewardBase} ** {@UtilityXPLevel} * {@CoinMultiplier}",
 			reward,
 			utility.reward,
-			utility.upgradeMulti,
 			utility.xpLevel,
 			client.document.coinMultiplier,
 		);

@@ -1,7 +1,7 @@
 import { Balance, Holding, OwnedBy, Renderable, Utility } from "shared/components";
-import { getOrError } from "shared/util";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
+import { getOrError } from "shared/util";
 import { Network } from "shared/network";
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
@@ -10,8 +10,8 @@ const handleUpgrade = (world: World, player: Player, state: ServerState, id: Any
 	const playerId = state.clients.get(player.UserId)!;
 	const balance = getOrError(world, playerId, Balance, "Player {@ID} does not have a Balance component");
 	const newUtility = getOrError(world, id, Utility, "Utility no longer exists");
-	const { baseUpgradeCost, upgradeMulti, xpLevel } = newUtility;
-	const nextLevelCost = baseUpgradeCost * upgradeMulti ** xpLevel;
+	const { baseUpgradeCost, xpLevel } = newUtility;
+	const nextLevelCost = baseUpgradeCost * (1.2 ** xpLevel - 1);
 	if (state.verbose) Log.Info("Next level cost: {@Cost} | {@Balance}", nextLevelCost, balance.balance);
 	if (balance.balance < nextLevelCost) {
 		Log.Warn("Player {@ID} does not have enough money to upgrade utility {@UtilityID}", playerId, id);

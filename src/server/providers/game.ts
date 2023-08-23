@@ -18,10 +18,9 @@ import { Network } from "shared/network";
 import { Players } from "@rbxts/services";
 import { Balance } from "shared/components";
 import { Queue } from "@rbxts/stacks-and-queues";
-import { store } from "server/data/PlayerData";
+import { New } from "@rbxts/fusion";
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
-import { New } from "@rbxts/fusion";
 
 interface PlayerData {
 	level: number;
@@ -333,7 +332,7 @@ export class GameProvider {
 			Log.Warn("No profile found for {@Name}", player.Name);
 			return;
 		}
-		Log.Info("Loaded profile for {@Name}: {@Profile}", player.Name, profile.Data);
+		if (state.verbose) Log.Info("Loaded profile for {@Name}: {@Profile}", player.Name, profile.Data);
 
 		if (!player.IsDescendantOf(Players)) {
 			Log.Debug("{@Name} is not a descendant of Players, releasing data", player.Name);
@@ -342,7 +341,6 @@ export class GameProvider {
 		}
 		player.leaderstats.Money.Value = profile.Data.money;
 
-		Log.Info("547847");
 		profile.Data.utilityLevels.forEach((level, utility) => {
 			New("IntValue")({
 				Name: utility,
@@ -350,8 +348,7 @@ export class GameProvider {
 				Parent: player.Utilities,
 			});
 		});
-		Log.Info("5478473");
-		Log.Warn("Loaded data for {@Name}", player.Name);
+		if (state.verbose) Log.Warn("Loaded data for {@Name}", player.Name);
 
 		return {
 			level: 1,

@@ -1,5 +1,7 @@
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { AnyEntity } from "@rbxts/matter";
+import { ComponentInfo } from "./util";
+import { Utility } from "./components";
 
 export enum PlayerState {
 	Invincible,
@@ -13,6 +15,7 @@ export interface ClientState {
 	debugEnabled: boolean;
 	playerId: AnyEntity | undefined;
 	storeStatus: StoreStatus;
+	utilityUpgrade: ComponentInfo<typeof Utility> | undefined;
 	update: (key: "open" | "balance", value: unknown) => void;
 	character: CharacterRigR15;
 	isRunning: boolean;

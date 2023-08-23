@@ -28,6 +28,7 @@ const state: ClientState = {
 	entityIdMap: new Map<string, AnyEntity>(),
 	character,
 	playerId: undefined,
+	utilityUpgrade: undefined,
 	storeStatus: {
 		open: false,
 	},

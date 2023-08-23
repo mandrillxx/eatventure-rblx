@@ -109,7 +109,6 @@ function level(world: World, state: ServerState) {
 			const every = utilModel.Every.Value;
 			const orderDelay = utilModel.OrderDelay.Value;
 			const reward = utilModel.Reward.Value;
-			const upgradeMulti = utilModel.UpgradeMulti.Value;
 			const baseUpgradeCost = utilModel.BaseUpgrade.Value;
 			const utilLevel = player.Utilities.FindFirstChild(utility.Name) as IntValue | undefined;
 			const xpLevel = utilLevel
@@ -127,7 +126,6 @@ function level(world: World, state: ServerState) {
 				level: { componentId: id, component: level },
 				xpLevel,
 				baseUpgradeCost,
-				upgradeMulti,
 				orderDelay,
 				reward,
 			});

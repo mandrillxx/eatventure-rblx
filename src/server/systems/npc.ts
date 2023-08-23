@@ -14,7 +14,6 @@ function npc(world: World, state: ServerState) {
 				? randomEmployeeModel(npcMaleNames.includes(npc.name as unknown as npcMaleName) ? "Male" : "Female")
 				: randomCustomerModel(npcMaleNames.includes(npc.name as unknown as npcMaleName) ? "Male" : "Female"),
 		) as BaseNPC;
-		bodyModel.Gender.Value;
 		const level = getOrError(world, belongsTo.levelId, Level, "Level {@LevelId} does not have a Level component");
 		const levelRenderable = getOrError(
 			world,

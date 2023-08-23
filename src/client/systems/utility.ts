@@ -1,14 +1,14 @@
-import { Renderable, Utility } from "shared/components";
-import { updateUtilityInfo } from "client/methods";
+import { getNextLevelCost, updateUtilityInfo } from "client/methods";
+import { Balance, Renderable, Utility } from "shared/components";
+import { fetchComponent, getOrError } from "shared/util";
 import { ClientState } from "shared/clientState";
-import { getOrError } from "shared/util";
 import { Players } from "@rbxts/services";
 import { World } from "@rbxts/matter";
 import Maid from "@rbxts/maid";
 
 const player = Players.LocalPlayer;
 
-function utility(world: World, _: ClientState) {
+function utility(world: World, state: ClientState) {
 	const maid = new Maid();
 
 	for (const [id, utility] of world.queryChanged(Utility)) {
@@ -31,6 +31,16 @@ function utility(world: World, _: ClientState) {
 						.FindFirstChildOfClass("PlayerGui")!
 						.FindFirstChild("UtilityInfo")! as UtilityInfoInstance;
 					const utility = getOrError(world, id, Utility, "Utility {@ID} no longer exists");
+					state.utilityUpgrade = fetchComponent(world, id, Utility);
+					const nextLevelCost = getNextLevelCost(world, id);
+					const balance = getOrError(
+						world,
+						state.playerId!,
+						Balance,
+						"Player {@ID} does not have a Balance component",
+					);
+					utilInfo.Background.Upgrade.BackgroundColor3 =
+						balance.balance >= nextLevelCost ? Color3.fromRGB(76, 229, 11) : Color3.fromRGB(229, 20, 5);
 					updateUtilityInfo(utilInfo, utility, world, id);
 					utilInfo.Adornee = utilInfo.Adornee === model ? undefined : model;
 					utilInfo.Enabled = utilInfo.Adornee === model;

@@ -85,7 +85,6 @@ type BaseUtility = Model & {
 	Every: IntValue;
 	OrderDelay: IntValue;
 	Reward: NumberValue;
-	UpgradeMulti: NumberValue;
 	BaseUpgrade: NumberValue;
 };
 

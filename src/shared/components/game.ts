@@ -1,6 +1,6 @@
+import { ComponentInfo } from "shared/util";
 import { component } from "@rbxts/matter";
 import { Level } from ".";
-import { ComponentInfo } from "shared/util";
 
 export const Product = component<{
 	amount: number;
@@ -14,7 +14,6 @@ export const Utility = component<{
 	level: ComponentInfo<typeof Level>;
 	xpLevel: number;
 	baseUpgradeCost: number;
-	upgradeMulti: number;
 	makes: Product;
 	every: number;
 	orderDelay: number;
