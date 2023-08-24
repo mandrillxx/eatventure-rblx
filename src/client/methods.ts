@@ -32,5 +32,7 @@ export function updateUtilityInfo(instance: UtilityInfoInstance, utility: Utilit
 		utility.xpLevel >= 100 ? "MAX" : utility.xpLevel >= 50 ? "100" : utility.xpLevel >= 25 ? "50" : "25";
 	instance.Background.Upgrade.Text = `Upgrade (${utility.xpLevel < 100 ? "$" + nextLevelCost : "MAX"})`;
 	if (utility.xpLevel >= 100) instance.Background.Upgrade.BackgroundColor3 = Color3.fromRGB(229, 20, 5);
-	instance.Background.Progress.Unlocked.Size = new UDim2(utility.xpLevel / nextLevel, 0, 1, 0);
+	const difference = nextLevel - utility.xpLevel;
+	const progress = nextLevel <= 25 ? utility.xpLevel / nextLevel : (utility.xpLevel - difference) / nextLevel;
+	instance.Background.Progress.Unlocked.Size = new UDim2(math.max(0, math.min(1, progress)), 0, 1, 0);
 }
