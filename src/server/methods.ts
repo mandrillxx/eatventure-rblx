@@ -57,7 +57,7 @@ export function giveItem({ player, entity, world, maid, id, wants, state, utilit
 	);
 	const benefitingPlayer = player
 		? state.clients.get(player.UserId)!
-		: state.clients.get(getOrError(world, entity!, BelongsTo).client.component.player.UserId)!;
+		: state.clients.get(getOrError(world, getOrError(world, entity!, BelongsTo).playerId, Client).player.UserId)!;
 	const client = getOrError(world, benefitingPlayer, Client);
 	const balance = getOrError(world, benefitingPlayer, Balance);
 	const utility = getOrError(world, utilityId, Utility);

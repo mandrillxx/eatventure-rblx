@@ -9,6 +9,7 @@ import {
 	Wants,
 	Body,
 	NPC,
+	Client,
 } from "shared/components";
 import { AnyEntity, World, useThrottle } from "@rbxts/matter";
 import { ComponentInfo, getOrError } from "shared/util";
@@ -29,7 +30,7 @@ const getNextDestination = (world: World, player: AnyEntity, fallbackWait: boole
 	for (const [_id, destination] of world.query(Destination).without(OccupiedBy)) {
 		if (destination.type !== "customer") continue;
 		const belongsTo = getOrError(world, _id, BelongsTo, "Destination does not have BelongsTo component");
-		if (belongsTo.client.componentId !== player) continue;
+		if (belongsTo.playerId !== player) continue;
 		if (destination.instance.Name === "Wait" && fallbackWait) {
 			waitDestination = { componentId: _id, component: destination };
 		} else {
@@ -86,7 +87,7 @@ const moveWaitingCustomer = (world: World) => {
 		if (isCustomerOccupying(world, belongsTo.levelId, id)) {
 			continue;
 		}
-		const destination = getNextDestination(world, belongsTo.client.componentId, false);
+		const destination = getNextDestination(world, belongsTo.playerId, false);
 		if (!destination) {
 			Log.Error("No destination found for customer {@CustomerId}", id);
 			continue;
@@ -101,7 +102,7 @@ function customer(world: World, state: ServerState) {
 	if (useThrottle(1)) {
 		for (const [id, _customer] of world.query(Customer).without(Pathfind)) {
 			const belongsTo = getOrError(world, id, BelongsTo, "NPC does not have BelongsTo component");
-			moveCustomerIfOpen(world, belongsTo.client.componentId, id);
+			moveCustomerIfOpen(world, belongsTo.playerId, id);
 		}
 	}
 
@@ -137,15 +138,16 @@ function customer(world: World, state: ServerState) {
 			}
 
 			world.insert(id, Speech({ text: "Thanks!" }));
-			if (state.playerStatisticsProvider.areStatisticsLoadedForPlayer(belongsTo.client.component.player))
-				state.playerStatisticsProvider.recordEvent(belongsTo.client.component.player, "customersServed", 1);
+			const client = getOrError(world, belongsTo.playerId, Client, "Player does not have Client component");
+			if (state.playerStatisticsProvider.areStatisticsLoadedForPlayer(client.player))
+				state.playerStatisticsProvider.recordEvent(client.player, "customersServed", 1);
 			task.delay(2, () => world.despawn(id));
 		}
 		if (!wants.old && wants.new) {
 			maids.set(id, new Maid());
 
 			const belongsTo = getOrError(world, id, BelongsTo, "NPC does not have BelongsTo component");
-			const chosenDestination = getNextDestination(world, belongsTo.client.componentId);
+			const chosenDestination = getNextDestination(world, belongsTo.playerId);
 			if (!chosenDestination) {
 				Log.Warn("No available destination found for customer {@CustomerId}", id);
 				continue;

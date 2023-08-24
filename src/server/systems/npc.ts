@@ -30,7 +30,7 @@ function npc(world: World, state: ServerState) {
 		New("BillboardGui")({
 			Parent: bodyModel,
 			Adornee: bodyModel.HumanoidRootPart,
-			AlwaysOnTop: true,
+			AlwaysOnTop: false,
 			Enabled: true,
 			Size: new UDim2(employee ? 1 : 4, 0, 1, 0),
 			SizeOffset: new Vector2(0, 2.5),

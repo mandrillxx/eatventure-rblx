@@ -2,7 +2,6 @@ import { ReplicatedStorage } from "@rbxts/services";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ComponentCtor } from "@rbxts/matter/lib/component";
 import Log from "@rbxts/log";
-import { Utility } from "./components";
 
 export interface ComponentInfo<T extends ComponentCtor> {
 	componentId: AnyEntity;

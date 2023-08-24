@@ -22,6 +22,6 @@ export type Body = ReturnType<typeof Body>;
 
 export const BelongsTo = component<{
 	levelId: AnyEntity;
-	client: ComponentInfo<typeof Client>;
+	playerId: AnyEntity;
 }>("BelongsTo");
 export type BelongsTo = ReturnType<typeof BelongsTo>;

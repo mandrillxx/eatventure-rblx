@@ -1,4 +1,4 @@
-import { Players, ReplicatedStorage } from "@rbxts/services";
+import { Players, ReplicatedStorage, UserInputService, Workspace } from "@rbxts/services";
 import { receiveReplication } from "./receiveReplication";
 import { withHookDetection } from "@rbxts/roact-hooked";
 import { CharacterRigR15 } from "@rbxts/promise-character";
@@ -17,6 +17,7 @@ Log.SetLogger(Logger.configure().WriteTo(Log.RobloxOutput()).Create());
 
 const player = Players.LocalPlayer;
 const character = (player.Character || player.CharacterAdded.Wait()[0]) as CharacterRigR15;
+const mouse = player.GetMouse();
 const overlapParams = new OverlapParams();
 const raycastParams = new RaycastParams();
 
@@ -49,6 +50,25 @@ function bootstrap() {
 	while (!state.playerId) {
 		task.wait(1);
 	}
+
+	UserInputService.InputBegan.Connect((input) => {
+		if (
+			input.UserInputType === Enum.UserInputType.MouseButton1 ||
+			input.UserInputType === Enum.UserInputType.Touch
+		) {
+			const target = mouse.Target;
+			if (target && target.IsA("BasePart")) {
+				const utilityInfo = player
+					.FindFirstChildOfClass("PlayerGui")!
+					.WaitForChild("UtilityInfo")! as UtilityInfoInstance;
+				const adornee = utilityInfo.Adornee;
+				if (adornee && !target.IsDescendantOf(adornee)) {
+					utilityInfo.Adornee = undefined;
+					utilityInfo.Enabled = false;
+				}
+			}
+		}
+	});
 
 	task.delay(1, () => {
 		const money = (player as BasePlayer).leaderstats.Money;

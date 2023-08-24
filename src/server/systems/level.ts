@@ -30,7 +30,7 @@ function level(world: World, state: ServerState) {
 			continue;
 		}
 		levelModel = levelModel.Clone();
-		levelModel.PivotTo(levelModel.GetPivot().add(new Vector3(0, 0, state.playerIndex * 100)));
+		levelModel.PivotTo(levelModel.GetPivot().add(new Vector3(state.playerIndex * 40, 0, 0)));
 
 		const destinations: ComponentInfo<typeof Destination>[] = [];
 		for (const child of levelModel.CustomerAnchors.GetChildren()) {
@@ -48,7 +48,7 @@ function level(world: World, state: ServerState) {
 			});
 			const componentId = world.spawn(
 				destination,
-				BelongsTo({ client: fetchComponent(world, ownedBy.playerId, Client), levelId: id }),
+				BelongsTo({ playerId: ownedBy.playerId, levelId: id }),
 				Renderable({ model: parent }),
 			);
 			destinations.push({ componentId, component: destination });
@@ -68,7 +68,7 @@ function level(world: World, state: ServerState) {
 			});
 			const componentId = world.spawn(
 				destination,
-				BelongsTo({ client: fetchComponent(world, ownedBy.playerId, Client), levelId: id }),
+				BelongsTo({ playerId: ownedBy.playerId, levelId: id }),
 				Renderable({ model: parent }),
 			);
 			destinations.push({ componentId, component: destination });
@@ -142,7 +142,7 @@ function level(world: World, state: ServerState) {
 			world.spawn(
 				utilityComponent,
 				BelongsTo({
-					client: fetchComponent(world, ownedBy.playerId, Client),
+					playerId: ownedBy.playerId,
 					levelId: id,
 				}),
 				Renderable({
@@ -240,7 +240,7 @@ function level(world: World, state: ServerState) {
 			if (!world.contains(id)) continue;
 			const ownedBy = getOrError(world, id, OwnedBy, "Level does not have OwnedBy component");
 			for (const [id, npc, belongsTo] of world.query(NPC, BelongsTo)) {
-				if (belongsTo.client.componentId === ownedBy.playerId) {
+				if (belongsTo.playerId === ownedBy.playerId) {
 					if (state.verbose) Log.Debug("Npc {@NPC} belongs to {@BelongsTo}", npc, belongsTo.levelId);
 					if (world.contains(id) && npc.type !== "employee") world.despawn(id);
 				}

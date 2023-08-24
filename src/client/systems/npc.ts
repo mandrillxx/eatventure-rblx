@@ -8,7 +8,7 @@ function npc(world: World, state: ClientState) {
 	for (const [id, body] of world.queryChanged(Body)) {
 		if (!world.contains(id)) continue;
 		const belongsTo = world.get(id, BelongsTo);
-		if (!belongsTo || belongsTo.client.componentId !== state.playerId) continue;
+		if (!belongsTo || belongsTo.playerId !== state.playerId) continue;
 
 		if (!body.old && body.new) {
 			const npc = world.get(id, NPC);

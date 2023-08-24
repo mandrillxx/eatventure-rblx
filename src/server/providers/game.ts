@@ -233,7 +233,7 @@ export class GameProvider {
 						}),
 						BelongsTo({
 							levelId,
-							client: { componentId: entity, component: client },
+							playerId: entity,
 						}),
 					);
 					event.ran = true;
@@ -265,7 +265,7 @@ export class GameProvider {
 						}),
 						BelongsTo({
 							levelId,
-							client: { componentId: entity, component: client },
+							playerId: entity,
 						}),
 						Wants({
 							product: Product({

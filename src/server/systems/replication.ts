@@ -9,6 +9,7 @@ import {
 	Wants,
 	Body,
 	NPC,
+	OwnedBy,
 } from "shared/components";
 import { AnyComponent, useEvent, World } from "@rbxts/matter";
 import { Players, ReplicatedStorage } from "@rbxts/services";
@@ -27,6 +28,7 @@ const REPLICATED_COMPONENTS = new Set<ComponentCtor>([
 	Balance,
 	NPC,
 	BelongsTo,
+	OwnedBy,
 	Body,
 	Wants,
 	Level,
