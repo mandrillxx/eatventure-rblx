@@ -1,11 +1,10 @@
-import { Balance, BelongsTo, Client, Renderable, Utility } from "shared/components";
-import { getNextLevelCost, updateUtilityInfo } from "client/methods";
+import { ServerEntityIdToClient, getNextLevelCost, updateUtilityInfo } from "client/methods";
+import { Balance, BelongsTo, OwnedBy, Renderable, Utility } from "shared/components";
 import { fetchComponent, getOrError } from "shared/util";
 import { ClientState } from "shared/clientState";
 import { Players } from "@rbxts/services";
 import { World } from "@rbxts/matter";
 import Maid from "@rbxts/maid";
-import Log from "@rbxts/log";
 
 const player = Players.LocalPlayer;
 
@@ -15,10 +14,13 @@ function utility(world: World, state: ClientState) {
 	for (const [id, utility] of world.queryChanged(Utility)) {
 		if (!utility.old && utility.new) {
 			const belongsTo = getOrError(world, id, BelongsTo, "Utility does not have BelongsTo component");
-			const playerId = belongsTo.playerId;
-			Log.Info(`Utility {@ID} belongs to player {@PlayerID}`, id, playerId);
-			const clientPlayer = getOrError(world, playerId, Client, "Cannot find player based on Utility");
-			if (clientPlayer.player.UserId !== player.UserId) continue;
+			const ownedBy = getOrError(
+				world,
+				ServerEntityIdToClient(state, belongsTo.levelId)!,
+				OwnedBy,
+				"Utility does not have OwnedBy component",
+			);
+			if (ownedBy.player.UserId !== player.UserId) continue;
 			const renderable = getOrError(world, id, Renderable, "Utility {@ID} does not have a Renderable component");
 			const model = renderable.model as BaseUtility;
 			maid.GiveTask(

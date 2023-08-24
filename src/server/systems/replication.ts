@@ -10,6 +10,11 @@ import {
 	Body,
 	NPC,
 	OwnedBy,
+	OccupiedBy,
+	HasUtilities,
+	Serving,
+	Customer,
+	Employee,
 } from "shared/components";
 import { AnyComponent, useEvent, World } from "@rbxts/matter";
 import { Players, ReplicatedStorage } from "@rbxts/services";

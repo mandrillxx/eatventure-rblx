@@ -31,6 +31,7 @@ function level(world: World, state: ServerState) {
 		}
 		levelModel = levelModel.Clone();
 		levelModel.PivotTo(levelModel.GetPivot().add(new Vector3(state.playerIndex * 40, 0, 0)));
+		state.playerIndex++;
 
 		const destinations: ComponentInfo<typeof Destination>[] = [];
 		for (const child of levelModel.CustomerAnchors.GetChildren()) {

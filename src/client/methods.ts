@@ -2,12 +2,17 @@ import { AnyEntity, World } from "@rbxts/matter";
 import { FormatCompact } from "@rbxts/format-number";
 import { getOrError } from "shared/util";
 import { Utility } from "shared/components";
+import { ClientState } from "shared/clientState";
 
 export function getNextLevelCost(world: World, id: AnyEntity) {
 	const newUtility = getOrError(world, id, Utility, "Utility no longer exists");
 	const { baseUpgradeCost, xpLevel } = newUtility;
 	const nextLevelCost = baseUpgradeCost * (1.2 ** xpLevel - 1);
 	return nextLevelCost;
+}
+
+export function ServerEntityIdToClient(state: ClientState, id: AnyEntity) {
+	return state.entityIdMap.get(tostring(id));
 }
 
 export function updateUtilityInfo(instance: UtilityInfoInstance, utility: Utility, world: World, utilityId: AnyEntity) {

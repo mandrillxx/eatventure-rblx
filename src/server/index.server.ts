@@ -119,7 +119,6 @@ async function bootstrap() {
 
 		function characterAdded(character: Model) {
 			promiseR15(character).andThen(async (model) => {
-				state.playerIndex++;
 				const playerEntity = world.spawn(
 					Client({
 						player,

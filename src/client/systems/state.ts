@@ -1,5 +1,5 @@
-import { Balance, BelongsTo, Client, OpenStatus, OwnedBy, Utility } from "shared/components";
-import { getNextLevelCost, updateUtilityInfo } from "client/methods";
+import { ServerEntityIdToClient, getNextLevelCost, updateUtilityInfo } from "client/methods";
+import { Balance, BelongsTo, OpenStatus, OwnedBy, Utility } from "shared/components";
 import { World, useThrottle } from "@rbxts/matter";
 import { ClientState } from "shared/clientState";
 import { getOrError } from "shared/util";
@@ -20,8 +20,13 @@ function state(world: World, state: ClientState) {
 	for (const [id, utility] of world.queryChanged(Utility)) {
 		if (utility.new) {
 			const belongsTo = getOrError(world, id, BelongsTo, "Utility does not have BelongsTo component");
-			const clientPlayer = getOrError(world, belongsTo.playerId, Client, "Cannot find player based on Utility");
-			if (clientPlayer.player.UserId !== player.UserId) continue;
+			const ownedBy = getOrError(
+				world,
+				ServerEntityIdToClient(state, belongsTo.levelId)!,
+				OwnedBy,
+				"Utility does not have OwnedBy component",
+			);
+			if (ownedBy.player.UserId !== player.UserId) continue;
 			const utilityInfo = player
 				.FindFirstChildOfClass("PlayerGui")!
 				.FindFirstChild("UtilityInfo")! as UtilityInfoInstance;
