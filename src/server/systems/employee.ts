@@ -184,6 +184,7 @@ function employee(world: World, state: ServerState) {
 													}),
 												);
 												task.delay(utility.utility.every / level.workRate, () => {
+													if (!world.contains(id)) return;
 													world.remove(id, Speech);
 													world.insert(
 														id,

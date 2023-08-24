@@ -50,6 +50,7 @@ export class radialObject {
 
 	update() {
 		const percentNumber = math.clamp(this.progress * 3.6, 0, 360);
+		if (!this.instance || !this.instance.Frame1 || !this.instance.Frame2) return;
 		const F1 = this.instance.Frame1.ImageLabel;
 		const F2 = this.instance.Frame2.ImageLabel;
 
@@ -102,7 +103,7 @@ export class radialObject {
 
 		const newConn = RunService.Heartbeat.Connect(() => {
 			this.progress = tweenProgressObj.Value;
-			this.update();
+			if (this.instance && this.instance.IsDescendantOf(game)) this.update();
 		});
 
 		tween.Play();

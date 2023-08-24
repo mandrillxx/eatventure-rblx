@@ -48,6 +48,7 @@ function pathfind(world: World, state: ServerState) {
 				);
 				path.Visualize = state.debug;
 
+				if (!world.contains(id)) return;
 				const isPathfinding = path.Run(destination);
 				if (!isPathfinding) {
 					if (pathfindErrors.has(id)) {
@@ -70,7 +71,7 @@ function pathfind(world: World, state: ServerState) {
 					maid.DoCleaning();
 					path.Destroy();
 
-					if (retry) {
+					if (retry && world.contains(id)) {
 						task.spawn(attemptPathfind);
 						return;
 					}

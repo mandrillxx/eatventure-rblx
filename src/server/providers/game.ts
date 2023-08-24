@@ -45,7 +45,7 @@ interface IPlayer {
 	player: Player;
 	client: Client;
 	entity: AnyEntity;
-	level?: Level;
+	levelId: AnyEntity;
 }
 
 interface Event {
@@ -85,7 +85,11 @@ export class GameProvider {
 			Log.Error("{@Player} does not have a session, cannot terminate", player.Name);
 			return;
 		}
-		const { client, entity } = session.player;
+		const { world } = session;
+		const { client, entity, levelId } = session.player;
+		if (world.contains(levelId)) world.despawn(levelId);
+		if (world.contains(entity)) world.despawn(entity);
+
 		session.maid.DoCleaning();
 		session.queue.clear();
 		this.savePlayerData(session);
@@ -146,7 +150,7 @@ export class GameProvider {
 				player: client.player,
 				client,
 				entity,
-				level,
+				levelId,
 			},
 		};
 		this.playerSessions.push(session);

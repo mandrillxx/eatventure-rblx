@@ -14,8 +14,8 @@ import {
 	NPC,
 	Client,
 } from "shared/components";
-import { Players, ReplicatedStorage, Workspace } from "@rbxts/services";
-import { ComponentInfo, fetchComponent, getOrError } from "shared/util";
+import { ReplicatedStorage, Workspace } from "@rbxts/services";
+import { ComponentInfo, getOrError } from "shared/util";
 import { ServerState, _Level } from "server/index.server";
 import { World, useThrottle } from "@rbxts/matter";
 import { New } from "@rbxts/fusion";
@@ -222,7 +222,14 @@ function level(world: World, state: ServerState) {
 		}
 	}
 
-	for (const [_id, level] of world.queryChanged(Level)) {
+	for (const [id, level] of world.queryChanged(Level)) {
+		if (level.old && !level.new) {
+			for (const [_id, belongsTo] of world.query(BelongsTo)) {
+				if (belongsTo.levelId === id) {
+					world.despawn(_id);
+				}
+			}
+		}
 		if (level.old && level.new && level.old.employeePace !== level.new.employeePace) {
 			if (state.verbose)
 				Log.Warn("Employee pace changed from {@Old} to {@New}", level.old.employeePace, level.new.employeePace);
