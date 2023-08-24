@@ -141,8 +141,11 @@ function employee(world: World, state: ServerState) {
 						continue;
 					}
 
-					world.insert(customer.npcId, customer.customer.patch({ servedBy: id }));
-					world.insert(customer.npcId, customer.wants.patch({ display: false }));
+					world.insert(
+						customer.npcId,
+						customer.wants.patch({ display: false }),
+						customer.customer.patch({ servedBy: id }),
+					);
 
 					const timeToTakeOrder = utility.utility.orderDelay / level.workRate;
 					const destinationIndex = getDestinationByCustomer(world, customer.npcId)!.instance.Name.sub(-1, -1);

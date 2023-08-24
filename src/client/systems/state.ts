@@ -31,7 +31,8 @@ function state(world: World, state: ClientState) {
 				.FindFirstChildOfClass("PlayerGui")!
 				.FindFirstChild("UtilityInfo")! as UtilityInfoInstance;
 			if (!utilityInfo.Enabled || utilityInfo.Adornee?.Name !== utility.new.type) continue;
-			const nextLevelCost = getNextLevelCost(world, id);
+			const newUtility = getOrError(world, id, Utility, "Utility no longer exists");
+			const nextLevelCost = getNextLevelCost(world, id, newUtility);
 			const balance = getOrError(
 				world,
 				state.playerId!,
@@ -39,7 +40,9 @@ function state(world: World, state: ClientState) {
 				"Player {@ID} does not have a Balance component",
 			);
 			utilityInfo.Background.Upgrade.BackgroundColor3 =
-				balance.balance >= nextLevelCost ? Color3.fromRGB(76, 229, 11) : Color3.fromRGB(229, 20, 5);
+				balance.balance >= nextLevelCost && newUtility.xpLevel + 1 < 100
+					? Color3.fromRGB(76, 229, 11)
+					: Color3.fromRGB(229, 20, 5);
 			updateUtilityInfo(utilityInfo, utility.new, world, id);
 		}
 	}
@@ -53,7 +56,9 @@ function state(world: World, state: ClientState) {
 				if (!utility || !utilityInfo.Enabled || utilityInfo.Adornee?.Name !== utility.component.type) continue;
 				const nextLevelCost = getNextLevelCost(world, utility.componentId);
 				utilityInfo.Background.Upgrade.BackgroundColor3 =
-					balance.new.balance >= nextLevelCost ? Color3.fromRGB(76, 229, 11) : Color3.fromRGB(229, 20, 5);
+					balance.new.balance >= nextLevelCost && utility.component.xpLevel < 100
+						? Color3.fromRGB(76, 229, 11)
+						: Color3.fromRGB(229, 20, 5);
 			}
 		}
 	}

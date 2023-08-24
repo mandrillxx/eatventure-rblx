@@ -61,19 +61,23 @@ export function giveItem({ player, entity, world, maid, id, wants, state, utilit
 	const client = getOrError(world, benefitingPlayer, Client);
 	const balance = getOrError(world, benefitingPlayer, Balance);
 	const utility = getOrError(world, utilityId, Utility);
-	const reward =
-		utility.xpLevel <= 1
-			? utility.reward * client.document.coinMultiplier
-			: utility.reward * (1.2 ** utility.xpLevel - 1) * 5 * 0.2 * client.document.coinMultiplier;
+	const reward = utility.reward * (1.2 ** utility.xpLevel - 1) * 5 * 0.2 * client.document.coinMultiplier;
+	let rewardMultiplier = 1;
+	if (utility.xpLevel >= 25 && utility.xpLevel < 50) rewardMultiplier *= 1.5;
+	if (utility.xpLevel >= 50 && utility.xpLevel < 100) rewardMultiplier *= 2;
+	if (utility.xpLevel >= 100) rewardMultiplier *= 3;
 	if (state.verbose)
 		Log.Info(
-			"Reward: {@Reward} {@RewardBase} ** {@UtilityXPLevel} * {@CoinMultiplier}",
+			"Reward: {@Reward}x{@RewardMulti} {@RewardBase} ** {@UtilityXPLevel} * {@CoinMultiplier}",
 			reward,
+			rewardMultiplier,
 			utility.reward,
 			utility.xpLevel,
 			client.document.coinMultiplier,
 		);
-	world.insert(benefitingPlayer, balance.patch({ balance: balance.balance + reward }));
+	if (state.playerStatisticsProvider.areStatisticsLoadedForPlayer(client.player))
+		state.playerStatisticsProvider.recordEvent(client.player, "moneyEarned", reward * rewardMultiplier);
+	world.insert(benefitingPlayer, balance.patch({ balance: balance.balance + reward * rewardMultiplier }));
 	if (currentWants.product.amount === 1) {
 		if (state.verbose) Log.Info("NPC {@NPC} got what they wanted", id);
 		world.remove(id, Wants);

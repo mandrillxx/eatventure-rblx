@@ -6,8 +6,13 @@ export const PlayerStatisticsDefinition: StatisticsDefinition = {
 		defaultValue: 0,
 		updateFunction: StandardStatisticUpdateFunctions.increment,
 	}),
+	moneyEarned: identity<StatisticDescription>({
+		defaultValue: 0,
+		updateFunction: StandardStatisticUpdateFunctions.increment,
+	}),
 };
 
 export const PlayerStatisticEventsDefinition: EventsDefinition<typeof PlayerStatisticsDefinition> = {
 	customersServed: identity<ReadonlyArray<keyof typeof PlayerStatisticsDefinition>>(["customersServed"]),
+	moneyEarned: identity<ReadonlyArray<keyof typeof PlayerStatisticsDefinition>>(["moneyEarned"]),
 };

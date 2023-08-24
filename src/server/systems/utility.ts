@@ -13,14 +13,20 @@ const handleUpgrade = (world: World, player: Player, state: ServerState, id: Any
 	const { baseUpgradeCost, xpLevel } = newUtility;
 	const nextLevelCost = baseUpgradeCost * (1.2 ** xpLevel - 1);
 	if (state.verbose) Log.Info("Next level cost: {@Cost} | {@Balance}", nextLevelCost, balance.balance);
+	if (newUtility.xpLevel >= 100) {
+		world.insert(id, SoundEffect({ sound: "Fail" }));
+		Log.Warn("Utility {@UtilityID} is already max level", id);
+		return;
+	}
 	if (balance.balance < nextLevelCost) {
 		world.insert(id, SoundEffect({ sound: "Fail" }));
 		Log.Warn("Player {@ID} does not have enough money to upgrade utility {@UtilityID}", playerId, id);
 		return;
 	}
-	Log.Warn("Upgrading utility {@UtilityID} for player {@ID}", id, playerId);
+	if (state.debug) Log.Warn("Upgrading utility {@UtilityID} for player {@ID}", id, playerId);
+	const nextLevel = newUtility.xpLevel + 1;
 	world.insert(playerId, balance.patch({ balance: balance.balance - nextLevelCost }));
-	world.insert(id, newUtility.patch({ xpLevel: newUtility.xpLevel + 1 }), SoundEffect({ sound: "Upgrade" }));
+	world.insert(id, newUtility.patch({ xpLevel: nextLevel }), SoundEffect({ sound: "Upgrade" }));
 };
 
 function utility(world: World, state: ServerState) {

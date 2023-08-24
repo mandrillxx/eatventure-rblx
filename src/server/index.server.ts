@@ -18,8 +18,8 @@ import { Proton } from "@rbxts/proton";
 import { start } from "shared/start";
 import { New } from "@rbxts/fusion";
 import Log, { Logger } from "@rbxts/log";
-import promiseR15 from "@rbxts/promise-character";
 import ProfileService from "@rbxts/profileservice";
+import promiseR15 from "@rbxts/promise-character";
 
 Proton.awaitStart();
 
@@ -63,7 +63,7 @@ const state: ServerState = {
 		EventsDefinition<StatisticsDefinition>
 	>,
 	playerIndex: 0,
-	debug: true,
+	debug: false,
 	verbose: false,
 };
 
