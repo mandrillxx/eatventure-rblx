@@ -15,6 +15,12 @@ export function ServerEntityIdToClient(state: ClientState, id: AnyEntity) {
 	return state.entityIdMap.get(tostring(id));
 }
 
+export function ClientEntityIdToServer(state: ClientState, id: AnyEntity) {
+	for (const [key, value] of state.entityIdMap) {
+		if (value === id) return key as unknown as AnyEntity;
+	}
+}
+
 export function updateUtilityInfo(instance: UtilityInfoInstance, utility: Utility, world: World, utilityId: AnyEntity) {
 	let rewardMultiplier = 1;
 	if (utility.xpLevel >= 25 && utility.xpLevel < 50) rewardMultiplier *= 1.5;

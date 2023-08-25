@@ -7,7 +7,7 @@ import {
 } from "@rbxts/player-statistics";
 import { DataStoreService, PhysicsService, Players, ReplicatedStorage } from "@rbxts/services";
 import { PlayerStatisticEventsDefinition, PlayerStatisticsDefinition } from "./data/PlayerStatisticsDefinition";
-import { Client, Renderable } from "shared/components";
+import { BelongsTo, Client, Renderable, Upgrade } from "shared/components";
 import { GameProvider } from "./providers/game";
 import { AnyEntity } from "@rbxts/matter";
 import { setupTags } from "shared/setupTags";
@@ -20,6 +20,8 @@ import { New } from "@rbxts/fusion";
 import Log, { Logger } from "@rbxts/log";
 import ProfileService from "@rbxts/profileservice";
 import promiseR15 from "@rbxts/promise-character";
+import { IProfile, setupPurchases } from "./data/PurchaseHandler";
+import { getOrError } from "shared/util";
 
 Proton.awaitStart();
 
@@ -41,15 +43,10 @@ export interface ServerState {
 	verbose: boolean;
 }
 
-interface IProfile {
-	level: number;
-	money: number;
-	logInTimes: number;
-	utilityLevels: Map<string, number>;
-}
 const ProfileTemplate: IProfile = {
 	level: 1,
 	money: 0,
+	gems: 5,
 	logInTimes: 0,
 	utilityLevels: new Map<string, number>(),
 };
@@ -63,7 +60,7 @@ const state: ServerState = {
 		EventsDefinition<StatisticsDefinition>
 	>,
 	playerIndex: 0,
-	debug: false,
+	debug: true,
 	verbose: false,
 };
 
@@ -152,7 +149,9 @@ async function bootstrap() {
 				Parent: leaderstats,
 			});
 			const utilityInfo = ReplicatedStorage.Assets.UtilityInfo.Clone();
+			const upgradeInfo = ReplicatedStorage.Assets.UpgradeInfo.Clone();
 			utilityInfo.Parent = player.FindFirstChildOfClass("PlayerGui")!;
+			upgradeInfo.Parent = player.FindFirstChildOfClass("PlayerGui")!;
 		});
 
 		handleData();
@@ -168,12 +167,32 @@ async function bootstrap() {
 
 	statistics();
 	collision();
+	setupPurchases(state, world);
 
 	Network.setStoreStatus.server.connect((player, open) => {
 		gameProvider.addEvent(player, {
 			type: open ? "openStore" : "closeStore",
 			ran: false,
 		});
+	});
+
+	Network.purchaseUpgrade.server.connect((player, upgradeId) => {
+		Log.Info("Player {@Player} is purchasing upgrade {@UpgradeId}", player, upgradeId);
+		if (!world.contains(upgradeId)) {
+			return Log.Warn(
+				"Player {@Player} is purchasing upgrade {@UpgradeId} which does not exist",
+				player,
+				upgradeId,
+			);
+		}
+		const upgrade = getOrError(world, upgradeId, Upgrade);
+		const belongsTo = getOrError(world, upgradeId, BelongsTo);
+		Log.Info(
+			"Player {@Player} is purchasing upgrade {@Upgrade} which belongs to {@PlayerId}",
+			player,
+			upgrade,
+			belongsTo.playerId,
+		);
 	});
 
 	Network.retrieveStatistics.server.handle((player) => {

@@ -15,6 +15,7 @@ import {
 	Serving,
 	Customer,
 	Employee,
+	Upgrade,
 } from "shared/components";
 import { AnyComponent, useEvent, World } from "@rbxts/matter";
 import { Players, ReplicatedStorage } from "@rbxts/services";
@@ -28,17 +29,18 @@ const remoteEvent = New("RemoteEvent")({
 });
 
 const REPLICATED_COMPONENTS = new Set<ComponentCtor>([
-	Client,
 	Renderable,
-	Balance,
-	NPC,
+	OpenStatus,
 	BelongsTo,
+	Upgrade,
+	Utility,
+	Balance,
 	OwnedBy,
-	Body,
+	Client,
 	Wants,
 	Level,
-	OpenStatus,
-	Utility,
+	Body,
+	NPC,
 ]);
 
 function replication(world: World): void {

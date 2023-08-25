@@ -20,6 +20,7 @@ import { ServerState, _Level } from "server/index.server";
 import { World, useThrottle } from "@rbxts/matter";
 import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
+import { Upgrades } from "shared/upgrades";
 
 function level(world: World, state: ServerState) {
 	for (const [id, level, ownedBy] of world.query(Level, OwnedBy).without(Renderable)) {
@@ -75,6 +76,10 @@ function level(world: World, state: ServerState) {
 			destinations.push({ componentId, component: destination });
 		}
 		const newDestinations = level.patch({ destinations });
+
+		for (const upgrade of Upgrades) {
+			world.spawn(upgrade, BelongsTo({ playerId: ownedBy.playerId, levelId: id }));
+		}
 
 		task.spawn(() =>
 			world.insert(

@@ -34,6 +34,7 @@ type Assets = Folder & {
 	Products: Folder & Products;
 	Progress: RadialInstance;
 	UtilityInfo: UtilityInfoInstance;
+	UpgradeInfo: UpgradeInfoInstance;
 	Animate: Script;
 };
 
@@ -47,6 +48,37 @@ type RadialInstance = Frame & {
 		ImageLabel: ImageLabel & {
 			UIGradient: UIGradient;
 		};
+	};
+};
+
+type BaseUpgrade = Frame & {
+	UICorner: UICorner;
+	UIPadding: UIPadding;
+	Purchase: TextButton & {
+		UICorner: UICorner;
+	};
+	ImageLabel: ImageLabel;
+	Title: TextLabel;
+	Description: TextLabel;
+};
+
+type UpgradeInfoInstance = ScreenGui & {
+	UpgradeFrame: Frame & {
+		UICorner: UICorner;
+		UIPadding: UIPadding;
+		Upgrades: ScrollingFrame & {
+			UICorner: UICorner;
+			UIListLayout: UIListLayout;
+			BaseUpgrade: BaseUpgrade;
+		};
+		Close: TextButton & {
+			UICorner: UICorner;
+		};
+		Title: TextLabel;
+	};
+	OpenUpgrades: TextButton & {
+		UICorner: UICorner;
+		UIPadding: UIPadding;
 	};
 };
 

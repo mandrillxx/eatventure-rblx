@@ -1,10 +1,13 @@
-import { Players, ReplicatedStorage, UserInputService, Workspace } from "@rbxts/services";
+import { Players, ReplicatedStorage, UserInputService } from "@rbxts/services";
+import { ClientEntityIdToServer } from "./methods";
 import { receiveReplication } from "./receiveReplication";
 import { withHookDetection } from "@rbxts/roact-hooked";
 import { CharacterRigR15 } from "@rbxts/promise-character";
+import { ComponentInfo } from "shared/util";
 import { ClientState } from "shared/clientState";
 import { AnyEntity } from "@rbxts/matter";
 import { Network } from "shared/network";
+import { Upgrade } from "shared/components";
 import { Proton } from "@rbxts/proton";
 import { start } from "shared/start";
 import Log, { Logger } from "@rbxts/log";
@@ -30,6 +33,7 @@ const state: ClientState = {
 	character,
 	playerId: undefined,
 	utilityUpgrade: undefined,
+	upgrades: new Map<AnyEntity, ComponentInfo<typeof Upgrade>>(),
 	storeStatus: {
 		open: false,
 	},
@@ -82,6 +86,22 @@ function bootstrap() {
 		utilityInfo.Background.Upgrade.MouseButton1Click.Connect(() => {
 			Network.upgradeUtility.client.fire(utilityInfo.Adornee! as Model);
 		});
+		const upgradeInfo = playerGui.WaitForChild("UpgradeInfo")! as UpgradeInfoInstance;
+		upgradeInfo.UpgradeFrame.Close.MouseButton1Click.Connect(() => {
+			upgradeInfo.UpgradeFrame.Visible = false;
+		});
+		upgradeInfo.OpenUpgrades.MouseButton1Click.Connect(() => {
+			upgradeInfo.UpgradeFrame.Visible = !upgradeInfo.UpgradeFrame.Visible;
+		});
+		for (const upgrade of upgradeInfo.UpgradeFrame.Upgrades.GetChildren()) {
+			if (upgrade.IsA("Frame") && upgrade.Name !== "BaseUpgrade") {
+				const purchaseButton = upgrade.FindFirstChild("Purchase")! as TextButton;
+				purchaseButton.MouseButton1Click.Connect(() => {
+					const serverId = ClientEntityIdToServer(state, upgrade.GetAttribute("serverId")! as AnyEntity);
+					Network.purchaseUpgrade.client.fire(serverId as AnyEntity);
+				});
+			}
+		}
 	});
 
 	Roact.mount(<Menu state={state} />, player.FindFirstChildOfClass("PlayerGui")!);

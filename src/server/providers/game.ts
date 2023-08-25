@@ -15,7 +15,7 @@ import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
 import { Provider } from "@rbxts/proton";
 import { Network } from "shared/network";
-import { Players } from "@rbxts/services";
+import { MarketplaceService, Players } from "@rbxts/services";
 import { Balance } from "shared/components";
 import { Queue } from "@rbxts/stacks-and-queues";
 import { New } from "@rbxts/fusion";
