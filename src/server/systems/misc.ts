@@ -1,5 +1,6 @@
-import { Body, Renderable, SoundEffect, Speech } from "shared/components";
+import { Body, Renderable, SoundEffect, Speech, Wants } from "shared/components";
 import { ReplicatedStorage } from "@rbxts/services";
+import { AssetMap, Foods } from "shared/globals";
 import { radialObject } from "shared/radial";
 import { ServerState } from "server/index.server";
 import { getOrError } from "shared/util";
@@ -41,6 +42,20 @@ function misc(world: World, state: ServerState) {
 			const body = getOrError(world, id, Body, "NPC does not have Body component but has Speech component");
 			const bodyModel = body.model as BaseNPC;
 			if (!speech.new.specialType) {
+				const wants = getOrError(
+					world,
+					id,
+					Wants,
+					"NPC does not have Wants component but has Speech component",
+				);
+				const productName = wants.product.product.lower() as Foods;
+				Log.Info(
+					"NPC wants {@Product} {@AssetMapSize} {@AssetMap}",
+					wants.product.product,
+					AssetMap.size(),
+					AssetMap.get(productName),
+				);
+				bodyModel.DialogGui.DialogFrame.ImageLabel.Image = AssetMap.get(productName)!;
 				bodyModel.DialogGui.DialogFrame.DialogText.Text = speech.new.text!;
 				// bodyModel.DialogGui.DialogFrame.Visible = true;
 				bodyModel.DialogGui.Progress.Visible = false;

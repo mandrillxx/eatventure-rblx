@@ -12,15 +12,15 @@ import {
 	Level,
 	Body,
 	NPC,
-	Client,
 } from "shared/components";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ComponentInfo, getOrError } from "shared/util";
 import { ServerState, _Level } from "server/index.server";
 import { World, useThrottle } from "@rbxts/matter";
+import { Upgrades } from "shared/upgrades";
+import { Foods } from "shared/globals";
 import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
-import { Upgrades } from "shared/upgrades";
 
 function level(world: World, state: ServerState) {
 	for (const [id, level, ownedBy] of world.query(Level, OwnedBy).without(Renderable)) {
@@ -120,7 +120,7 @@ function level(world: World, state: ServerState) {
 		const utilities: { utility: Utility; model: BaseUtility }[] = [];
 		for (const utility of levelModel.Utilities.GetChildren()) {
 			const utilModel = utility as BaseUtility;
-			const product = utilModel.Makes.Value as keyof Products;
+			const product = utilModel.Makes.Value as Foods;
 			const amount = utilModel.Amount.Value;
 			const every = utilModel.Every.Value;
 			const orderDelay = utilModel.OrderDelay.Value;

@@ -15,9 +15,10 @@ import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
 import { Provider } from "@rbxts/proton";
 import { Network } from "shared/network";
-import { MarketplaceService, Players } from "@rbxts/services";
+import { Players } from "@rbxts/services";
 import { Balance } from "shared/components";
 import { Queue } from "@rbxts/stacks-and-queues";
+import { Foods } from "shared/globals";
 import { New } from "@rbxts/fusion";
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
@@ -259,7 +260,7 @@ export class GameProvider {
 						Log.Error("No product found for customer {@CustomerName}", name);
 						return;
 					}
-					const productName = product.model.Makes.Value as keyof Products;
+					const productName = product.model.Makes.Value as Foods;
 
 					world.spawn(
 						NPC({

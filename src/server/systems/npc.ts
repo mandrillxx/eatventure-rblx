@@ -32,35 +32,59 @@ function npc(world: World, state: ServerState) {
 			Adornee: bodyModel.HumanoidRootPart,
 			AlwaysOnTop: false,
 			Enabled: true,
-			Size: new UDim2(employee ? 1 : 4, 0, 1, 0),
-			SizeOffset: new Vector2(0, 2.5),
+			Size: new UDim2(1, 0, 1, 0),
+			SizeOffset: new Vector2(0, 3.25),
 			ZIndexBehavior: Enum.ZIndexBehavior.Global,
 			Name: "DialogGui",
 		});
 		const progressFrame = ReplicatedStorage.Assets.Progress.Clone();
 		progressFrame.Visible = false;
 		progressFrame.Parent = bodyModel.DialogGui;
-		New("Frame")({
+		const DialogFrame = New("Frame")({
 			Parent: bodyModel.DialogGui,
 			Name: "DialogFrame",
 			Visible: false,
 			Size: new UDim2(1, 0, 1, 0),
 		});
+		New("UICorner")({
+			Parent: DialogFrame,
+			CornerRadius: new UDim(0.1, 0),
+		});
 		New("UIPadding")({
-			Parent: bodyModel.DialogGui.DialogFrame,
+			Parent: DialogFrame,
 			PaddingBottom: new UDim(0.1, 0),
 			PaddingLeft: new UDim(0.1, 0),
 			PaddingRight: new UDim(0.1, 0),
 			PaddingTop: new UDim(0.1, 0),
 		});
-		New("TextButton")({
-			Parent: bodyModel.DialogGui.DialogFrame,
-			Name: "DialogText",
+		New("ImageLabel")({
+			BackgroundTransparency: 1,
+			Parent: DialogFrame,
+			Position: new UDim2(0, 0, 0, 0),
 			Size: new UDim2(1, 0, 1, 0),
+		});
+		const DialogText = New("TextButton")({
+			Parent: DialogFrame,
+			Name: "DialogText",
+			Position: new UDim2(0.525, 0, 0.5, 0),
+			Size: new UDim2(0.5, 0, 0.5, 0),
 			FontFace: new Font("SourceSans", Enum.FontWeight.SemiBold),
 			TextScaled: true,
+			ZIndex: 2,
 			Text: "",
 		});
+		New("UICorner")({
+			CornerRadius: new UDim(0.5, 0),
+			Parent: DialogText,
+		});
+		New("UIPadding")({
+			PaddingBottom: new UDim(0.1, 0),
+			PaddingLeft: new UDim(0.1, 0),
+			PaddingRight: new UDim(0.1, 0),
+			PaddingTop: new UDim(0.1, 0),
+			Parent: DialogText,
+		});
+
 		New("ClickDetector")({
 			Parent: bodyModel,
 			MaxActivationDistance: 32,

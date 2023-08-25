@@ -109,7 +109,7 @@ function customer(world: World, state: ServerState) {
 	for (const [id, wants] of world.queryChanged(Wants)) {
 		if (wants.old && wants.new) {
 			if (!world.contains(id)) continue;
-			world.insert(id, Speech({ text: `${wants.new.product.amount}x ${wants.new.product.product}` }));
+			world.insert(id, Speech({ text: `x${wants.new.product.amount}` }));
 		}
 		if (wants.old && !wants.new) {
 			if (!world.contains(id)) return;
@@ -174,7 +174,7 @@ function customer(world: World, state: ServerState) {
 			);
 			task.delay(1, () => {
 				if (!world.contains(id)) return;
-				world.insert(id, Speech({ text: `${wants.new!.product.amount}x ${wants.new!.product.product}` }));
+				world.insert(id, Speech({ text: `x${wants.new!.product.amount}` }));
 			});
 		}
 	}

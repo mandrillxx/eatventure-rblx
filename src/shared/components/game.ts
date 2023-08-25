@@ -1,10 +1,11 @@
 import { ComponentInfo } from "shared/util";
 import { component } from "@rbxts/matter";
+import { Foods } from "shared/globals";
 import { Level } from ".";
 
 export const Product = component<{
 	amount: number;
-	product: keyof Products;
+	product: Foods;
 }>("Product");
 export type Product = ReturnType<typeof Product>;
 

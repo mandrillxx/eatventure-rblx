@@ -31,7 +31,7 @@ type Assets = Folder & {
 	NPCs: Folder & EmployeesFolder & CustomersFolder;
 	Levels: Folder & Levels;
 	Sounds: Folder & Sounds;
-	Products: Folder & Products;
+	Products: Folder;
 	Progress: RadialInstance;
 	UtilityInfo: UtilityInfoInstance;
 	UpgradeInfo: UpgradeInfoInstance;
@@ -76,10 +76,7 @@ type UpgradeInfoInstance = ScreenGui & {
 		};
 		Title: TextLabel;
 	};
-	OpenUpgrades: TextButton & {
-		UICorner: UICorner;
-		UIPadding: UIPadding;
-	};
+	OpenUpgrades: ImageButton;
 };
 
 type UtilityInfoInstance = BillboardGui & {
@@ -167,7 +164,12 @@ type BaseNPC = import("@rbxts/promise-character").CharacterRigR15 & {
 	Gender: StringValue;
 	DialogGui: BillboardGui & {
 		DialogFrame: Frame & {
-			DialogText: TextLabel;
+			UIPadding: UIPadding;
+			DialogText: TextLabel & {
+				UICorner: UICorner;
+				UIPadding: UIPadding;
+			};
+			ImageLabel: ImageLabel;
 		};
 		Progress: RadialInstance;
 	};
@@ -202,12 +204,6 @@ type AnimationType =
 	| "toolslash"
 	| "walk"
 	| "wave";
-
-type Products = {
-	Coffee: BaseProduct;
-	Bagel: BaseProduct;
-	Tea: BaseProduct;
-};
 
 type ComputedAnchorPoint = Model & {
 	[key: string]: BasePart & {
