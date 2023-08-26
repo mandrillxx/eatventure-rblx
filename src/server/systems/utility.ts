@@ -11,9 +11,10 @@ const handleUpgrade = (world: World, player: Player, state: ServerState, id: Any
 	const balance = getOrError(world, playerId, Balance, "Player {@ID} does not have a Balance component");
 	const newUtility = getOrError(world, id, Utility, "Utility no longer exists");
 	const { baseUpgradeCost, xpLevel } = newUtility;
-	const nextLevelCost = baseUpgradeCost * (1.2 ** xpLevel - 1);
+	const xpBias = xpLevel > 100 ? 1.35 : 1.2;
+	const nextLevelCost = baseUpgradeCost * (xpBias ** xpLevel - 1);
 	if (state.verbose) Log.Info("Next level cost: {@Cost} | {@Balance}", nextLevelCost, balance.balance);
-	if (newUtility.xpLevel >= 100) {
+	if (newUtility.xpLevel >= 250) {
 		world.insert(id, SoundEffect({ sound: "Fail" }));
 		Log.Warn("Utility {@UtilityID} is already max level", id);
 		return;

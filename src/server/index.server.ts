@@ -48,7 +48,8 @@ const ProfileTemplate: IProfile = {
 	money: 0,
 	gems: 5,
 	logInTimes: 0,
-	utilityLevels: new Map<string, number>(),
+	purchasedUpgrades: new Set(),
+	utilityLevels: new Map(),
 };
 
 const state: ServerState = {

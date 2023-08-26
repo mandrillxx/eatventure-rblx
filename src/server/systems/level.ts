@@ -21,6 +21,7 @@ import { Upgrades } from "shared/upgrades";
 import { Foods } from "shared/globals";
 import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
+import { handleUpgrade } from "server/components/levelUpgrade";
 
 function level(world: World, state: ServerState) {
 	for (const [id, level, ownedBy] of world.query(Level, OwnedBy).without(Renderable)) {
@@ -77,8 +78,14 @@ function level(world: World, state: ServerState) {
 		}
 		const newDestinations = level.patch({ destinations });
 
+		const profile = state.profiles.get(player);
+		if (!profile) {
+			Log.Error("Could not find profile for player");
+			continue;
+		}
+
 		for (const upgrade of Upgrades) {
-			world.spawn(upgrade, BelongsTo({ playerId: ownedBy.playerId, levelId: id }));
+			handleUpgrade(upgrade, player, ownedBy.playerId, id, world, state);
 		}
 
 		task.spawn(() =>

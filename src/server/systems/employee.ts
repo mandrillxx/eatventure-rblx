@@ -171,6 +171,7 @@ function employee(world: World, state: ServerState) {
 								);
 
 								task.delay(timeToTakeOrder, () => {
+									if (!world.contains(id)) return;
 									world.insert(
 										id,
 										Pathfind({

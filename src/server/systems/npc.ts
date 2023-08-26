@@ -32,8 +32,8 @@ function npc(world: World, state: ServerState) {
 			Adornee: bodyModel.HumanoidRootPart,
 			AlwaysOnTop: false,
 			Enabled: true,
-			Size: new UDim2(1, 0, 1, 0),
-			SizeOffset: new Vector2(0, 3.25),
+			Size: new UDim2(1.5, 0, 1.5, 0),
+			SizeOffset: new Vector2(0, 2.5),
 			ZIndexBehavior: Enum.ZIndexBehavior.Global,
 			Name: "DialogGui",
 		});

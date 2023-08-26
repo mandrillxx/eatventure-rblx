@@ -130,18 +130,20 @@ function customer(world: World, state: ServerState) {
 							id,
 						);
 					task.delay(2.05, () => {
-						world.remove(_id, OccupiedBy);
+						if (world.contains(_id)) world.remove(_id, OccupiedBy);
 						moveWaitingCustomer(world);
 					});
 					continue;
 				}
 			}
 
-			world.insert(id, Speech({ text: "Thanks!" }));
+			world.insert(id, Speech({ text: ":)" }));
 			const client = getOrError(world, belongsTo.playerId, Client, "Player does not have Client component");
 			if (state.playerStatisticsProvider.areStatisticsLoadedForPlayer(client.player))
 				state.playerStatisticsProvider.recordEvent(client.player, "customersServed", 1);
-			task.delay(2, () => world.despawn(id));
+			task.delay(2, () => {
+				if (world.contains(id)) world.despawn(id);
+			});
 		}
 		if (!wants.old && wants.new) {
 			maids.set(id, new Maid());

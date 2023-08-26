@@ -1,6 +1,5 @@
-import { World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
-import { BelongsTo, Upgrade } from "shared/components";
+import { World } from "@rbxts/matter";
 
 function upgrade(world: World, _: ServerState) {}
 

@@ -61,11 +61,13 @@ export function giveItem({ player, entity, world, maid, id, wants, state, utilit
 	const client = getOrError(world, benefitingPlayer, Client);
 	const balance = getOrError(world, benefitingPlayer, Balance);
 	const utility = getOrError(world, utilityId, Utility);
-	const reward = utility.reward * (1.2 ** utility.xpLevel - 1) * 5 * 0.2 * client.document.coinMultiplier;
+	const xpBias = utility.xpLevel > 100 ? 1.35 : 1.2;
+	const reward = utility.reward * (xpBias ** utility.xpLevel - 1) * 5 * 0.2 * client.document.coinMultiplier;
 	let rewardMultiplier = 1;
 	if (utility.xpLevel >= 25 && utility.xpLevel < 50) rewardMultiplier *= 1.5;
 	if (utility.xpLevel >= 50 && utility.xpLevel < 100) rewardMultiplier *= 2;
-	if (utility.xpLevel >= 100) rewardMultiplier *= 3;
+	if (utility.xpLevel >= 100 && utility.xpLevel < 250) rewardMultiplier *= 3;
+	if (utility.xpLevel >= 250) rewardMultiplier *= 4;
 	if (state.verbose)
 		Log.Info(
 			"Reward: {@Reward}x{@RewardMulti} {@RewardBase} ** {@UtilityXPLevel} * {@CoinMultiplier}",

@@ -93,15 +93,6 @@ function bootstrap() {
 		upgradeInfo.OpenUpgrades.MouseButton1Click.Connect(() => {
 			upgradeInfo.UpgradeFrame.Visible = !upgradeInfo.UpgradeFrame.Visible;
 		});
-		for (const upgrade of upgradeInfo.UpgradeFrame.Upgrades.GetChildren()) {
-			if (upgrade.IsA("Frame") && upgrade.Name !== "BaseUpgrade") {
-				const purchaseButton = upgrade.FindFirstChild("Purchase")! as TextButton;
-				purchaseButton.MouseButton1Click.Connect(() => {
-					const serverId = ClientEntityIdToServer(state, upgrade.GetAttribute("serverId")! as AnyEntity);
-					Network.purchaseUpgrade.client.fire(serverId as AnyEntity);
-				});
-			}
-		}
 	});
 
 	Roact.mount(<Menu state={state} />, player.FindFirstChildOfClass("PlayerGui")!);

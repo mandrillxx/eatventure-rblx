@@ -17,6 +17,7 @@ export const Level = component<{
 export type Level = ReturnType<typeof Level>;
 
 export const Upgrade = component<{
+	identifier: number;
 	type: UpgradeType;
 	title: string;
 	description: string;

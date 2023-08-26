@@ -1,8 +1,9 @@
 import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
 import { World } from "@rbxts/matter";
+import { updateUpgrades } from "server/components/levelUpgrade";
 import { ServerState } from "server/index.server";
-import { Balance, Client, OwnedBy, Utility } from "shared/components";
+import { Balance, BelongsTo, Client, OwnedBy, Upgrade, Utility } from "shared/components";
 import { getOrError } from "shared/util";
 
 function state(world: World, state: ServerState) {
@@ -20,6 +21,33 @@ function state(world: World, state: ServerState) {
 			const player = client.player;
 			const profile = getProfile(player);
 			profile.Data.money = balance.new.balance;
+			const upgradeInfo = player
+				.FindFirstChildOfClass("PlayerGui")!
+				.FindFirstChild("UpgradeInfo")! as UpgradeInfoInstance;
+			updateUpgrades({
+				world,
+				playerId: id,
+				upgradeInfo,
+				profile,
+			});
+		}
+	}
+
+	for (const [id, upgrade] of world.queryChanged(Upgrade)) {
+		if (upgrade.old && upgrade.new && upgrade.new.purchased !== upgrade.old.purchased) {
+			const belongsTo = getOrError(world, id, BelongsTo);
+			const client = getOrError(world, belongsTo.playerId, Client);
+			const player = client.player;
+			const profile = getProfile(player);
+			const upgradeInfo = player
+				.FindFirstChildOfClass("PlayerGui")!
+				.FindFirstChild("UpgradeInfo")! as UpgradeInfoInstance;
+			updateUpgrades({
+				world,
+				playerId: belongsTo.playerId,
+				upgradeInfo,
+				profile,
+			});
 		}
 	}
 

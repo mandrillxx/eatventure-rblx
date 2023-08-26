@@ -49,12 +49,13 @@ function misc(world: World, state: ServerState) {
 					"NPC does not have Wants component but has Speech component",
 				);
 				const productName = wants.product.product.lower() as Foods;
-				Log.Info(
-					"NPC wants {@Product} {@AssetMapSize} {@AssetMap}",
-					wants.product.product,
-					AssetMap.size(),
-					AssetMap.get(productName),
-				);
+				if (state.verbose)
+					Log.Info(
+						"NPC wants {@Product} {@AssetMapSize} {@AssetMap}",
+						wants.product.product,
+						AssetMap.size(),
+						AssetMap.get(productName),
+					);
 				bodyModel.DialogGui.DialogFrame.ImageLabel.Image = AssetMap.get(productName)!;
 				bodyModel.DialogGui.DialogFrame.DialogText.Text = speech.new.text!;
 				// bodyModel.DialogGui.DialogFrame.Visible = true;
