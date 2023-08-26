@@ -16,6 +16,7 @@ import {
 	Body,
 	NPC,
 	SoundEffect,
+	Utility,
 } from "shared/components";
 import { AnyEntity, World, useThrottle } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
@@ -178,16 +179,17 @@ function employee(world: World, state: ServerState) {
 											destination: utilityDestination,
 											running: false,
 											finished: () => {
+												const newUtility = getOrError(world, serverEntityId, Utility);
 												world.insert(
 													id,
 													Speech({
 														specialType: {
 															type: "meter",
-															time: utility.utility.every / level.workRate,
+															time: newUtility.every / level.workRate,
 														},
 													}),
 												);
-												task.delay(utility.utility.every / level.workRate, () => {
+												task.delay(newUtility.every / level.workRate, () => {
 													if (!world.contains(id)) return;
 													world.remove(id, Speech);
 													world.insert(
@@ -196,7 +198,7 @@ function employee(world: World, state: ServerState) {
 															product: [
 																Product({
 																	product: product.product,
-																	amount: utility.utility.makes.amount,
+																	amount: newUtility.makes.amount,
 																}),
 															],
 														}),

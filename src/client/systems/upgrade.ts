@@ -1,11 +1,9 @@
-import { Balance, BelongsTo, Upgrade } from "shared/components";
-import { ComponentInfo, getOrError } from "shared/util";
+import { BelongsTo, Upgrade } from "shared/components";
 import { ServerEntityIdToClient } from "client/methods";
 import { AnyEntity, World } from "@rbxts/matter";
-import { FormatCompact } from "@rbxts/format-number";
+import { ComponentInfo } from "shared/util";
 import { ClientState } from "shared/clientState";
 import { Players } from "@rbxts/services";
-import Log from "@rbxts/log";
 
 const player = Players.LocalPlayer;
 

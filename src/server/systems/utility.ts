@@ -26,8 +26,13 @@ const handleUpgrade = (world: World, player: Player, state: ServerState, id: Any
 	}
 	if (state.debug) Log.Warn("Upgrading utility {@UtilityID} for player {@ID}", id, playerId);
 	const nextLevel = newUtility.xpLevel + 1;
+	const everyRate = nextLevel === 50 ? 2 : 1;
 	world.insert(playerId, balance.patch({ balance: balance.balance - nextLevelCost }));
-	world.insert(id, newUtility.patch({ xpLevel: nextLevel }), SoundEffect({ sound: "Upgrade" }));
+	world.insert(
+		id,
+		newUtility.patch({ xpLevel: nextLevel, every: newUtility.every / everyRate }),
+		SoundEffect({ sound: "Upgrade" }),
+	);
 };
 
 function utility(world: World, state: ServerState) {

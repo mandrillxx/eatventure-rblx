@@ -129,10 +129,6 @@ function level(world: World, state: ServerState) {
 			const utilModel = utility as BaseUtility;
 			const product = utilModel.Makes.Value as Foods;
 			const amount = utilModel.Amount.Value;
-			const every = utilModel.Every.Value;
-			const orderDelay = utilModel.OrderDelay.Value;
-			const reward = utilModel.Reward.Value;
-			const baseUpgradeCost = utilModel.BaseUpgrade.Value;
 			const utilLevel = player.Utilities.FindFirstChild(utility.Name) as IntValue | undefined;
 			const xpLevel = utilLevel
 				? utilLevel.Value
@@ -141,6 +137,10 @@ function level(world: World, state: ServerState) {
 						Value: 1,
 						Parent: utilModel,
 				  }).Value;
+			const every = utilModel.Every.Value / (xpLevel >= 50 ? 2 : 1);
+			const orderDelay = utilModel.OrderDelay.Value;
+			const reward = utilModel.Reward.Value;
+			const baseUpgradeCost = utilModel.BaseUpgrade.Value;
 			const utilityComponent = Utility({
 				type: utility.Name,
 				unlocked: true,

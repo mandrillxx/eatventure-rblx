@@ -21,10 +21,13 @@ export const Upgrade = component<{
 	type: UpgradeType;
 	title: string;
 	description: string;
+	document: {
+		amount?: number;
+		machine?: string;
+	};
 	cost: number;
 	purchased: boolean;
 	ran: boolean;
-	amount: number;
 }>("Upgrade");
 export type Upgrade = ReturnType<typeof Upgrade>;
 

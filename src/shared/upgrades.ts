@@ -11,7 +11,9 @@ export const Upgrades: Upgrade[] = [
 		cost: 10,
 		purchased: false,
 		ran: false,
-		amount: 1,
+		document: {
+			amount: 1,
+		},
 	}),
 	Upgrade({
 		identifier: 2,
@@ -21,7 +23,9 @@ export const Upgrades: Upgrade[] = [
 		cost: 25,
 		purchased: false,
 		ran: false,
-		amount: 1,
+		document: {
+			amount: 1,
+		},
 	}),
 	Upgrade({
 		identifier: 3,
@@ -31,7 +35,9 @@ export const Upgrades: Upgrade[] = [
 		cost: 100,
 		purchased: false,
 		ran: false,
-		amount: 1,
+		document: {
+			amount: 1,
+		},
 	}),
 	Upgrade({
 		identifier: 4,
@@ -41,7 +47,9 @@ export const Upgrades: Upgrade[] = [
 		cost: 1000,
 		purchased: false,
 		ran: false,
-		amount: 1,
+		document: {
+			amount: 1,
+		},
 	}),
 	Upgrade({
 		identifier: 5,
@@ -51,7 +59,9 @@ export const Upgrades: Upgrade[] = [
 		cost: 3000,
 		purchased: false,
 		ran: false,
-		amount: 1.5,
+		document: {
+			amount: 1,
+		},
 	}),
 	Upgrade({
 		identifier: 6,
@@ -61,6 +71,9 @@ export const Upgrades: Upgrade[] = [
 		cost: 5000,
 		purchased: false,
 		ran: false,
-		amount: 3,
+		document: {
+			amount: 3,
+			machine: "DeepFryer",
+		},
 	}),
 ];

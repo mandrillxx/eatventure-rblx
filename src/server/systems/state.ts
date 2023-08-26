@@ -1,4 +1,4 @@
-import { Balance, BelongsTo, Client, OwnedBy, Upgrade, Utility } from "shared/components";
+import { Balance, BelongsTo, Client, OwnedBy, Renderable, Upgrade, Utility } from "shared/components";
 import { updateUpgrades } from "server/components/levelUpgrade";
 import { ServerState } from "server/index.server";
 import { getOrError } from "shared/util";
@@ -28,7 +28,6 @@ function state(world: World, state: ServerState) {
 				firstRun: false,
 				world,
 				playerId: id,
-				state,
 				upgradeInfo,
 				profile,
 			});
@@ -48,7 +47,6 @@ function state(world: World, state: ServerState) {
 				firstRun: false,
 				world,
 				playerId: belongsTo.playerId,
-				state,
 				upgradeInfo,
 				profile,
 			});
@@ -86,6 +84,11 @@ function state(world: World, state: ServerState) {
 			}
 			const profile = getProfile(player);
 			profile.Data.utilityLevels.set(utility.new.type, utility.new.xpLevel);
+		}
+		if (utility.old && utility.new && utility.old.every !== utility.new.every) {
+			const levelRenderable = getOrError(world, utility.new.level.componentId, Renderable).model as BaseLevel;
+			const utilityModel = levelRenderable.Utilities.FindFirstChild(utility.new.type) as BaseUtility;
+			utilityModel.Every.Value = utility.new.every;
 		}
 	}
 }
