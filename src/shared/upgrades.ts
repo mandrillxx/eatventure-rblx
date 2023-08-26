@@ -10,7 +10,8 @@ export const Upgrades: Upgrade[] = [
 		description: "+1 Customer",
 		cost: 10,
 		purchased: false,
-		upgrade: (levelId) => {},
+		ran: false,
+		amount: 1,
 	}),
 	Upgrade({
 		identifier: 2,
@@ -19,7 +20,8 @@ export const Upgrades: Upgrade[] = [
 		description: "+1 Employee",
 		cost: 25,
 		purchased: false,
-		upgrade: (levelId) => {},
+		ran: false,
+		amount: 1,
 	}),
 	Upgrade({
 		identifier: 3,
@@ -28,7 +30,8 @@ export const Upgrades: Upgrade[] = [
 		description: "+1 Customer",
 		cost: 100,
 		purchased: false,
-		upgrade: (levelId) => {},
+		ran: false,
+		amount: 1,
 	}),
 	Upgrade({
 		identifier: 4,
@@ -37,7 +40,8 @@ export const Upgrades: Upgrade[] = [
 		description: "+1 Employee",
 		cost: 1000,
 		purchased: false,
-		upgrade: (levelId) => {},
+		ran: false,
+		amount: 1,
 	}),
 	Upgrade({
 		identifier: 5,
@@ -46,7 +50,8 @@ export const Upgrades: Upgrade[] = [
 		description: "+50% Employee Pace",
 		cost: 3000,
 		purchased: false,
-		upgrade: (levelId) => {},
+		ran: false,
+		amount: 1.5,
 	}),
 	Upgrade({
 		identifier: 6,
@@ -55,6 +60,7 @@ export const Upgrades: Upgrade[] = [
 		description: "Fries profit x3",
 		cost: 5000,
 		purchased: false,
-		upgrade: (levelId) => {},
+		ran: false,
+		amount: 3,
 	}),
 ];

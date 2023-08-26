@@ -1,10 +1,10 @@
-import { New } from "@rbxts/fusion";
-import Log from "@rbxts/log";
-import { World } from "@rbxts/matter";
+import { Balance, BelongsTo, Client, OwnedBy, Upgrade, Utility } from "shared/components";
 import { updateUpgrades } from "server/components/levelUpgrade";
 import { ServerState } from "server/index.server";
-import { Balance, BelongsTo, Client, OwnedBy, Upgrade, Utility } from "shared/components";
 import { getOrError } from "shared/util";
+import { World } from "@rbxts/matter";
+import { New } from "@rbxts/fusion";
+import Log from "@rbxts/log";
 
 function state(world: World, state: ServerState) {
 	const getProfile = (player: Player) => {
@@ -25,8 +25,10 @@ function state(world: World, state: ServerState) {
 				.FindFirstChildOfClass("PlayerGui")!
 				.FindFirstChild("UpgradeInfo")! as UpgradeInfoInstance;
 			updateUpgrades({
+				firstRun: false,
 				world,
 				playerId: id,
+				state,
 				upgradeInfo,
 				profile,
 			});
@@ -43,8 +45,10 @@ function state(world: World, state: ServerState) {
 				.FindFirstChildOfClass("PlayerGui")!
 				.FindFirstChild("UpgradeInfo")! as UpgradeInfoInstance;
 			updateUpgrades({
+				firstRun: false,
 				world,
 				playerId: belongsTo.playerId,
+				state,
 				upgradeInfo,
 				profile,
 			});

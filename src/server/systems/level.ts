@@ -17,11 +17,11 @@ import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { ComponentInfo, getOrError } from "shared/util";
 import { ServerState, _Level } from "server/index.server";
 import { World, useThrottle } from "@rbxts/matter";
+import { handleUpgrade } from "server/components/levelUpgrade";
 import { Upgrades } from "shared/upgrades";
 import { Foods } from "shared/globals";
 import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
-import { handleUpgrade } from "server/components/levelUpgrade";
 
 function level(world: World, state: ServerState) {
 	for (const [id, level, ownedBy] of world.query(Level, OwnedBy).without(Renderable)) {
@@ -85,7 +85,7 @@ function level(world: World, state: ServerState) {
 		}
 
 		for (const upgrade of Upgrades) {
-			handleUpgrade(upgrade, player, ownedBy.playerId, id, world, state);
+			handleUpgrade(true, upgrade, player, ownedBy.playerId, id, world, state);
 		}
 
 		task.spawn(() =>
@@ -243,11 +243,11 @@ function level(world: World, state: ServerState) {
 			}
 		}
 		if (level.old && level.new && level.old.employeePace !== level.new.employeePace) {
-			if (state.verbose)
+			if (state.debug)
 				Log.Warn("Employee pace changed from {@Old} to {@New}", level.old.employeePace, level.new.employeePace);
 			for (const [_id, npc, body, belongsTo] of world.query(NPC, Body, BelongsTo)) {
 				if (npc.type === "employee" && belongsTo.levelId === _id) {
-					if (state.verbose)
+					if (state.debug)
 						Log.Warn("Setting {@NPC} walk speed to {@WalkSpeed}", npc.type, level.new.employeePace);
 					body.model.Humanoid.WalkSpeed = level.new.employeePace;
 				}

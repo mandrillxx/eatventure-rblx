@@ -1,12 +1,11 @@
-import { Balance, BelongsTo, Upgrade } from "shared/components";
+import { Balance, BelongsTo, Level, Upgrade } from "shared/components";
 import { ComponentInfo, getOrError } from "shared/util";
 import { AnyEntity, World } from "@rbxts/matter";
 import { FormatCompact } from "@rbxts/format-number";
 import { ServerState } from "server/index.server";
-import Log from "@rbxts/log";
-import { Profile } from "@rbxts/profileservice/globals";
 import { IProfile } from "server/data/PurchaseHandler";
-import { ReplicatedStorage } from "@rbxts/services";
+import { Profile } from "@rbxts/profileservice/globals";
+import Log from "@rbxts/log";
 
 function getProfile(state: ServerState, player: Player) {
 	const profile = state.profiles.get(player);
@@ -33,42 +32,93 @@ function has(set: Set<number>, value: number) {
 	return false;
 }
 
+function runUpgrade(world: World, upgradeId: AnyEntity) {
+	const upgrade = getOrError(world, upgradeId, Upgrade);
+	const belongsTo = getOrError(world, upgradeId, BelongsTo);
+	const levelId = belongsTo.levelId;
+	const level = getOrError(world, levelId, Level);
+
+	switch (upgrade.type) {
+		case "EmployeePace":
+			world.insert(levelId, level.patch({ employeePace: level.employeePace * upgrade.amount }));
+			break;
+		case "NewCustomer":
+			world.insert(levelId, level.patch({ maxCustomers: level.maxCustomers + upgrade.amount }));
+			break;
+		case "NewEmployee":
+			world.insert(levelId, level.patch({ maxEmployees: level.maxEmployees + upgrade.amount }));
+			break;
+		case "UpdateProfit":
+			break;
+	}
+}
+
 export function saveUpgrade(
+	firstRun: boolean,
 	world: World,
+	state: ServerState,
 	playerId: AnyEntity,
 	balance: Balance,
 	profile: Profile<IProfile, unknown>,
 	upgrade: ComponentInfo<typeof Upgrade>,
 ) {
-	if (balance.balance < upgrade.component.cost) {
-		Log.Warn(
-			"Player {@PlayerId} tried to purchase upgrade {@UpgradeId} but did not have enough money",
-			playerId,
-			upgrade.componentId,
-		);
+	/*
+		saveUpgrade is called once when the player joins the game to load
+		all of their previously purchased upgrades.
+		After that, it is called when the player purchases an upgrade.
+		This function should check if the player has enough money to purchase the upgrade,
+		and if they do, then proceed with the purchase.
+	*/
+	const newestUpgrade = getOrError(world, upgrade.componentId, Upgrade);
+	if (newestUpgrade.ran) return;
+	const hasUpgrade = firstRun
+		? profile.Data.purchasedUpgrades.has(newestUpgrade.identifier)
+		: newestUpgrade.purchased;
+
+	const handleUpgrade = () => {
+		Log.Info("Running upgrade {@UpgradeId}", upgrade.componentId);
+		world.insert(upgrade.componentId, newestUpgrade.patch({ purchased: true, ran: true }));
+		task.delay(1, () => runUpgrade(world, upgrade.componentId));
+	};
+
+	if (!newestUpgrade.ran && firstRun && hasUpgrade) {
+		Log.Info("First Run && Upgrade not ran");
+		handleUpgrade();
 		return;
 	}
-	world.insert(playerId, balance.patch({ balance: balance.balance - upgrade.component.cost }));
-	world.insert(upgrade.componentId, upgrade.component.patch({ purchased: true }));
-	if (!profile.Data.purchasedUpgrades.has(upgrade.component.identifier)) {
-		profile.Data.purchasedUpgrades.add(upgrade.component.identifier);
+
+	if (!firstRun && balance.balance <= newestUpgrade.cost) {
+		Log.Warn("Player does not have enough money to purchase upgrade");
+		return;
 	}
+
+	if (!firstRun) {
+		Log.Info("player is purchasing");
+		world.insert(playerId, balance.patch({ balance: balance.balance - upgrade.component.cost }));
+		profile.Data.purchasedUpgrades.add(upgrade.component.identifier);
+		handleUpgrade();
+		return;
+	}
+
+	if (hasUpgrade) handleUpgrade();
 }
 
 export function updateUpgrades({
+	firstRun,
 	upgrades,
 	world,
 	playerId,
+	state,
 	profile,
 	upgradeInfo,
-	onUpgradeClicked,
 }: {
+	firstRun: boolean;
 	upgrades?: ComponentInfo<typeof Upgrade>[];
 	world: World;
 	playerId: AnyEntity;
+	state: ServerState;
 	profile: Profile<IProfile, unknown>;
 	upgradeInfo: UpgradeInfoInstance;
-	onUpgradeClicked?: (upgrade: ComponentInfo<typeof Upgrade>) => void;
 }) {
 	const _upgrades = upgrades ?? getAllUpgradesForPlayer(world, playerId);
 	const baseUpgrade = upgradeInfo.UpgradeFrame.Upgrades.BaseUpgrade;
@@ -79,7 +129,7 @@ export function updateUpgrades({
 		}
 	}
 	_upgrades
-		.sort((a, b) => a.component.cost <= b.component.cost)
+		.sort((a, b) => a.component.identifier <= b.component.identifier)
 		.forEach((upgrade, index) => {
 			const newUpgrade = baseUpgrade.Clone();
 			const ownsUpgrade = has(profile.Data.purchasedUpgrades, upgrade.component.identifier);
@@ -102,15 +152,20 @@ export function updateUpgrades({
 					: Color3.fromRGB(255, 22, 14);
 			newUpgrade.LayoutOrder = index;
 			newUpgrade.Parent = upgradeInfo.UpgradeFrame.Upgrades;
+			const save = (firstRun: boolean) =>
+				saveUpgrade(firstRun, world, state, playerId, balance, profile, upgrade);
+			if (firstRun) {
+				save(true);
+			}
 			if (!ownsUpgrade)
 				newUpgrade.Purchase.MouseButton1Click.Connect(() => {
-					if (onUpgradeClicked) onUpgradeClicked(upgrade);
-					else saveUpgrade(world, playerId, balance, profile, upgrade);
+					save(false);
 				});
 		});
 }
 
 export function handleUpgrade(
+	firstRun: boolean,
 	upgrade: Upgrade,
 	player: BasePlayer,
 	playerId: AnyEntity,
@@ -125,25 +180,16 @@ export function handleUpgrade(
 	const sortedUpgrades = [...otherUpgrades, { componentId: upgradeId, component: upgrade }].sort(
 		(a, b) => a.component.cost <= b.component.cost,
 	);
-	const balance = getOrError(world, playerId, Balance);
 	const upgradeInfo = player
 		.FindFirstChildOfClass("PlayerGui")!
 		.FindFirstChild("UpgradeInfo")! as UpgradeInfoInstance;
-	function onUpgradeClicked(upgrade: ComponentInfo<typeof Upgrade>) {
-		if (balance.balance >= upgrade.component.cost) {
-			world.insert(playerId, balance.patch({ balance: balance.balance - upgrade.component.cost }));
-			world.insert(upgrade.componentId, upgrade.component.patch({ purchased: true }));
-			if (!profile.Data.purchasedUpgrades.has(upgrade.component.identifier)) {
-				profile.Data.purchasedUpgrades.add(upgrade.component.identifier);
-			}
-		}
-	}
 	updateUpgrades({
+		firstRun,
 		upgrades: sortedUpgrades,
 		world,
 		playerId,
+		state,
 		profile,
 		upgradeInfo,
-		onUpgradeClicked,
 	});
 }

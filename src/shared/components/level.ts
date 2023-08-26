@@ -1,7 +1,7 @@
 import { AnyEntity, component } from "@rbxts/matter";
 import { ComponentInfo } from "shared/util";
-import { Utility } from ".";
 import { UpgradeType } from "shared/upgrades";
+import { Utility } from ".";
 
 export const Level = component<{
 	name: keyof Levels;
@@ -23,7 +23,8 @@ export const Upgrade = component<{
 	description: string;
 	cost: number;
 	purchased: boolean;
-	upgrade: (levelId: AnyEntity) => void;
+	ran: boolean;
+	amount: number;
 }>("Upgrade");
 export type Upgrade = ReturnType<typeof Upgrade>;
 
