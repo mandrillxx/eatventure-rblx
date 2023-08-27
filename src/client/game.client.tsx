@@ -1,12 +1,13 @@
-import { Players, ReplicatedStorage, UserInputService } from "@rbxts/services";
+import { Players, ReplicatedStorage, SoundService, UserInputService } from "@rbxts/services";
+import { SoundEffect, Upgrade } from "shared/components";
 import { receiveReplication } from "./receiveReplication";
 import { withHookDetection } from "@rbxts/roact-hooked";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { ComponentInfo } from "shared/util";
 import { ClientState } from "shared/clientState";
+import { Soundtrack } from "shared/soundtrack";
 import { AnyEntity } from "@rbxts/matter";
 import { Network } from "shared/network";
-import { Upgrade } from "shared/components";
 import { Proton } from "@rbxts/proton";
 import { start } from "shared/start";
 import Log, { Logger } from "@rbxts/log";
@@ -49,6 +50,11 @@ const state: ClientState = {
 
 const world = start([ReplicatedStorage.Client.systems, ReplicatedStorage.Shared.systems], state)(receiveReplication);
 
+function setupSoundtrack() {
+	const soundtrack = new Soundtrack(SoundService.Soundtrack);
+	soundtrack.Play();
+}
+
 function bootstrap() {
 	withHookDetection(Roact);
 	while (!state.playerId) {
@@ -74,6 +80,8 @@ function bootstrap() {
 		}
 	});
 
+	setupSoundtrack();
+
 	task.delay(1, () => {
 		const money = (player as BasePlayer).leaderstats.Money;
 		const update = (value?: number) => state.update("balance", value ?? money.Value);
@@ -90,8 +98,24 @@ function bootstrap() {
 		upgradeInfo.UpgradeFrame.Close.MouseButton1Click.Connect(() => {
 			upgradeInfo.UpgradeFrame.Visible = false;
 		});
-		upgradeInfo.OpenUpgrades.MouseButton1Click.Connect(() => {
+		const overlayGui = playerGui.WaitForChild("Overlay")! as OverlayGui;
+		overlayGui.OpenUpgrades.MouseButton1Click.Connect(() => {
+			world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 			upgradeInfo.UpgradeFrame.Visible = !upgradeInfo.UpgradeFrame.Visible;
+		});
+		overlayGui.OpenSettings.MouseButton1Click.Connect(() => {
+			world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+			overlayGui.Settings.Visible = !overlayGui.Settings.Visible;
+		});
+		overlayGui.Settings.Frame.Music.Holder.Amount.Changed.Connect((newValue) => {
+			SoundService.Soundtrack.Volume = newValue / 100;
+		});
+		overlayGui.Settings.Close.MouseButton1Click.Connect(() => {
+			world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+			overlayGui.Settings.Visible = false;
+		});
+		overlayGui.Settings.Frame.SoundFX.Holder.Amount.Changed.Connect((newValue) => {
+			SoundService.SoundFX.Volume = (newValue / 100) * 2;
 		});
 	});
 

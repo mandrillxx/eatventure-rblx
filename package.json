@@ -58,6 +58,7 @@
     "@rbxts/signals-tooling": "^1.0.8",
     "@rbxts/simplepath": "2.2.1-ts.2",
     "@rbxts/snapdragon": "2.0.0-beta.1",
+    "@rbxts/soundtrack": "^1.0.4",
     "@rbxts/stacks-and-queues": "^1.0.5",
     "@rbxts/string-utils": "^1.0.3",
     "@rbxts/suphi-datastore": "^1.0.0",

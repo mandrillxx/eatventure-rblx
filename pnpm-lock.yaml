@@ -106,6 +106,9 @@ dependencies:
   '@rbxts/snapdragon':
     specifier: 2.0.0-beta.1
     version: 2.0.0-beta.1
+  '@rbxts/soundtrack':
+    specifier: ^1.0.4
+    version: 1.0.4
   '@rbxts/stacks-and-queues':
     specifier: ^1.0.5
     version: 1.0.5
@@ -499,6 +502,12 @@ packages:
 
   /@rbxts/snapdragon@2.0.0-beta.1:
     resolution: {integrity: sha512-cN2Qgg2Z+Tj5FZGXLFOrBz/QYq92du1al/vnLGtv7WDOb4SmhfQ8tNVCC4Jh/OBdmZuRYp/t07QSjKgYmolnlA==}
+    dev: false
+
+  /@rbxts/soundtrack@1.0.4:
+    resolution: {integrity: sha512-9Lgc4t3pIpYnews8/S9zLjNCwe32+XyNT8B5MNjhSQJgtUhmspUAaFKzvOvEVq1GwfZ0BUfSU2OxCUnUQbX4vg==}
+    dependencies:
+      '@rbxts/services': 1.5.1
     dev: false
 
   /@rbxts/stacks-and-queues@1.0.5:

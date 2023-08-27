@@ -36,5 +36,6 @@ export type Transform = ReturnType<typeof Transform>;
 
 export const SoundEffect = component<{
 	sound: keyof Sounds;
+	meantFor: "everyone" | Player;
 }>("SoundEffect");
 export type SoundEffect = ReturnType<typeof SoundEffect>;

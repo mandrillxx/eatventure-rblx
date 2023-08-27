@@ -1,5 +1,5 @@
-import { ServerEntityIdToClient, getNextLevelCost, updateUtilityInfo } from "client/methods";
 import { Balance, BelongsTo, Level, OpenStatus, OwnedBy, Upgrade, Utility } from "shared/components";
+import { ServerEntityIdToClient, getNextLevelCost, updateUtilityInfo } from "client/methods";
 import { World, useThrottle } from "@rbxts/matter";
 import { ClientState } from "shared/clientState";
 import { getOrError } from "shared/util";
@@ -72,9 +72,8 @@ function state(world: World, state: ClientState) {
 
 	for (const [_id, balance] of world.queryChanged(Balance)) {
 		if (balance.new && state.levelId) {
-			const openUpgrades = (
-				player.FindFirstChildOfClass("PlayerGui")!.FindFirstChild("UpgradeInfo") as UpgradeInfoInstance
-			).OpenUpgrades;
+			const openUpgrades = (player.FindFirstChildOfClass("PlayerGui")!.FindFirstChild("Overlay") as OverlayGui)
+				.OpenUpgrades;
 
 			let upgradesCanAfford = 0;
 			for (const [_id, upgrade, belongsTo] of world.query(Upgrade, BelongsTo)) {

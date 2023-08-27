@@ -1,4 +1,4 @@
-import { Balance, Holding, OwnedBy, Renderable, SoundEffect, Utility } from "shared/components";
+import { Balance, Client, Holding, OwnedBy, Renderable, SoundEffect, Utility } from "shared/components";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
 import { getOrError } from "shared/util";
@@ -8,6 +8,7 @@ import Log from "@rbxts/log";
 
 const handleUpgrade = (world: World, player: Player, state: ServerState, id: AnyEntity) => {
 	const playerId = state.clients.get(player.UserId)!;
+	const client = getOrError(world, playerId, Client);
 	const balance = getOrError(world, playerId, Balance, "Player {@ID} does not have a Balance component");
 	const newUtility = getOrError(world, id, Utility, "Utility no longer exists");
 	const { baseUpgradeCost, xpLevel } = newUtility;
@@ -15,12 +16,12 @@ const handleUpgrade = (world: World, player: Player, state: ServerState, id: Any
 	const nextLevelCost = baseUpgradeCost * (xpBias ** xpLevel - 1);
 	if (state.verbose) Log.Info("Next level cost: {@Cost} | {@Balance}", nextLevelCost, balance.balance);
 	if (newUtility.xpLevel >= 250) {
-		world.insert(id, SoundEffect({ sound: "Fail" }));
+		world.insert(id, SoundEffect({ sound: "Fail", meantFor: client.player }));
 		Log.Warn("Utility {@UtilityID} is already max level", id);
 		return;
 	}
 	if (balance.balance < nextLevelCost) {
-		world.insert(id, SoundEffect({ sound: "Fail" }));
+		world.insert(id, SoundEffect({ sound: "Fail", meantFor: client.player }));
 		Log.Warn("Player {@ID} does not have enough money to upgrade utility {@UtilityID}", playerId, id);
 		return;
 	}
@@ -31,7 +32,7 @@ const handleUpgrade = (world: World, player: Player, state: ServerState, id: Any
 	world.insert(
 		id,
 		newUtility.patch({ xpLevel: nextLevel, every: newUtility.every / everyRate }),
-		SoundEffect({ sound: "Upgrade" }),
+		SoundEffect({ sound: "Upgrade", meantFor: client.player }),
 	);
 };
 

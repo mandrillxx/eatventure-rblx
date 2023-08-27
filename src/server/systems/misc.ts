@@ -26,11 +26,11 @@ function misc(world: World, state: ServerState) {
 				world.remove(id, SoundEffect);
 			});
 		};
-		if (sound.old && sound.new) {
+		if (sound.old && sound.new && sound.new.meantFor === "everyone") {
 			playSound(sound.new);
 			continue;
 		}
-		if (!sound.old && sound.new) {
+		if (!sound.old && sound.new && sound.new.meantFor === "everyone") {
 			playSound(sound.new);
 			continue;
 		}

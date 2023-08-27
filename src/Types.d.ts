@@ -18,10 +18,61 @@ interface ReplicatedStorage extends Instance {
 	Assets: Assets;
 }
 
+type SettingsGuiInstance = ImageLabel & {
+	Accept: ImageButton;
+	Close: ImageButton;
+	Decline: ImageButton;
+	Frame: SettingsFrame;
+	Gear: ImageLabel;
+	Title: TextLabel;
+};
+
+interface PlayerGui extends Instance {
+	Overlay: OverlayGui;
+}
+
+interface StarterGui extends Instance {
+	Overlay: OverlayGui;
+}
+
+interface SoundService extends Instance {
+	Soundtrack: SoundGroup;
+	SoundFX: SoundGroup;
+}
+
+type OverlayGui = ScreenGui & {
+	OpenSettings: ImageButton;
+	OpenShop: ImageButton;
+	OpenUpgrades: OpenUpgradesInstance;
+	Settings: SettingsGuiInstance;
+};
+
+type SliderGui = Frame & {
+	UIListLayout: UIListLayout;
+	Holder: Frame & {
+		Amount: IntValue;
+		SliderScript: ModuleScript;
+		Background: Frame & {
+			Unselected: ImageLabel;
+			Selected: ImageLabel;
+		};
+		Slider: ImageLabel;
+	};
+	Title: TextLabel;
+};
+
+type SettingsFrame = Frame & {
+	UIListLayout: UIListLayout;
+	Music: SliderGui;
+	SoundFX: SliderGui;
+	Title: TextLabel;
+};
+
 type EmployeesFolder = Folder & Employees;
 type CustomersFolder = Folder & Customers;
 
 type Sounds = {
+	UIClick: Sound;
 	MoneyPickup: Sound;
 	Upgrade: Sound;
 	Fail: Sound;
@@ -91,7 +142,6 @@ type UpgradeInfoInstance = ScreenGui & {
 		};
 		Title: TextLabel;
 	};
-	OpenUpgrades: OpenUpgradesInstance;
 };
 
 type UtilityInfoInstance = BillboardGui & {

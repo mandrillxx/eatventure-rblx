@@ -17,6 +17,7 @@ import {
 	NPC,
 	SoundEffect,
 	Utility,
+	Client,
 } from "shared/components";
 import { AnyEntity, World, useThrottle } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
@@ -224,7 +225,18 @@ function employee(world: World, state: ServerState) {
 																	id: customer.npcId,
 																	utilityId: serverEntityId,
 																});
-																world.insert(id, SoundEffect({ sound: "MoneyPickup" }));
+																const player = getOrError(
+																	world,
+																	belongsTo.playerId,
+																	Client,
+																).player;
+																world.insert(
+																	id,
+																	SoundEffect({
+																		sound: "MoneyPickup",
+																		meantFor: player,
+																	}),
+																);
 															},
 														}),
 													);
