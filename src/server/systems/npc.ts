@@ -40,6 +40,31 @@ function npc(world: World, state: ServerState) {
 		const progressFrame = ReplicatedStorage.Assets.Progress.Clone();
 		progressFrame.Visible = false;
 		progressFrame.Parent = bodyModel.DialogGui;
+		const UpgradeFrame = New("Frame")({
+			Parent: bodyModel.DialogGui,
+			Name: "UpgradeFrame",
+			BackgroundColor3: Color3.fromRGB(255, 75, 78),
+			Visible: false,
+			Size: new UDim2(1, 0, 1, 0),
+		});
+		New("UICorner")({
+			Parent: UpgradeFrame,
+			CornerRadius: new UDim(0.1, 0),
+		});
+		New("UIPadding")({
+			Parent: UpgradeFrame,
+			PaddingBottom: new UDim(0.1, 0),
+			PaddingLeft: new UDim(0.1, 0),
+			PaddingRight: new UDim(0.1, 0),
+			PaddingTop: new UDim(0.1, 0),
+		});
+		New("ImageLabel")({
+			BackgroundTransparency: 1,
+			Parent: UpgradeFrame,
+			Image: "rbxassetid://14583168073",
+			Position: new UDim2(0, 0, 0, 0),
+			Size: new UDim2(1, 0, 1, 0),
+		});
 		const DialogFrame = New("Frame")({
 			Parent: bodyModel.DialogGui,
 			Name: "DialogFrame",

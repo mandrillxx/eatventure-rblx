@@ -58,7 +58,6 @@ function misc(world: World, state: ServerState) {
 					);
 				bodyModel.DialogGui.DialogFrame.ImageLabel.Image = AssetMap.get(productName)!;
 				bodyModel.DialogGui.DialogFrame.DialogText.Text = speech.new.text!;
-				// bodyModel.DialogGui.DialogFrame.Visible = true;
 				bodyModel.DialogGui.Progress.Visible = false;
 				continue;
 			} else if (speech.new.specialType.type === "meter") {

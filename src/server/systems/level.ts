@@ -32,7 +32,7 @@ function level(world: World, state: ServerState) {
 			continue;
 		}
 		levelModel = levelModel.Clone();
-		levelModel.PivotTo(levelModel.GetPivot().add(new Vector3(state.playerIndex * 40, 0, 0)));
+		levelModel.PivotTo(levelModel.GetPivot().add(new Vector3(0, 0, state.playerIndex * 40)));
 		state.playerIndex++;
 
 		const destinations: ComponentInfo<typeof Destination>[] = [];
@@ -126,6 +126,9 @@ function level(world: World, state: ServerState) {
 
 		const utilities: { utility: Utility; model: BaseUtility }[] = [];
 		for (const utility of levelModel.Utilities.GetChildren()) {
+			const upgradeGui = ReplicatedStorage.Assets.UpgradeGui.Clone() as UpgradeGuiInstance;
+			upgradeGui.Adornee = utility as Model;
+			upgradeGui.Parent = utility;
 			const utilModel = utility as BaseUtility;
 			const product = utilModel.Makes.Value as Foods;
 			const amount = utilModel.Amount.Value;
@@ -152,7 +155,7 @@ function level(world: World, state: ServerState) {
 				orderDelay,
 				reward,
 			});
-			world.spawn(
+			const utilityId = world.spawn(
 				utilityComponent,
 				BelongsTo({
 					playerId: ownedBy.playerId,
@@ -162,6 +165,7 @@ function level(world: World, state: ServerState) {
 					model: utility as BaseUtility,
 				}),
 			);
+			utility.SetAttribute("serverId", utilityId);
 			utilities.push({
 				utility: utilityComponent,
 				model: utility as BaseUtility,

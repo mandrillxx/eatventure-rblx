@@ -35,6 +35,7 @@ type Assets = Folder & {
 	Progress: RadialInstance;
 	UtilityInfo: UtilityInfoInstance;
 	UpgradeInfo: UpgradeInfoInstance;
+	UpgradeGui: UpgradeGuiInstance;
 	Animate: Script;
 };
 
@@ -60,6 +61,14 @@ type BaseUpgrade = Frame & {
 	ImageLabel: ImageLabel;
 	Title: TextLabel;
 	Description: TextLabel;
+};
+
+type UpgradeGuiInstance = BillboardGui & {
+	UpgradeFrame: Frame & {
+		UICorner: UICorner;
+		UIPadding: UIPadding;
+		ImageLabel: ImageLabel;
+	};
 };
 
 type UpgradeInfoInstance = ScreenGui & {
@@ -122,6 +131,7 @@ type BaseUtility = Model & {
 	OrderDelay: IntValue;
 	Reward: NumberValue;
 	BaseUpgrade: NumberValue;
+	UpgradeGui: UpgradeGuiInstance;
 };
 
 type Levels = {

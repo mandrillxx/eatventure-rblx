@@ -85,6 +85,7 @@ function employee(world: World, state: ServerState) {
 			.without(Pathfind, Serving)) {
 			if (state.verbose) Log.Info("Employee {@EmployeeId} is looking for customers", id);
 			const levelId = belongsTo.levelId;
+			if (!world.contains(levelId)) continue;
 			const levelRenderable = getOrError(
 				world,
 				levelId,
@@ -108,6 +109,7 @@ function employee(world: World, state: ServerState) {
 
 			for (const customer of customers) {
 				if (!customer.customer.servedBy) {
+					if (!world.contains(customer.npcId) || !world.contains(levelId)) continue;
 					const hasUtilities = getOrError(
 						world,
 						levelId,
@@ -179,17 +181,19 @@ function employee(world: World, state: ServerState) {
 											destination: utilityDestination,
 											running: false,
 											finished: () => {
+												if (!world.contains(serverEntityId) || !world.contains(id)) return;
 												const newUtility = getOrError(world, serverEntityId, Utility);
+												const newLevel = getOrError(world, newUtility.level.componentId, Level);
 												world.insert(
 													id,
 													Speech({
 														specialType: {
 															type: "meter",
-															time: newUtility.every / level.workRate,
+															time: newUtility.every / newLevel.workRate,
 														},
 													}),
 												);
-												task.delay(newUtility.every / level.workRate, () => {
+												task.delay(newUtility.every / newLevel.workRate, () => {
 													if (!world.contains(id)) return;
 													world.remove(id, Speech);
 													world.insert(
