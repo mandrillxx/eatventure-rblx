@@ -133,7 +133,7 @@ function npc(world: World, state: ServerState) {
 				? levelModel.EmployeeAnchors.Spawn.PrimaryPart!.CFrame.add(new Vector3(0, 3, 0))
 				: levelModel.CustomerAnchors.Spawn.PrimaryPart!.CFrame.add(new Vector3(0, 3, 0)),
 		);
-		bodyModel.Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Viewer;
+		bodyModel.Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None;
 		bodyModel.Parent = Workspace.NPCs;
 
 		const setNPCCollisionGroup = () => {

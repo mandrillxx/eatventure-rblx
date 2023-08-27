@@ -118,42 +118,45 @@ export function updateUpgrades({
 	const _upgrades = upgrades ?? getAllUpgradesForPlayer(world, playerId);
 	const baseUpgrade = upgradeInfo.UpgradeFrame.Upgrades.BaseUpgrade;
 	const balance = getOrError(world, playerId, Balance);
-	for (const child of upgradeInfo.UpgradeFrame.Upgrades.GetChildren()) {
-		if (child.IsA("Frame") && child.Name !== "BaseUpgrade") {
-			child.Destroy();
+	if (firstRun) {
+		for (const child of upgradeInfo.UpgradeFrame.Upgrades.GetChildren()) {
+			if (child.IsA("Frame") && child.Name !== "BaseUpgrade") {
+				child.Destroy();
+			}
 		}
+		_upgrades.forEach((upgrade) => {
+			const newUpgrade = baseUpgrade.Clone();
+			const ownsUpgrade = has(profile.Data.purchasedUpgrades, upgrade.component.identifier);
+			newUpgrade.Visible = true;
+			newUpgrade.Name = tostring(upgrade.componentId);
+			newUpgrade.Purchase.Text = `$${FormatCompact(upgrade.component.cost, 0)}`;
+			newUpgrade.Title.Text = `${upgrade.component.title} ${ownsUpgrade ? "(Owned)" : ""}`;
+			newUpgrade.Description.Text = upgrade.component.description;
+			newUpgrade.ImageLabel.Image = upgrade.component.image;
+			newUpgrade.Purchase.BackgroundColor3 =
+				balance.balance >= upgrade.component.cost && !ownsUpgrade
+					? Color3.fromRGB(66, 132, 255)
+					: ownsUpgrade
+					? Color3.fromRGB(13, 13, 13)
+					: Color3.fromRGB(65, 65, 65);
+			newUpgrade.Purchase.TextColor3 =
+				!ownsUpgrade && balance.balance >= upgrade.component.cost && !ownsUpgrade
+					? Color3.fromRGB(255, 255, 255)
+					: ownsUpgrade
+					? Color3.fromRGB(245, 255, 97)
+					: Color3.fromRGB(255, 22, 14);
+			newUpgrade.LayoutOrder = upgrade.componentId;
+			newUpgrade.Parent = upgradeInfo.UpgradeFrame.Upgrades;
+			const save = (firstRun: boolean) => saveUpgrade(firstRun, world, playerId, balance, profile, upgrade);
+			if (firstRun) {
+				save(true);
+			}
+			if (!ownsUpgrade)
+				newUpgrade.Purchase.MouseButton1Click.Connect(() => {
+					save(false);
+				});
+		});
 	}
-	_upgrades.forEach((upgrade) => {
-		const newUpgrade = baseUpgrade.Clone();
-		const ownsUpgrade = has(profile.Data.purchasedUpgrades, upgrade.component.identifier);
-		newUpgrade.Visible = true;
-		newUpgrade.Name = tostring(upgrade.componentId);
-		newUpgrade.Purchase.Text = `$${FormatCompact(upgrade.component.cost, 0)}`;
-		newUpgrade.Title.Text = `${upgrade.component.title} ${ownsUpgrade ? "(Owned)" : ""}`;
-		newUpgrade.Description.Text = upgrade.component.description;
-		newUpgrade.Purchase.BackgroundColor3 =
-			balance.balance >= upgrade.component.cost && !ownsUpgrade
-				? Color3.fromRGB(66, 132, 255)
-				: ownsUpgrade
-				? Color3.fromRGB(13, 13, 13)
-				: Color3.fromRGB(65, 65, 65);
-		newUpgrade.Purchase.TextColor3 =
-			!ownsUpgrade && balance.balance >= upgrade.component.cost && !ownsUpgrade
-				? Color3.fromRGB(255, 255, 255)
-				: ownsUpgrade
-				? Color3.fromRGB(245, 255, 97)
-				: Color3.fromRGB(255, 22, 14);
-		newUpgrade.LayoutOrder = upgrade.componentId;
-		newUpgrade.Parent = upgradeInfo.UpgradeFrame.Upgrades;
-		const save = (firstRun: boolean) => saveUpgrade(firstRun, world, playerId, balance, profile, upgrade);
-		if (firstRun) {
-			save(true);
-		}
-		if (!ownsUpgrade)
-			newUpgrade.Purchase.MouseButton1Click.Connect(() => {
-				save(false);
-			});
-	});
 }
 
 export function handleUpgrade(

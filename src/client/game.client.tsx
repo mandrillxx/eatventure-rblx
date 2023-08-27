@@ -56,12 +56,22 @@ function setupSoundtrack() {
 	return soundtrack;
 }
 
-function bootstrap() {
-	withHookDetection(Roact);
-	while (!state.playerId) {
-		task.wait(1);
-	}
+function setupSprinting() {
+	UserInputService.InputBegan.Connect((input) => {
+		if (input.KeyCode === Enum.KeyCode.LeftShift) {
+			state.isRunning = true;
+			character.Humanoid.WalkSpeed = 32;
+		}
+	});
+	UserInputService.InputEnded.Connect((input) => {
+		if (input.KeyCode === Enum.KeyCode.LeftShift) {
+			state.isRunning = false;
+			character.Humanoid.WalkSpeed = 16;
+		}
+	});
+}
 
+function setupUtilityGui() {
 	UserInputService.InputBegan.Connect((input) => {
 		if (
 			input.UserInputType === Enum.UserInputType.MouseButton1 ||
@@ -80,15 +90,9 @@ function bootstrap() {
 			}
 		}
 	});
+}
 
-	const soundtrack = setupSoundtrack();
-
-	const money = (player as BasePlayer).leaderstats.Money;
-	const update = (value?: number) => state.update("balance", value ?? money.Value);
-	update();
-	money.Changed.Connect((newValue) => {
-		update(newValue);
-	});
+function setupGuiFunctions(soundtrack: Soundtrack) {
 	const playerGui = player.FindFirstChildOfClass("PlayerGui")!;
 	const utilityInfo = playerGui.WaitForChild("UtilityInfo")! as UtilityInfoInstance;
 	utilityInfo.Background.Upgrade.MouseButton1Click.Connect(() => {
@@ -154,9 +158,29 @@ function bootstrap() {
 	overlayGui.Settings.Frame.SoundFX.Holder.Amount.Changed.Connect((newValue) => {
 		SoundService.SoundFX.Volume = (newValue / 100) * 2;
 	});
+}
+
+function bootstrap() {
+	withHookDetection(Roact);
+	while (!state.playerId) {
+		task.wait(0.1);
+	}
+
+	setupUtilityGui();
+	setupSprinting();
+
+	const soundtrack = setupSoundtrack();
+
+	const money = (player as BasePlayer).leaderstats.Money;
+	const update = (value?: number) => state.update("balance", value ?? money.Value);
+	update();
+	money.Changed.Connect((newValue) => {
+		update(newValue);
+	});
+
+	setupGuiFunctions(soundtrack);
 
 	Roact.mount(<Menu state={state} />, player.FindFirstChildOfClass("PlayerGui")!);
-	// Roact.mount(<Npc state={state} npc={{ name: "Erik" }} />, player.FindFirstChildOfClass("PlayerGui")!);
 
 	Network.setState.client.connect((state) => {
 		state = { ...state };

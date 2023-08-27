@@ -21,6 +21,7 @@ export const Upgrade = component<{
 	type: UpgradeType;
 	title: string;
 	description: string;
+	image: string;
 	document: {
 		amount?: number;
 		machine?: string;

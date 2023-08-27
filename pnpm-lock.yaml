@@ -49,6 +49,9 @@ dependencies:
   '@rbxts/plasma':
     specifier: 0.4.1-ts.1
     version: 0.4.1-ts.1
+  '@rbxts/player-statistic-achievements':
+    specifier: ^1.0.2
+    version: 1.0.2
   '@rbxts/player-statistics':
     specifier: ^1.0.4
     version: 1.0.4
@@ -64,6 +67,9 @@ dependencies:
   '@rbxts/proton':
     specifier: ^0.7.0
     version: 0.7.0
+  '@rbxts/reward-containers':
+    specifier: ^1.0.1
+    version: 1.0.1
   '@rbxts/rewire':
     specifier: ^0.3.0
     version: 0.3.0
@@ -354,6 +360,19 @@ packages:
     resolution: {integrity: sha512-RhLkC3GQW0KeyqjFwvOUbHhsIJOHmXg+BhcKLp0IgUDVgC5GktShi3zmW6GQ319yod+RlUDG1XHjOnP3Omo4bA==}
     dev: false
 
+  /@rbxts/player-statistic-achievements@1.0.2:
+    resolution: {integrity: sha512-IkPuf+ptmfJHCC1nmH4IpgWRAIzwjieWGoySJmVs6nJOKS0g1jA4TdqTnJApLqJ88aLx4ZDWY7MIKIAqe3T08g==}
+    dependencies:
+      '@rbxts/dumpster': 1.0.8
+      '@rbxts/fitumi': 1.0.11
+      '@rbxts/inspect': 1.0.1
+      '@rbxts/player-statistics': 1.0.4
+      '@rbxts/reward-containers': 0.0.1-beta.9
+      '@rbxts/services': 1.5.1
+      '@rbxts/signals-tooling': 1.0.8
+      '@rbxts/testez': 0.3.1-ts.7
+    dev: false
+
   /@rbxts/player-statistics@1.0.4:
     resolution: {integrity: sha512-CoPdyUfe+205dROkzpuwWmDouKA2WoH2O1lGI4hBPCVkjtZq51z01Q63PJZtz2fIetSfVpM4XzT5NemObAsobg==}
     dependencies:
@@ -397,6 +416,26 @@ packages:
     dependencies:
       '@rbxts/beacon': 2.1.1
       '@rbxts/services': 1.5.1
+    dev: false
+
+  /@rbxts/reward-containers@0.0.1-beta.9:
+    resolution: {integrity: sha512-nG47rxL1RbpChQDzrMUMYM6EOjV/MrbZd+ZVb2bsqlxnHYl1T3fGSI9lxvnRvA2O+JjZGA9F4n+CvaFNTOg0dw==}
+    dependencies:
+      '@rbxts/fitumi': 1.0.11
+      '@rbxts/inspect': 1.0.1
+      '@rbxts/services': 1.5.1
+      '@rbxts/signals-tooling': 1.0.8
+      '@rbxts/testez': 0.3.1-ts.7
+    dev: false
+
+  /@rbxts/reward-containers@1.0.1:
+    resolution: {integrity: sha512-YzUHt3pQ1/cUSECCEV+/8tsvb+TIy/VPbR09+iaGWd+ZtwD1+faGGR2aHk1PRqHX9yF9FQV91/LTSBNYXjjfHA==}
+    dependencies:
+      '@rbxts/fitumi': 1.0.11
+      '@rbxts/inspect': 1.0.1
+      '@rbxts/services': 1.5.1
+      '@rbxts/signals-tooling': 1.0.8
+      '@rbxts/testez': 0.3.1-ts.7
     dev: false
 
   /@rbxts/rewire@0.3.0:

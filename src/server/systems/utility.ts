@@ -34,6 +34,7 @@ const handleUpgrade = (world: World, player: Player, state: ServerState, id: Any
 		newUtility.patch({ xpLevel: nextLevel, every: newUtility.every / everyRate }),
 		SoundEffect({ sound: "Upgrade", meantFor: client.player }),
 	);
+	if (nextLevel >= 250) state.playerStatisticsProvider.recordEvent(player, "utilitiesMaxed", 1);
 };
 
 function utility(world: World, state: ServerState) {

@@ -8,7 +8,12 @@ import {
 import { DataStoreService, PhysicsService, Players, ReplicatedStorage } from "@rbxts/services";
 import { PlayerStatisticEventsDefinition, PlayerStatisticsDefinition } from "./data/PlayerStatisticsDefinition";
 import { BelongsTo, Client, Renderable, Upgrade } from "shared/components";
+import { PlayerStatisticAchievementsDefinition } from "./data/BadgeHandler";
+import { PlayerStatisticAchievementsManager } from "@rbxts/player-statistic-achievements";
+import { IProfile, setupPurchases } from "./data/PurchaseHandler";
+import { BadgeRewardGranter } from "@rbxts/reward-containers";
 import { GameProvider } from "./providers/game";
+import { getOrError } from "shared/util";
 import { AnyEntity } from "@rbxts/matter";
 import { setupTags } from "shared/setupTags";
 import { Profile } from "@rbxts/profileservice/globals";
@@ -20,8 +25,6 @@ import { New } from "@rbxts/fusion";
 import Log, { Logger } from "@rbxts/log";
 import ProfileService from "@rbxts/profileservice";
 import promiseR15 from "@rbxts/promise-character";
-import { IProfile, setupPurchases } from "./data/PurchaseHandler";
-import { getOrError } from "shared/util";
 
 Proton.awaitStart();
 
@@ -78,6 +81,13 @@ function statistics() {
 		PlayerStatisticEventsDefinition,
 		playerStatisticsPersistenceLayer,
 		PlayerStatisticsDefinition,
+	);
+
+	const rewardGrantersByRewardType = new Map([["Badge", BadgeRewardGranter.create()]]);
+	const playerStatisticAchievementsManager = PlayerStatisticAchievementsManager.create(
+		PlayerStatisticAchievementsDefinition,
+		rewardGrantersByRewardType,
+		state.playerStatisticsProvider,
 	);
 }
 
