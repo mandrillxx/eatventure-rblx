@@ -14,6 +14,7 @@ interface StoreStatus {
 export interface ClientState {
 	debugEnabled: boolean;
 	playerId: AnyEntity | undefined;
+	levelId: AnyEntity | undefined;
 	storeStatus: StoreStatus;
 	utilityUpgrade: ComponentInfo<typeof Utility> | undefined;
 	upgrades: Map<AnyEntity, ComponentInfo<typeof Upgrade>>;

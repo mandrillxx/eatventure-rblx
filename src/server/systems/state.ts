@@ -25,6 +25,7 @@ function state(world: World, state: ServerState) {
 				const utilityId = _utility.GetAttribute("serverId") as AnyEntity;
 				const utility = getOrError(world, utilityId, Utility);
 				const { baseUpgradeCost, xpLevel } = utility;
+				if (xpLevel + 1 > 250) continue;
 				const xpBias = xpLevel > 100 ? 1.35 : 1.2;
 				const nextLevelCost = baseUpgradeCost * (xpBias ** xpLevel - 1);
 				if (balance.new.balance >= nextLevelCost) {

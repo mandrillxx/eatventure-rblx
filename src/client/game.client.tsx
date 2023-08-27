@@ -1,5 +1,4 @@
 import { Players, ReplicatedStorage, UserInputService } from "@rbxts/services";
-import { ClientEntityIdToServer } from "./methods";
 import { receiveReplication } from "./receiveReplication";
 import { withHookDetection } from "@rbxts/roact-hooked";
 import { CharacterRigR15 } from "@rbxts/promise-character";
@@ -32,6 +31,7 @@ const state: ClientState = {
 	entityIdMap: new Map<string, AnyEntity>(),
 	character,
 	playerId: undefined,
+	levelId: undefined,
 	utilityUpgrade: undefined,
 	upgrades: new Map<AnyEntity, ComponentInfo<typeof Upgrade>>(),
 	storeStatus: {

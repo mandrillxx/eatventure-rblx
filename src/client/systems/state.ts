@@ -1,11 +1,11 @@
 import { ServerEntityIdToClient, getNextLevelCost, updateUtilityInfo } from "client/methods";
-import { Balance, BelongsTo, OpenStatus, OwnedBy, Utility } from "shared/components";
+import { Balance, BelongsTo, Level, OpenStatus, OwnedBy, Upgrade, Utility } from "shared/components";
 import { World, useThrottle } from "@rbxts/matter";
 import { ClientState } from "shared/clientState";
 import { getOrError } from "shared/util";
 import { Players } from "@rbxts/services";
 
-const player = Players.LocalPlayer;
+const player = Players.LocalPlayer as BasePlayer;
 
 function state(world: World, state: ClientState) {
 	if (useThrottle(1)) {
@@ -46,6 +46,13 @@ function state(world: World, state: ClientState) {
 			updateUtilityInfo(utilityInfo, utility.new, world, id);
 		}
 	}
+
+	for (const [id, _level] of world.queryChanged(Level)) {
+		const ownedBy = getOrError(world, id, OwnedBy, "Level does not have OwnedBy component");
+		if (ownedBy.player.UserId !== player.UserId) continue;
+		state.levelId = id;
+	}
+
 	for (const [id, balance] of world.queryChanged(Balance)) {
 		if (balance.new) {
 			if (id === state.playerId) {
@@ -60,6 +67,29 @@ function state(world: World, state: ClientState) {
 						? Color3.fromRGB(76, 229, 11)
 						: Color3.fromRGB(229, 20, 5);
 			}
+		}
+	}
+
+	for (const [_id, balance] of world.queryChanged(Balance)) {
+		if (balance.new && state.levelId) {
+			const openUpgrades = (
+				player.FindFirstChildOfClass("PlayerGui")!.FindFirstChild("UpgradeInfo") as UpgradeInfoInstance
+			).OpenUpgrades;
+
+			let upgradesCanAfford = 0;
+			for (const [_id, upgrade, belongsTo] of world.query(Upgrade, BelongsTo)) {
+				if (ServerEntityIdToClient(state, belongsTo.levelId) !== state.levelId) continue;
+				if (upgrade.cost <= balance.new.balance && !upgrade.purchased) {
+					upgradesCanAfford++;
+				}
+			}
+
+			if (upgradesCanAfford === 0) {
+				openUpgrades.TextLabel.Visible = false;
+				continue;
+			}
+			openUpgrades.TextLabel.Text = tostring(upgradesCanAfford);
+			openUpgrades.TextLabel.Visible = true;
 		}
 	}
 }

@@ -71,6 +71,12 @@ type UpgradeGuiInstance = BillboardGui & {
 	};
 };
 
+type OpenUpgradesInstance = ImageButton & {
+	TextLabel: TextLabel & {
+		UICorner: UICorner;
+	};
+};
+
 type UpgradeInfoInstance = ScreenGui & {
 	UpgradeFrame: Frame & {
 		UICorner: UICorner;
@@ -85,7 +91,7 @@ type UpgradeInfoInstance = ScreenGui & {
 		};
 		Title: TextLabel;
 	};
-	OpenUpgrades: ImageButton;
+	OpenUpgrades: OpenUpgradesInstance;
 };
 
 type UtilityInfoInstance = BillboardGui & {
