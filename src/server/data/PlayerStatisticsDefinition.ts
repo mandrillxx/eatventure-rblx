@@ -1,19 +1,25 @@
 import { EventsDefinition, StandardStatisticUpdateFunctions, StatisticsDefinition } from "@rbxts/player-statistics";
 import { StatisticDescription } from "@rbxts/player-statistics/out/types/StatisticDescription";
 
+export const customersServed = identity<StatisticDescription>({
+	defaultValue: 0,
+	updateFunction: StandardStatisticUpdateFunctions.increment,
+});
+
+export const moneyEarned = identity<StatisticDescription>({
+	defaultValue: 0,
+	updateFunction: StandardStatisticUpdateFunctions.increment,
+});
+
+export const utilitiesMaxed = identity<StatisticDescription>({
+	defaultValue: 0,
+	updateFunction: StandardStatisticUpdateFunctions.increment,
+});
+
 export const PlayerStatisticsDefinition: StatisticsDefinition = {
-	customersServed: identity<StatisticDescription>({
-		defaultValue: 0,
-		updateFunction: StandardStatisticUpdateFunctions.increment,
-	}),
-	moneyEarned: identity<StatisticDescription>({
-		defaultValue: 0,
-		updateFunction: StandardStatisticUpdateFunctions.increment,
-	}),
-	utilitiesMaxed: identity<StatisticDescription>({
-		defaultValue: 0,
-		updateFunction: StandardStatisticUpdateFunctions.increment,
-	}),
+	customersServed,
+	moneyEarned,
+	utilitiesMaxed,
 };
 
 export const PlayerStatisticEventsDefinition: EventsDefinition<typeof PlayerStatisticsDefinition> = {

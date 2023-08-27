@@ -5,13 +5,18 @@ import {
 	StatisticsDefinition,
 	EventsDefinition,
 } from "@rbxts/player-statistics";
+import {
+	IPlayerStatisticAchievementsManager,
+	PlayerStatisticAchievementsManager,
+} from "@rbxts/player-statistic-achievements";
+import { served10Customers, served1000Customers, earned100k, earned10m, maxedUtility } from "./data/BadgeHandler";
 import { DataStoreService, PhysicsService, Players, ReplicatedStorage } from "@rbxts/services";
 import { PlayerStatisticEventsDefinition, PlayerStatisticsDefinition } from "./data/PlayerStatisticsDefinition";
+import { BadgeRewardGranter, RecurringTimeLockedRewardContainer } from "@rbxts/reward-containers";
 import { BelongsTo, Client, Renderable, Upgrade } from "shared/components";
 import { PlayerStatisticAchievementsDefinition } from "./data/BadgeHandler";
-import { PlayerStatisticAchievementsManager } from "@rbxts/player-statistic-achievements";
+import { rewardsOpeningCoordinator } from "./data/RewardHandler";
 import { IProfile, setupPurchases } from "./data/PurchaseHandler";
-import { BadgeRewardGranter } from "@rbxts/reward-containers";
 import { GameProvider } from "./providers/game";
 import { getOrError } from "shared/util";
 import { AnyEntity } from "@rbxts/matter";
@@ -39,8 +44,19 @@ declare const script: { systems: Folder };
 export interface ServerState {
 	levels: Map<number, _Level>;
 	clients: Map<number, AnyEntity>;
+	rewardContainers: Map<number, RecurringTimeLockedRewardContainer>;
 	profiles: Map<Player, Profile<IProfile, unknown>>;
 	playerStatisticsProvider: IPlayerStatisticsProvider<StatisticsDefinition, EventsDefinition<StatisticsDefinition>>;
+	playerAchievementsManager: IPlayerStatisticAchievementsManager<
+		StatisticsDefinition,
+		{
+			served10Customers: typeof served10Customers;
+			served1000Customers: typeof served1000Customers;
+			earned100k: typeof earned100k;
+			earned10m: typeof earned10m;
+			maxedUtility: typeof maxedUtility;
+		}
+	>;
 	playerIndex: number;
 	debug: boolean;
 	verbose: boolean;
@@ -59,9 +75,14 @@ const state: ServerState = {
 	levels: new Map(),
 	clients: new Map(),
 	profiles: new Map(),
+	rewardContainers: new Map(),
 	playerStatisticsProvider: undefined as unknown as IPlayerStatisticsProvider<
 		StatisticsDefinition,
 		EventsDefinition<StatisticsDefinition>
+	>,
+	playerAchievementsManager: undefined as unknown as PlayerStatisticAchievementsManager<
+		typeof PlayerStatisticsDefinition,
+		typeof PlayerStatisticAchievementsDefinition
 	>,
 	playerIndex: 0,
 	debug: true,
@@ -89,6 +110,7 @@ function statistics() {
 		rewardGrantersByRewardType,
 		state.playerStatisticsProvider,
 	);
+	state.playerAchievementsManager = playerStatisticAchievementsManager;
 }
 
 function collision() {
@@ -102,12 +124,24 @@ async function bootstrap() {
 		state.clients.delete(player.UserId);
 		const profile = state.profiles.get(player);
 		if (profile) {
+			state.profiles.delete(player);
 			profile.Release();
 		}
+		state.rewardContainers.delete(player.UserId);
 		gameProvider.saveAndCleanup(player);
 	}
 
 	function playerAdded(player: Player) {
+		function handleRewards() {
+			const rewardContainerForPlayer = RecurringTimeLockedRewardContainer.create(
+				"DailyRewardContainer",
+				3 * 60 * 60,
+				player,
+				rewardsOpeningCoordinator(),
+			);
+			state.rewardContainers.set(player.UserId, rewardContainerForPlayer);
+		}
+
 		function handleData() {
 			const profile = GameProfileStore.LoadProfileAsync("Player_" + player.UserId);
 			if (!profile) {
@@ -166,6 +200,8 @@ async function bootstrap() {
 		});
 
 		handleData();
+		handleRewards();
+
 		if (player.Character) characterAdded(player.Character);
 		player.CharacterAdded.Connect(characterAdded);
 	}
