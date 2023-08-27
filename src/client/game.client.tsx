@@ -53,6 +53,7 @@ const world = start([ReplicatedStorage.Client.systems, ReplicatedStorage.Shared.
 function setupSoundtrack() {
 	const soundtrack = new Soundtrack(SoundService.Soundtrack);
 	soundtrack.Play();
+	return soundtrack;
 }
 
 function bootstrap() {
@@ -80,43 +81,78 @@ function bootstrap() {
 		}
 	});
 
-	setupSoundtrack();
+	const soundtrack = setupSoundtrack();
 
-	task.delay(1, () => {
-		const money = (player as BasePlayer).leaderstats.Money;
-		const update = (value?: number) => state.update("balance", value ?? money.Value);
-		update();
-		money.Changed.Connect((newValue) => {
-			update(newValue);
-		});
-		const playerGui = player.FindFirstChildOfClass("PlayerGui")!;
-		const utilityInfo = playerGui.WaitForChild("UtilityInfo")! as UtilityInfoInstance;
-		utilityInfo.Background.Upgrade.MouseButton1Click.Connect(() => {
-			Network.upgradeUtility.client.fire(utilityInfo.Adornee! as Model);
-		});
-		const upgradeInfo = playerGui.WaitForChild("UpgradeInfo")! as UpgradeInfoInstance;
-		upgradeInfo.UpgradeFrame.Close.MouseButton1Click.Connect(() => {
-			upgradeInfo.UpgradeFrame.Visible = false;
-		});
-		const overlayGui = playerGui.WaitForChild("Overlay")! as OverlayGui;
-		overlayGui.OpenUpgrades.MouseButton1Click.Connect(() => {
-			world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
-			upgradeInfo.UpgradeFrame.Visible = !upgradeInfo.UpgradeFrame.Visible;
-		});
-		overlayGui.OpenSettings.MouseButton1Click.Connect(() => {
-			world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
-			overlayGui.Settings.Visible = !overlayGui.Settings.Visible;
-		});
-		overlayGui.Settings.Frame.Music.Holder.Amount.Changed.Connect((newValue) => {
-			SoundService.Soundtrack.Volume = newValue / 100;
-		});
-		overlayGui.Settings.Close.MouseButton1Click.Connect(() => {
-			world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
-			overlayGui.Settings.Visible = false;
-		});
-		overlayGui.Settings.Frame.SoundFX.Holder.Amount.Changed.Connect((newValue) => {
-			SoundService.SoundFX.Volume = (newValue / 100) * 2;
-		});
+	const money = (player as BasePlayer).leaderstats.Money;
+	const update = (value?: number) => state.update("balance", value ?? money.Value);
+	update();
+	money.Changed.Connect((newValue) => {
+		update(newValue);
+	});
+	const playerGui = player.FindFirstChildOfClass("PlayerGui")!;
+	const utilityInfo = playerGui.WaitForChild("UtilityInfo")! as UtilityInfoInstance;
+	utilityInfo.Background.Upgrade.MouseButton1Click.Connect(() => {
+		Network.upgradeUtility.client.fire(utilityInfo.Adornee! as Model);
+	});
+	const upgradeInfo = playerGui.WaitForChild("UpgradeInfo")! as UpgradeInfoInstance;
+	upgradeInfo.UpgradeFrame.Close.MouseButton1Click.Connect(() => {
+		upgradeInfo.UpgradeFrame.Visible = false;
+	});
+	const overlayGui = playerGui.WaitForChild("Overlay")! as OverlayGui;
+	overlayGui.PlaylistControls.Frame.PlayPause.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		const playing = soundtrack.Playing;
+		if (playing) {
+			overlayGui.PlaylistControls.Frame.PlayPause.Image = "rbxassetid://14585111287";
+			soundtrack.Pause();
+		} else {
+			overlayGui.PlaylistControls.Frame.PlayPause.Image = "rbxassetid://14585110274";
+			soundtrack.Play();
+		}
+	});
+	overlayGui.PlaylistControls.Frame.Rewind.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		soundtrack.Shuffle();
+	});
+	overlayGui.PlaylistControls.Frame.Skip.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		soundtrack.Skip();
+	});
+	overlayGui.PlaylistControls.Close.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		overlayGui.PlaylistControls.Visible = false;
+		overlayGui.OpenPlaylist.Visible = true;
+	});
+	overlayGui.OpenPlaylist.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		overlayGui.PlaylistControls.Visible = true;
+		overlayGui.OpenPlaylist.Visible = false;
+	});
+	overlayGui.OpenUpgrades.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		upgradeInfo.UpgradeFrame.Visible = !upgradeInfo.UpgradeFrame.Visible;
+	});
+	overlayGui.OpenSettings.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		overlayGui.Settings.Visible = !overlayGui.Settings.Visible;
+	});
+	overlayGui.Settings.Frame.Music.Holder.Amount.Changed.Connect((newValue) => {
+		SoundService.Soundtrack.Volume = newValue / 100;
+	});
+	overlayGui.Settings.Close.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		overlayGui.Settings.Visible = false;
+	});
+	overlayGui.Settings.Accept.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		overlayGui.Settings.Visible = false;
+	});
+	overlayGui.Settings.Decline.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		overlayGui.Settings.Visible = false;
+	});
+	overlayGui.Settings.Frame.SoundFX.Holder.Amount.Changed.Connect((newValue) => {
+		SoundService.SoundFX.Volume = (newValue / 100) * 2;
 	});
 
 	Roact.mount(<Menu state={state} />, player.FindFirstChildOfClass("PlayerGui")!);

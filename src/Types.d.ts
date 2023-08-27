@@ -41,6 +41,15 @@ interface SoundService extends Instance {
 }
 
 type OverlayGui = ScreenGui & {
+	PlaylistControls: Frame & {
+		Frame: Frame & {
+			Rewind: ImageButton;
+			PlayPause: ImageButton;
+			Skip: ImageButton;
+		};
+		Close: ImageButton;
+	};
+	OpenPlaylist: ImageButton;
 	OpenSettings: ImageButton;
 	OpenShop: ImageButton;
 	OpenUpgrades: OpenUpgradesInstance;

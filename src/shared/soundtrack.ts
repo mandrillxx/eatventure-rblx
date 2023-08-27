@@ -107,6 +107,7 @@ export class Soundtrack {
 	public Shuffle(): ThisType<Soundtrack> {
 		this.Stop();
 		this.Songs = Shuffle(table.clone(this.Songs));
+		this.Play();
 
 		return this;
 	}
