@@ -10,7 +10,7 @@ import {
 	Wants,
 	NPC,
 } from "shared/components";
-import { NPCDisplayNames, getOrError, randomIndex, randomNpcName } from "shared/util";
+import { NPCDisplayNames, getOrError, randomNpcName, weightedRandomIndex } from "shared/util";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
 import { Provider } from "@rbxts/proton";
@@ -255,12 +255,21 @@ export class GameProvider {
 						HasUtilities,
 						"Level does not have HasUtilities component",
 					);
-					const product = randomIndex(hasUtilities.utilities);
-					if (!product) {
-						Log.Error("No product found for customer {@CustomerName}", name);
+					const utilityName = weightedRandomIndex(hasUtilities.utilities);
+					if (state.verbose)
+						Log.Warn("Chose utility {@UtilityName} for customer {@CustomerName}", utilityName, name);
+					if (!utilityName) {
+						Log.Error("No utility for product found for customer {@CustomerName}", name);
 						return;
 					}
-					const productName = product.model.Makes.Value as Foods;
+					const levelRenderable = getOrError(
+						world,
+						levelId,
+						Renderable,
+						"Level does not have Renderable component",
+					).model as BaseLevel;
+					const model = levelRenderable.Utilities.FindFirstChild(utilityName) as BaseUtility;
+					const productName = model.Makes.Value as Foods;
 
 					world.spawn(
 						NPC({

@@ -13,6 +13,7 @@ export const Utility = component<{
 	type: string; //"Oven" | "IceCreamMaker" | "Fryer" | "DrinkMaker";
 	unlocked: boolean;
 	level: ComponentInfo<typeof Level>;
+	weight: number;
 	xpLevel: number;
 	baseUpgradeCost: number;
 	makes: Product;

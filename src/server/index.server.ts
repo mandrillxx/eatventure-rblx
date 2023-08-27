@@ -133,11 +133,12 @@ async function bootstrap() {
 
 	function playerAdded(player: Player) {
 		function handleRewards() {
+			const _rewardsOpeningCoordinator = rewardsOpeningCoordinator();
 			const rewardContainerForPlayer = RecurringTimeLockedRewardContainer.create(
 				"DailyRewardContainer",
 				3 * 60 * 60,
 				player,
-				rewardsOpeningCoordinator(),
+				_rewardsOpeningCoordinator,
 			);
 			state.rewardContainers.set(player.UserId, rewardContainerForPlayer);
 		}

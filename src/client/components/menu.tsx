@@ -33,27 +33,6 @@ function Menu({ state }: MenuProps) {
 						className="text-green-500 font-bold text-4xl"
 						Text={`$${FormatCompact(balance, balance > 1_000_000 ? 1 : 2)}`}
 					/>
-					<Div className="flex gap-4 px-12 items-center">
-						<Text className="text-white font-bold text-4xl" Text={`Store Open: ${open}`} />
-						<Button
-							className="rounded-xl bg-blue-500 text-white text-2xl px-4 py-2"
-							Text="Open Store"
-							Event={{
-								MouseButton1Click: () => {
-									Network.setStoreStatus.client.fire(true);
-								},
-							}}
-						/>
-						<Button
-							className="rounded-xl bg-red-500 text-white text-2xl px-4 py-2"
-							Text="Close Store"
-							Event={{
-								MouseButton1Click: () => {
-									Network.setStoreStatus.client.fire(false);
-								},
-							}}
-						/>
-					</Div>
 				</Div>
 			</Div>
 		</screengui>

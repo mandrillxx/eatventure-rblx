@@ -1,6 +1,12 @@
 import { Upgrade } from "./components";
 
-export type UpgradeType = "NewCustomer" | "NewEmployee" | "EmployeePace" | "UpdateProfit" | "UpdateWorkRate";
+export type UpgradeType =
+	| "NewCustomer"
+	| "NewEmployee"
+	| "EmployeePace"
+	| "UpdateProfit"
+	| "UpdateWorkRate"
+	| "UpdateEventRate";
 
 export const Upgrades: Upgrade[] = [
 	Upgrade({
@@ -133,6 +139,19 @@ export const Upgrades: Upgrade[] = [
 		document: {
 			amount: 2,
 			machine: "DeepFryer",
+		},
+	}),
+	Upgrade({
+		identifier: 11,
+		type: "UpdateProfit",
+		title: "Word got out",
+		description: "Customers spawn faster",
+		image: "rbxassetid://14594410499",
+		cost: 150_000,
+		purchased: false,
+		ran: false,
+		document: {
+			amount: 2,
 		},
 	}),
 ];

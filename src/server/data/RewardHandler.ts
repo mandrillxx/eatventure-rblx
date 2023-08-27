@@ -38,5 +38,6 @@ const rewardsSelector = WeightedRewardsSelector.create(
 	1,
 );
 
-export const rewardsOpeningCoordinator = () =>
-	StandardRewardsOpeningCoordinator.create(rewardGrantersByType, rewardsSelector);
+export function rewardsOpeningCoordinator() {
+	return StandardRewardsOpeningCoordinator.create(rewardGrantersByType, rewardsSelector);
+}

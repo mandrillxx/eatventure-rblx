@@ -93,6 +93,10 @@ export class Soundtrack {
 	}
 
 	public Skip(To = this.Active === this.Songs.size() ? 1 : this.Active + 1): Sound {
+		if (!this.Songs[this.Active] || !this.Songs[To]) {
+			this.Shuffle();
+			return this.Skip(To);
+		}
 		FadeOut(this.Songs[this.Active]);
 
 		const NextSong: Sound = this.Songs[To];

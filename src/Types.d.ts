@@ -195,6 +195,7 @@ type BaseUtility = Model & {
 	Every: IntValue;
 	OrderDelay: IntValue;
 	Reward: NumberValue;
+	Weight: IntValue;
 	BaseUpgrade: NumberValue;
 	UpgradeGui: UpgradeGuiInstance;
 };

@@ -18,9 +18,9 @@ import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
 
 const moveCustomerIfOpen = (world: World, player: AnyEntity, customer: AnyEntity) => {
-	const isCloserDestinationAvailable = getNextDestination(world, player, false);
-	if (isCloserDestinationAvailable && isCloserDestinationAvailable.component.instance.Name !== "Wait") {
-		moveCustomer(world, customer, isCloserDestinationAvailable);
+	const closerDestination = getNextDestination(world, player, false);
+	if (closerDestination && closerDestination.component.instance.Name !== "Wait") {
+		moveCustomer(world, customer, closerDestination);
 	}
 };
 
@@ -57,7 +57,7 @@ const isCustomerOccupying = (world: World, levelId: AnyEntity, customer: AnyEnti
 const moveCustomer = (world: World, customer: AnyEntity, destination: ComponentInfo<typeof Destination>) => {
 	if (destination.component.instance.Name !== "Wait") {
 		for (const [_id, _destination, occupiedBy] of world.query(Destination, OccupiedBy)) {
-			if (occupiedBy.entityId === customer) {
+			if (_destination.instance.Name !== "Wait" && occupiedBy.entityId === customer) {
 				return;
 			}
 		}
@@ -68,7 +68,6 @@ const moveCustomer = (world: World, customer: AnyEntity, destination: ComponentI
 		Pathfind({
 			destination: destination.component.destination,
 			running: false,
-			cf: true,
 			finished: () => {
 				const body = getOrError(
 					world,

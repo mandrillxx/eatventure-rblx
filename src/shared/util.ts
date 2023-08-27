@@ -44,6 +44,22 @@ export function getOrError<T extends ComponentCtor>(
 	return componentInstance;
 }
 
+export function weightedRandomIndex<T extends { utility: { weight: number; type: string } }>(array: Array<T>) {
+	let totalWeight = 0;
+	const weights = new Map<number, string>();
+	for (const item of array) {
+		totalWeight += item.utility.weight;
+		for (let i = 0; i < item.utility.weight; i++) {
+			const nextAvailableIndex = weights.size() + 1;
+			weights.set(nextAvailableIndex, item.utility.type);
+		}
+	}
+	const random = math.random(1, totalWeight);
+	const utilityType = weights.get(random);
+
+	return utilityType;
+}
+
 export function randomIndex<T>(array: Array<T>) {
 	return array[math.random(1, array.size()) - 1];
 }

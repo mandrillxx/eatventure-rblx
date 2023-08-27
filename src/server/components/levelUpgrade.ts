@@ -51,6 +51,9 @@ function runUpgrade(world: World, upgradeId: AnyEntity, playerId: AnyEntity) {
 		case "UpdateWorkRate":
 			world.insert(levelId, level.patch({ workRate: level.workRate * upgrade.document.amount! }));
 			break;
+		case "UpdateEventRate":
+			world.insert(levelId, level.patch({ eventRate: level.workRate / upgrade.document.amount! }));
+			break;
 		case "UpdateProfit":
 			for (const [id, utility, belongsTo] of world.query(Utility, BelongsTo)) {
 				if (belongsTo.playerId !== playerId || utility.type !== upgrade.document.machine) continue;

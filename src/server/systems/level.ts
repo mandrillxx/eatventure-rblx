@@ -143,6 +143,7 @@ function level(world: World, state: ServerState) {
 			const every = utilModel.Every.Value / (xpLevel >= 50 ? 2 : 1);
 			const orderDelay = utilModel.OrderDelay.Value;
 			const reward = utilModel.Reward.Value;
+			const weight = utilModel.Weight.Value;
 			const baseUpgradeCost = utilModel.BaseUpgrade.Value;
 			const utilityComponent = Utility({
 				type: utility.Name,
@@ -151,6 +152,7 @@ function level(world: World, state: ServerState) {
 				every,
 				level: { componentId: id, component: level },
 				xpLevel,
+				weight,
 				baseUpgradeCost,
 				orderDelay,
 				reward,
@@ -188,7 +190,7 @@ function level(world: World, state: ServerState) {
 	if (useThrottle(2)) {
 		for (const [id, occupiedBy] of world.query(OccupiedBy)) {
 			if (!world.contains(occupiedBy.entityId)) {
-				if (state.debug)
+				if (state.verbose)
 					Log.Warn(
 						"OccupiedBy entity {@OccupiedBy} does not exist but was occupying, clearing destination",
 						occupiedBy.entityId,
