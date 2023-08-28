@@ -19,10 +19,8 @@ import Log from "@rbxts/log";
 const getNextDestination = (world: World, player: AnyEntity, fallbackWait: boolean = true) => {
 	let waitDestination: ComponentInfo<typeof Destination> | undefined;
 	let selectedDestination: ComponentInfo<typeof Destination> | undefined;
-	for (const [_id, destination] of world.query(Destination).without(OccupiedBy)) {
-		if (destination.type !== "customer") continue;
-		const belongsTo = getOrError(world, _id, BelongsTo, "Destination does not have BelongsTo component");
-		if (belongsTo.playerId !== player) continue;
+	for (const [_id, destination, belongsTo] of world.query(Destination, BelongsTo).without(OccupiedBy)) {
+		if (destination.type !== "customer" || belongsTo.playerId !== player) continue;
 		if (destination.instance.Name === "Wait" && fallbackWait) {
 			waitDestination = { componentId: _id, component: destination } as ComponentInfo<typeof Destination>;
 		} else if (destination.instance.Name !== "Wait" && !selectedDestination) {
@@ -49,12 +47,14 @@ const isCustomerOccupying = (world: World, levelId: AnyEntity, customer: AnyEnti
 const moveCustomer = (world: World, customer: AnyEntity, destination: ComponentInfo<typeof Destination>) => {
 	if (destination.component.instance.Name !== "Wait")
 		world.insert(destination.componentId, OccupiedBy({ entityId: customer }));
+
 	world.insert(
 		customer,
 		Pathfind({
 			destination: destination.component.destination,
 			running: false,
 			finished: () => {
+				if (!world.contains(customer)) return;
 				const body = getOrError(
 					world,
 					customer,
@@ -90,16 +90,20 @@ function customer(world: World, state: ServerState) {
 				Log.Warn("No available destination found for customer {@CustomerId}", id);
 				continue;
 			}
-			if (chosenDestination.component.instance.Name !== "Wait")
-				world.insert(chosenDestination.componentId, OccupiedBy({ entityId: id }));
+			const isWaitDestination = chosenDestination.component.instance.Name === "Wait";
+			if (!isWaitDestination) world.insert(chosenDestination.componentId, OccupiedBy({ entityId: id }));
+			const waiting = math.random(1, 3);
+			const destination = isWaitDestination
+				? chosenDestination.component.destination.add(new Vector3(-(2 * waiting), 0, 0))
+				: chosenDestination.component.destination;
 			world.insert(
 				id,
 				Pathfind({
-					destination: chosenDestination.component.destination,
+					destination,
 					cf: true,
 					running: false,
 					finished: () => {
-						if (chosenDestination.component.instance.Name === "Wait") return;
+						if (chosenDestination.component.instance.Name === "Wait" || !world.contains(id)) return;
 						const body = getOrError(
 							world,
 							id,

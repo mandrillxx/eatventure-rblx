@@ -316,7 +316,7 @@ export class GameProvider {
 				name: levelName,
 				maxCustomers: 2,
 				maxEmployees: 1,
-				eventRate: 0.4,
+				eventRate: 1,
 				workRate: 1,
 				employeePace: 13,
 				spawnRate: 25,
