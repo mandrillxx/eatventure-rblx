@@ -8,7 +8,6 @@ import {
 	Level,
 	Wants,
 	Body,
-	NPC,
 	Client,
 } from "shared/components";
 import { AnyEntity, World, useThrottle } from "@rbxts/matter";
@@ -16,13 +15,6 @@ import { ComponentInfo, getOrError } from "shared/util";
 import { ServerState } from "server/index.server";
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
-
-const moveCustomerIfOpen = (world: World, player: AnyEntity, customer: AnyEntity) => {
-	const closerDestination = getNextDestination(world, player, false);
-	if (closerDestination && closerDestination.component.instance.Name !== "Wait") {
-		moveCustomer(world, customer, closerDestination);
-	}
-};
 
 const getNextDestination = (world: World, player: AnyEntity, fallbackWait: boolean = true) => {
 	let waitDestination: ComponentInfo<typeof Destination> | undefined;
@@ -32,9 +24,9 @@ const getNextDestination = (world: World, player: AnyEntity, fallbackWait: boole
 		const belongsTo = getOrError(world, _id, BelongsTo, "Destination does not have BelongsTo component");
 		if (belongsTo.playerId !== player) continue;
 		if (destination.instance.Name === "Wait" && fallbackWait) {
-			waitDestination = { componentId: _id, component: destination };
-		} else {
-			selectedDestination = { componentId: _id, component: destination };
+			waitDestination = { componentId: _id, component: destination } as ComponentInfo<typeof Destination>;
+		} else if (destination.instance.Name !== "Wait" && !selectedDestination) {
+			selectedDestination = { componentId: _id, component: destination } as ComponentInfo<typeof Destination>;
 		}
 	}
 	return selectedDestination ?? waitDestination;
@@ -51,18 +43,12 @@ const isCustomerOccupying = (world: World, levelId: AnyEntity, customer: AnyEnti
 			}
 		}
 	}
-	return undefined;
+	return false;
 };
 
 const moveCustomer = (world: World, customer: AnyEntity, destination: ComponentInfo<typeof Destination>) => {
-	if (destination.component.instance.Name !== "Wait") {
-		for (const [_id, _destination, occupiedBy] of world.query(Destination, OccupiedBy)) {
-			if (_destination.instance.Name !== "Wait" && occupiedBy.entityId === customer) {
-				return;
-			}
-		}
+	if (destination.component.instance.Name !== "Wait")
 		world.insert(destination.componentId, OccupiedBy({ entityId: customer }));
-	}
 	world.insert(
 		customer,
 		Pathfind({
@@ -81,69 +67,20 @@ const moveCustomer = (world: World, customer: AnyEntity, destination: ComponentI
 	);
 };
 
-const moveWaitingCustomer = (world: World) => {
-	for (const [id, _npc, _customer, belongsTo] of world.query(NPC, Customer, BelongsTo).without(Pathfind)) {
-		if (isCustomerOccupying(world, belongsTo.levelId, id)) {
-			continue;
-		}
-		const destination = getNextDestination(world, belongsTo.playerId, false);
-		if (!destination) {
-			Log.Error("No destination found for customer {@CustomerId}", id);
-			continue;
-		}
-		moveCustomer(world, id, destination);
-	}
-};
-
 function customer(world: World, state: ServerState) {
 	const maids = new Map<AnyEntity, Maid>();
 
 	if (useThrottle(1)) {
-		for (const [id, _customer] of world.query(Customer).without(Pathfind)) {
-			const belongsTo = getOrError(world, id, BelongsTo, "NPC does not have BelongsTo component");
-			moveCustomerIfOpen(world, belongsTo.playerId, id);
+		for (const [id, _customer, belongsTo] of world.query(Customer, BelongsTo)) {
+			const destination = getNextDestination(world, belongsTo.playerId, false);
+			const isOccupying = isCustomerOccupying(world, belongsTo.levelId, id);
+			if (destination?.component.instance.Name === "Wait") Log.Warn("Somethign went wrnnnnn =============-");
+			if (isOccupying || !destination) continue;
+			moveCustomer(world, id, destination);
 		}
 	}
 
 	for (const [id, wants] of world.queryChanged(Wants)) {
-		if (wants.old && wants.new) {
-			if (!world.contains(id)) continue;
-			world.insert(id, Speech({ text: `x${wants.new.product.amount}` }));
-		}
-		if (wants.old && !wants.new) {
-			if (!world.contains(id)) return;
-			const maid = maids.get(id);
-			if (maid) {
-				maid.DoCleaning();
-				maids.delete(id);
-			}
-			const belongsTo = getOrError(world, id, BelongsTo, "NPC does not have BelongsTo component");
-			world.remove(id, Pathfind);
-
-			for (const [_id, destination, occupiedBy] of world.query(Destination, OccupiedBy)) {
-				if (destination.instance.Name !== "Wait" && occupiedBy.entityId === id) {
-					if (state.verbose)
-						Log.Warn(
-							"Clear destination {@DestinationName} for customer {@CustomerId}",
-							destination.instance.Name,
-							id,
-						);
-					task.delay(2.05, () => {
-						if (world.contains(_id)) world.remove(_id, OccupiedBy);
-						moveWaitingCustomer(world);
-					});
-					continue;
-				}
-			}
-
-			world.insert(id, Speech({ text: ":)" }));
-			const client = getOrError(world, belongsTo.playerId, Client, "Player does not have Client component");
-			if (state.playerStatisticsProvider.areStatisticsLoadedForPlayer(client.player))
-				state.playerStatisticsProvider.recordEvent(client.player, "customersServed", 1);
-			task.delay(2, () => {
-				if (world.contains(id)) world.despawn(id);
-			});
-		}
 		if (!wants.old && wants.new) {
 			maids.set(id, new Maid());
 
@@ -177,6 +114,43 @@ function customer(world: World, state: ServerState) {
 				if (!world.contains(id)) return;
 				world.insert(id, Speech({ text: `x${wants.new!.product.amount}` }));
 			});
+		}
+		if (wants.old && !wants.new) {
+			if (!world.contains(id)) return;
+			const maid = maids.get(id);
+			if (maid) {
+				maid.DoCleaning();
+				maids.delete(id);
+			}
+			const belongsTo = getOrError(world, id, BelongsTo, "NPC does not have BelongsTo component");
+			world.remove(id, Pathfind);
+
+			for (const [_id, destination, occupiedBy] of world.query(Destination, OccupiedBy)) {
+				if (destination.instance.Name !== "Wait" && occupiedBy.entityId === id) {
+					if (state.verbose)
+						Log.Warn(
+							"Clear destination {@DestinationName} for customer {@CustomerId}",
+							destination.instance.Name,
+							id,
+						);
+					task.delay(2.05, () => {
+						if (world.contains(_id)) world.remove(_id, OccupiedBy);
+					});
+					continue;
+				}
+			}
+
+			world.insert(id, Speech({ text: ":)" }));
+			const client = getOrError(world, belongsTo.playerId, Client, "Player does not have Client component");
+			if (state.playerStatisticsProvider.areStatisticsLoadedForPlayer(client.player))
+				state.playerStatisticsProvider.recordEvent(client.player, "customersServed", 1);
+			task.delay(2, () => {
+				if (world.contains(id)) world.despawn(id);
+			});
+		}
+		if (wants.old && wants.new) {
+			if (!world.contains(id)) continue;
+			world.insert(id, Speech({ text: `x${wants.new.product.amount}` }));
 		}
 	}
 }

@@ -5,7 +5,6 @@ import { FormatCompact } from "@rbxts/format-number";
 import { ServerState } from "server/index.server";
 import { IProfile } from "server/data/PurchaseHandler";
 import { Profile } from "@rbxts/profileservice/globals";
-import Log from "@rbxts/log";
 
 function getProfile(state: ServerState, player: Player) {
 	const profile = state.profiles.get(player);
@@ -88,11 +87,7 @@ export function saveUpgrade(
 		return;
 	}
 
-	if (!firstRun && balance.balance <= newestUpgrade.cost) {
-		Log.Warn("Player does not have enough money to purchase upgrade");
-		return;
-	}
-
+	if (!firstRun && balance.balance <= newestUpgrade.cost) return;
 	if (!firstRun) {
 		world.insert(playerId, balance.patch({ balance: balance.balance - upgrade.component.cost }));
 		profile.Data.purchasedUpgrades.add(upgrade.component.identifier);

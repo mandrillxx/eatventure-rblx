@@ -85,7 +85,7 @@ const state: ServerState = {
 		typeof PlayerStatisticAchievementsDefinition
 	>,
 	playerIndex: 0,
-	debug: true,
+	debug: false,
 	verbose: false,
 };
 

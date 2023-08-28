@@ -1,8 +1,8 @@
 import { Balance, BelongsTo, Client, OwnedBy, Renderable, Upgrade, Utility } from "shared/components";
+import { AnyEntity, World } from "@rbxts/matter";
 import { updateUpgrades } from "server/components/levelUpgrade";
 import { ServerState } from "server/index.server";
 import { getOrError } from "shared/util";
-import { AnyEntity, World } from "@rbxts/matter";
 import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
 
@@ -26,7 +26,7 @@ function state(world: World, state: ServerState) {
 				const utility = getOrError(world, utilityId, Utility);
 				const { baseUpgradeCost, xpLevel } = utility;
 				if (xpLevel + 1 > 250) continue;
-				const xpBias = xpLevel > 100 ? 1.35 : 1.2;
+				const xpBias = xpLevel > 100 ? 1.205 : 1.2;
 				const nextLevelCost = baseUpgradeCost * (xpBias ** xpLevel - 1);
 				if (balance.new.balance >= nextLevelCost) {
 					if (state.verbose) Log.Info("Utility {@ID} can be upgraded, showing GUI", utilityId);

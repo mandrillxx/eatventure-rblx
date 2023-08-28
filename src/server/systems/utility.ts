@@ -12,7 +12,7 @@ const handleUpgrade = (world: World, player: Player, state: ServerState, id: Any
 	const balance = getOrError(world, playerId, Balance, "Player {@ID} does not have a Balance component");
 	const newUtility = getOrError(world, id, Utility, "Utility no longer exists");
 	const { baseUpgradeCost, xpLevel } = newUtility;
-	const xpBias = xpLevel > 100 ? 1.35 : 1.2;
+	const xpBias = xpLevel > 100 ? 1.205 : 1.2;
 	const nextLevelCost = baseUpgradeCost * (xpBias ** xpLevel - 1);
 	if (state.verbose) Log.Info("Next level cost: {@Cost} | {@Balance}", nextLevelCost, balance.balance);
 	if (newUtility.xpLevel >= 250) {
@@ -22,7 +22,8 @@ const handleUpgrade = (world: World, player: Player, state: ServerState, id: Any
 	}
 	if (balance.balance < nextLevelCost) {
 		world.insert(id, SoundEffect({ sound: "Fail", meantFor: client.player }));
-		Log.Warn("Player {@ID} does not have enough money to upgrade utility {@UtilityID}", playerId, id);
+		if (state.verbose)
+			Log.Warn("Player {@ID} does not have enough money to upgrade utility {@UtilityID}", playerId, id);
 		return;
 	}
 	if (state.debug) Log.Warn("Upgrading utility {@UtilityID} for player {@ID}", id, playerId);

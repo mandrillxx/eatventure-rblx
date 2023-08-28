@@ -7,7 +7,7 @@ import { Utility } from "shared/components";
 export function getNextLevelCost(world: World, id: AnyEntity, utility?: Utility) {
 	const newUtility = utility ?? getOrError(world, id, Utility, "Utility no longer exists");
 	const { baseUpgradeCost, xpLevel } = newUtility;
-	const xpBias = xpLevel > 100 ? 1.35 : 1.2;
+	const xpBias = xpLevel > 100 ? 1.205 : 1.2;
 	const nextLevelCost = baseUpgradeCost * (xpBias ** xpLevel - 1);
 	return nextLevelCost;
 }
@@ -24,11 +24,11 @@ export function ClientEntityIdToServer(state: ClientState, id: AnyEntity) {
 
 export function updateUtilityInfo(instance: UtilityInfoInstance, utility: Utility, world: World, utilityId: AnyEntity) {
 	let rewardMultiplier = 1;
-	if (utility.xpLevel >= 25 && utility.xpLevel < 50) rewardMultiplier *= 1.5;
-	if (utility.xpLevel >= 50 && utility.xpLevel < 100) rewardMultiplier *= 2;
-	if (utility.xpLevel >= 100 && utility.xpLevel < 250) rewardMultiplier *= 3;
-	if (utility.xpLevel >= 250) rewardMultiplier *= 4;
-	const xpBias = utility.xpLevel > 100 ? 1.35 : 1.2;
+	if (utility.xpLevel >= 25 && utility.xpLevel < 50) rewardMultiplier = 1.125;
+	if (utility.xpLevel >= 50 && utility.xpLevel < 100) rewardMultiplier = 1.135;
+	if (utility.xpLevel >= 100 && utility.xpLevel < 250) rewardMultiplier = 1.145;
+	if (utility.xpLevel >= 250) rewardMultiplier = 1.155;
+	const xpBias = utility.xpLevel > 100 ? 1.205 : 1.2;
 	const reward = FormatCompact(utility.reward * (xpBias ** utility.xpLevel - 1) * 5 * 0.2 * rewardMultiplier, 1);
 	const nextLevelCost = FormatCompact(getNextLevelCost(world, utilityId), 2);
 	instance.Background.Level.Text = `Level ${utility.xpLevel}`;
