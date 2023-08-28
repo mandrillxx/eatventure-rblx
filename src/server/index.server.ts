@@ -40,8 +40,17 @@ export interface _Level {
 	levelId: AnyEntity;
 }
 
+interface Plot {
+	playerId: AnyEntity | undefined;
+	playerUserId: number | undefined;
+	levelId: AnyEntity | undefined;
+	position: 1 | 2 | 3 | 4;
+}
+
 declare const script: { systems: Folder };
 export interface ServerState {
+	nextOpenPlot: () => Plot | undefined;
+	plots: Map<1 | 2 | 3 | 4, Plot>;
 	levels: Map<number, _Level>;
 	clients: Map<number, AnyEntity>;
 	rewardContainers: Map<number, RecurringTimeLockedRewardContainer>;
@@ -72,6 +81,10 @@ const ProfileTemplate: IProfile = {
 };
 
 const state: ServerState = {
+	plots: new Map(),
+	nextOpenPlot: () => {
+		return undefined;
+	},
 	levels: new Map(),
 	clients: new Map(),
 	profiles: new Map(),
@@ -121,6 +134,25 @@ function collision() {
 
 async function bootstrap() {
 	function playerRemoving(player: Player) {
+		function getPlayerPlot(player: Player) {
+			for (const plot of state.plots) {
+				if (plot[1].playerUserId === player.UserId) {
+					return plot[1];
+				}
+			}
+		}
+		const playersPlot = getPlayerPlot(player);
+		if (!playersPlot) {
+			Log.Warn("Could not find plot for player {@Player}, cannot clear", player);
+		} else {
+			state.plots.set(playersPlot.position, {
+				playerId: undefined,
+				playerUserId: undefined,
+				levelId: undefined,
+				position: playersPlot.position,
+			});
+		}
+
 		state.clients.delete(player.UserId);
 		const profile = state.profiles.get(player);
 		if (profile) {
@@ -130,6 +162,23 @@ async function bootstrap() {
 		state.rewardContainers.delete(player.UserId);
 		gameProvider.saveAndCleanup(player);
 	}
+
+	for (let i = 1; i < 5; i++) {
+		const _i = i as 1 | 2 | 3 | 4;
+		state.plots.set(_i, {
+			playerUserId: undefined,
+			playerId: undefined,
+			levelId: undefined,
+			position: _i,
+		});
+	}
+	state.nextOpenPlot = () => {
+		for (const plot of state.plots) {
+			if (!plot[1].levelId && !plot[1].playerId) {
+				return plot[1];
+			}
+		}
+	};
 
 	function playerAdded(player: Player) {
 		function handleRewards() {

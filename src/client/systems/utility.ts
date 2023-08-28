@@ -20,7 +20,7 @@ function utility(world: World, state: ClientState) {
 				OwnedBy,
 				"Utility does not have OwnedBy component",
 			);
-			if (ownedBy.player.UserId !== player.UserId) continue;
+			if (ownedBy.player !== player) continue;
 			const renderable = getOrError(world, id, Renderable, "Utility {@ID} does not have a Renderable component");
 			const model = renderable.model as BaseUtility;
 			maid.GiveTask(

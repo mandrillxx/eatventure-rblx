@@ -5,6 +5,12 @@ interface Workspace extends Instance {
 	NPCs: Folder & {
 		[key: string]: BaseNPC;
 	};
+	Plots: Folder & {
+		Plot1: Part;
+		Plot2: Part;
+		Plot3: Part;
+		Plot4: Part;
+	};
 }
 
 interface ReplicatedStorage extends Instance {
@@ -162,6 +168,10 @@ type RadialInstance = Frame & {
 			UIGradient: UIGradient;
 		};
 	};
+};
+
+type BasePlot = Part & {
+	Attachment: Attachment;
 };
 
 type BaseUpgrade = Frame & {

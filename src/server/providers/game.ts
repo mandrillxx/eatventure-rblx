@@ -334,7 +334,11 @@ export class GameProvider {
 		task.delay(1, () => {
 			const levelRenderable = getOrError(world, levelId, Renderable, "Level does not have Renderable component");
 			const levelModel = levelRenderable.model as BaseLevel;
-			character.PivotTo(levelModel.EmployeeAnchors.Spawn.PrimaryPart!.CFrame.add(new Vector3(0, 3, 0)));
+			character.PivotTo(
+				levelModel.EmployeeAnchors.Spawn.PrimaryPart!.CFrame.add(
+					new Vector3(math.random(1, 3), 3, math.random(1, 3)),
+				),
+			);
 			Log.Info("Teleported {@Name} to {@LevelName}", levelName, client.player.Name);
 		});
 

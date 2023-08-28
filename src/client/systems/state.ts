@@ -13,7 +13,7 @@ function state(world: World, state: ClientState) {
 		for (const [id, openStatus] of world.queryChanged(OpenStatus)) {
 			if (openStatus.new) {
 				const ownedBy = getOrError(world, id, OwnedBy, "OpenStatus does not have OwnedBy component");
-				if (ownedBy.player.UserId !== player.UserId) continue;
+				if (ownedBy.player !== player) continue;
 				state.update("open", openStatus.new.open);
 			}
 		}
@@ -27,7 +27,7 @@ function state(world: World, state: ClientState) {
 				OwnedBy,
 				"Utility does not have OwnedBy component",
 			);
-			if (ownedBy.player.UserId !== player.UserId) continue;
+			if (ownedBy.player !== player) continue;
 			const utilityInfo = player
 				.FindFirstChildOfClass("PlayerGui")!
 				.FindFirstChild("UtilityInfo")! as UtilityInfoInstance;
@@ -50,42 +50,46 @@ function state(world: World, state: ClientState) {
 
 	for (const [id, _level] of world.queryChanged(Level)) {
 		const ownedBy = getOrError(world, id, OwnedBy, "Level does not have OwnedBy component");
-		if (ownedBy.player.UserId !== player.UserId) continue;
+		if (ownedBy.player !== player) continue;
 		state.levelId = id;
 	}
 
 	for (const [id, balance] of world.queryChanged(Balance)) {
+		if (id !== state.playerId!) continue;
 		if (balance.new) {
-			if (id === state.playerId) {
-				const playerGui = player.FindFirstChildOfClass("PlayerGui")!;
-				const overlay = playerGui.FindFirstChild("Overlay") as NewOverlayGui;
-				const playerInfo = overlay.PlayerInfo;
-				const settings = overlay.Settings;
-				playerInfo.Bars.Progress.Cash.Text.TextLabel.Text = `$${FormatCompact(
-					balance.new.balance,
-					balance.new.balance > 1_000_000 ? 1 : 2,
-				)}`;
-				settings.Content.Body.Cash.Text.TextLabel.Text = `$${FormatCompact(
-					balance.new.balance,
-					balance.new.balance > 1_000_000 ? 1 : 2,
-				)}`;
-				settings.Content.Body.Cash.Text["TextLabel - Stroke"].Text = `$${FormatCompact(
-					balance.new.balance,
-					balance.new.balance > 1_000_000 ? 1 : 2,
-				)}`;
-				const utilityInfo = playerGui.FindFirstChild("UtilityInfo")! as UtilityInfoInstance;
-				const utility = state.utilityUpgrade;
-				if (!utility || !utilityInfo.Enabled || utilityInfo.Adornee?.Name !== utility.component.type) continue;
-				const nextLevelCost = getNextLevelCost(world, utility.componentId);
-				utilityInfo.Background.Upgrade.BackgroundColor3 =
-					balance.new.balance >= nextLevelCost && utility.component.xpLevel < 250
-						? Color3.fromRGB(76, 229, 11)
-						: Color3.fromRGB(229, 20, 5);
-			}
+			const playerGui = player.FindFirstChildOfClass("PlayerGui")!;
+			const overlay = playerGui.FindFirstChild("Overlay") as NewOverlayGui;
+			const playerInfo = overlay.PlayerInfo;
+			const settings = overlay.Settings;
+			playerInfo.Bars.Progress.Cash.Text.TextLabel.Text = `$${FormatCompact(
+				balance.new.balance,
+				balance.new.balance > 1_000_000 ? 1 : 2,
+			)}`;
+			playerInfo.Bars.Progress.Cash.Text["TextLabel - Stroke"].Text = `$${FormatCompact(
+				balance.new.balance,
+				balance.new.balance > 1_000_000 ? 1 : 2,
+			)}`;
+			settings.Content.Body.Cash.Text.TextLabel.Text = `$${FormatCompact(
+				balance.new.balance,
+				balance.new.balance > 1_000_000 ? 1 : 2,
+			)}`;
+			settings.Content.Body.Cash.Text["TextLabel - Stroke"].Text = `$${FormatCompact(
+				balance.new.balance,
+				balance.new.balance > 1_000_000 ? 1 : 2,
+			)}`;
+			const utilityInfo = playerGui.FindFirstChild("UtilityInfo")! as UtilityInfoInstance;
+			const utility = state.utilityUpgrade;
+			if (!utility || !utilityInfo.Enabled || utilityInfo.Adornee?.Name !== utility.component.type) continue;
+			const nextLevelCost = getNextLevelCost(world, utility.componentId);
+			utilityInfo.Background.Upgrade.BackgroundColor3 =
+				balance.new.balance >= nextLevelCost && utility.component.xpLevel < 250
+					? Color3.fromRGB(76, 229, 11)
+					: Color3.fromRGB(229, 20, 5);
 		}
 	}
 
-	for (const [_id, balance] of world.queryChanged(Balance)) {
+	for (const [id, balance] of world.queryChanged(Balance)) {
+		if (id !== state.playerId!) continue;
 		if (balance.new && state.levelId) {
 			const openUpgrades = (player.FindFirstChildOfClass("PlayerGui")!.FindFirstChild("Overlay") as OverlayGui)
 				.OpenUpgrades;
@@ -93,7 +97,7 @@ function state(world: World, state: ClientState) {
 			let upgradesCanAfford = 0;
 			for (const [_id, upgrade, belongsTo] of world.query(Upgrade, BelongsTo)) {
 				if (ServerEntityIdToClient(state, belongsTo.levelId) !== state.levelId) continue;
-				if (upgrade.cost <= balance.new.balance && !upgrade.purchased) {
+				if (upgrade.cost <= balance.new.balance && !upgrade.purchased && !upgrade.ran) {
 					upgradesCanAfford++;
 				}
 			}

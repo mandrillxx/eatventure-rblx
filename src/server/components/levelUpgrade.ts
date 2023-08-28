@@ -124,51 +124,50 @@ export function updateUpgrades({
 	const _upgrades = upgrades ?? getAllUpgradesForPlayer(world, playerId);
 	const baseUpgrade = upgradeInfo.Content.Body.BaseUpgrade;
 	const balance = getOrError(world, playerId, Balance);
-	if (firstRun) {
-		for (const child of upgradeInfo.Content.Body.GetChildren()) {
-			if (child.IsA("Frame") && child.Name !== "BaseUpgrade") {
-				child.Destroy();
-			}
-		}
-		_upgrades.forEach((upgrade) => {
-			const newUpgrade = baseUpgrade.Clone();
-			const ownsUpgrade = has(profile.Data.purchasedUpgrades, upgrade.component.identifier);
-			if (ownsUpgrade) return;
-			newUpgrade.Visible = true;
-			newUpgrade.Name = tostring(upgrade.componentId);
-			newUpgrade.Content.Purchase.Visible = false;
-			newUpgrade.Content.AlreadyOwn.Visible = false;
-			newUpgrade.Content.CantAfford.Visible = false;
-			const button =
-				balance.balance >= upgrade.component.cost && !ownsUpgrade
-					? newUpgrade.Content.Purchase
-					: ownsUpgrade
-					? newUpgrade.Content.AlreadyOwn
-					: newUpgrade.Content.CantAfford;
 
-			button.BtnImage.Text.TextLabel.Text = `$${FormatCompact(upgrade.component.cost, 0)}`;
-			button.BtnImage.Text["TextLabel - Stroke"].Text = `$${FormatCompact(upgrade.component.cost, 0)}`;
-			button.Visible = true;
-			newUpgrade.Content.Title.Text.TextLabel.Text = `${upgrade.component.title} ${ownsUpgrade ? "(Owned)" : ""}`;
-			newUpgrade.Content.Title.Text["TextLabel - Stroke"].Text = `${upgrade.component.title} ${
-				ownsUpgrade ? "(Owned)" : ""
-			}`;
-			newUpgrade.Content.Description.Text.TextLabel.Text = upgrade.component.description;
-			newUpgrade.Content.Description.Text["TextLabel - Stroke"].Text = upgrade.component.description;
-			newUpgrade.Content.ImageLabel.Image = upgrade.component.image;
-			newUpgrade.LayoutOrder = upgrade.componentId;
-			newUpgrade.Parent = upgradeInfo.Content.Body;
-			const save = (firstRun: boolean) =>
-				saveUpgrade(firstRun, world, playerId, balance, profile, upgrade, upgradeInfo);
-			if (firstRun) {
-				save(true);
-			}
-			if (!ownsUpgrade)
-				button.MouseButton1Click.Connect(() => {
-					save(false);
-				});
-		});
+	for (const child of upgradeInfo.Content.Body.GetChildren()) {
+		if (child.IsA("Frame") && child.Name !== "BaseUpgrade") {
+			child.Destroy();
+		}
 	}
+	_upgrades.forEach((upgrade) => {
+		const newUpgrade = baseUpgrade.Clone();
+		const ownsUpgrade = has(profile.Data.purchasedUpgrades, upgrade.component.identifier);
+		if (ownsUpgrade) return;
+		newUpgrade.Visible = true;
+		newUpgrade.Name = tostring(upgrade.componentId);
+		newUpgrade.Content.Purchase.Visible = false;
+		newUpgrade.Content.AlreadyOwn.Visible = false;
+		newUpgrade.Content.CantAfford.Visible = false;
+		const button =
+			balance.balance >= upgrade.component.cost && !ownsUpgrade
+				? newUpgrade.Content.Purchase
+				: ownsUpgrade
+				? newUpgrade.Content.AlreadyOwn
+				: newUpgrade.Content.CantAfford;
+
+		button.BtnImage.Text.TextLabel.Text = `$${FormatCompact(upgrade.component.cost, 0)}`;
+		button.BtnImage.Text["TextLabel - Stroke"].Text = `$${FormatCompact(upgrade.component.cost, 0)}`;
+		button.Visible = true;
+		newUpgrade.Content.Title.Text.TextLabel.Text = `${upgrade.component.title} ${ownsUpgrade ? "(Owned)" : ""}`;
+		newUpgrade.Content.Title.Text["TextLabel - Stroke"].Text = `${upgrade.component.title} ${
+			ownsUpgrade ? "(Owned)" : ""
+		}`;
+		newUpgrade.Content.Description.Text.TextLabel.Text = upgrade.component.description;
+		newUpgrade.Content.Description.Text["TextLabel - Stroke"].Text = upgrade.component.description;
+		newUpgrade.Content.ImageLabel.Image = upgrade.component.image;
+		newUpgrade.LayoutOrder = upgrade.componentId;
+		newUpgrade.Parent = upgradeInfo.Content.Body;
+		const save = (firstRun: boolean) =>
+			saveUpgrade(firstRun, world, playerId, balance, profile, upgrade, upgradeInfo);
+		if (firstRun) {
+			save(true);
+		}
+		if (!ownsUpgrade)
+			button.MouseButton1Click.Connect(() => {
+				save(false);
+			});
+	});
 }
 
 export function handleUpgrade(

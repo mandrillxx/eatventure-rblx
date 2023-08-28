@@ -31,8 +31,22 @@ function level(world: World, state: ServerState) {
 			Log.Error("Level {@LevelName} does not have a representative asset", level.name);
 			continue;
 		}
+		const nextOpenPlot = state.nextOpenPlot();
+		if (!nextOpenPlot) {
+			Log.Error("Could not find next open plot");
+			continue;
+		}
+
+		const plot = Workspace.Plots.FindFirstChild(`PLOT${nextOpenPlot.position}`) as BasePlot;
+		state.plots.set(nextOpenPlot.position, {
+			levelId: id,
+			playerUserId: player.UserId,
+			playerId: ownedBy.playerId,
+			position: nextOpenPlot.position,
+		});
+
 		levelModel = levelModel.Clone();
-		levelModel.PivotTo(levelModel.GetPivot().add(new Vector3(0, 0, state.playerIndex * 40)));
+		levelModel.PivotTo(plot.Attachment.WorldCFrame);
 		state.playerIndex++;
 
 		const destinations: ComponentInfo<typeof Destination>[] = [];
