@@ -70,30 +70,102 @@ export class GameProvider {
 	  Player Leaves ->
 	  GameProvider.saveAndCleanup() ->          <[player]
 	  GameProvider.savePlayerData() ->          >[level, money, utility levels]
-	  */
+	*/
 
 	private playerSessions: PlayerSession[] = [];
 
-	saveAndCleanup(player: Player) {
-		const session = this.playerSessions.find((session, index) => {
+	private cleanup(world: World, state: ServerState, levelId: AnyEntity, session: PlayerSession) {
+		session.queue.clear();
+		session.maid.DoCleaning();
+
+		function getPlayerPlot(player: Player) {
+			for (const plot of state.plots) {
+				if (plot[1].playerUserId === player.UserId) {
+					return plot[1];
+				}
+			}
+		}
+
+		const playersPlot = getPlayerPlot(session.player.player);
+		if (!playersPlot) {
+			Log.Fatal("Could not find plot for player {@Player}, cannot clear", session.player.player);
+			return;
+		}
+
+		state.plots.set(playersPlot.position, {
+			playerId: undefined,
+			playerUserId: undefined,
+			levelId: undefined,
+			position: playersPlot.position,
+		});
+
+		if (world.contains(levelId)) world.despawn(levelId);
+	}
+
+	private getPlayerSession(player: Player) {
+		return this.playerSessions.find((session, index) => {
 			const matches = session.player.player === player;
 			if (matches) {
 				this.playerSessions.remove(index);
 			}
 			return matches;
 		});
+	}
+
+	switchLevel(player: Player, state: ServerState, level: number) {
+		const session = this.getPlayerSession(player);
+
+		if (!session) {
+			Log.Error("{@Player} does not have a session, cannot switch levels", player.Name);
+			return;
+		}
+
+		const { world } = session;
+		const { entity, levelId } = session.player;
+		this.cleanup(world, state, levelId, session);
+
+		const newLevelId = this.loadLevel(
+			world,
+			entity,
+			session.player.client,
+			level,
+			player.Character || player.CharacterAdded.Wait()[0],
+		);
+		if (!world.contains(newLevelId)) {
+			Log.Error("Level {@LevelId} could not be found", newLevelId);
+			return;
+		}
+
+		const playerData = this.loadPlayerData(session.player.client, state);
+		if (!playerData) {
+			Log.Fatal("Player data could not be loaded for {@Name}", session.player.player.Name);
+			return;
+		}
+		world.insert(
+			entity,
+			Balance({
+				balance: playerData.money,
+			}),
+		);
+
+		const newLevel = getOrError(world, newLevelId, Level, "Level component not found on new level entity");
+		task.delay(1, () => {
+			this.beginGameplayLoop(world, state, session.player.client, entity, newLevel, newLevelId);
+		});
+	}
+
+	saveAndCleanup(player: Player, state: ServerState) {
+		const session = this.getPlayerSession(player);
 
 		if (!session) {
 			Log.Error("{@Player} does not have a session, cannot terminate", player.Name);
 			return;
 		}
 		const { world } = session;
-		const { client, entity, levelId } = session.player;
-		if (world.contains(levelId)) world.despawn(levelId);
-		if (world.contains(entity)) world.despawn(entity);
+		const { entity, levelId } = session.player;
+		this.cleanup(world, state, levelId, session);
 
-		session.maid.DoCleaning();
-		session.queue.clear();
+		if (world.contains(entity)) world.despawn(entity);
 		this.savePlayerData(session);
 	}
 
@@ -206,6 +278,7 @@ export class GameProvider {
 					return;
 				}
 				if (state.verbose) Log.Debug("{@Status} store", open ? "Opening" : "Closing");
+				if (!world.contains(levelId)) return;
 				world.insert(
 					levelId,
 					OpenStatus({
@@ -227,7 +300,7 @@ export class GameProvider {
 					break;
 				}
 				case "newEmployee": {
-					if (event.ran) return;
+					if (!world.contains(levelId) || event.ran) return;
 					if (state.verbose) Log.Debug("Spawning new employee");
 					const gender = math.random(0, 10) < 5 ? "Male" : "Female";
 					const name = event.args?.npc ?? randomNpcName(gender);
@@ -250,6 +323,7 @@ export class GameProvider {
 					if (state.verbose) Log.Debug("Spawning new customer");
 					const gender = math.random(0, 10) < 5 ? "Male" : "Female";
 					const name = event.args?.npc ?? randomNpcName(gender);
+					if (!world.contains(levelId)) return;
 					const hasUtilities = getOrError(
 						world,
 						levelId,
@@ -363,6 +437,7 @@ export class GameProvider {
 		player.Money.Value = profile.Data.money;
 
 		profile.Data.utilityLevels.forEach((level, utility) => {
+			if (player.Utilities.FindFirstChild(utility)) return;
 			New("IntValue")({
 				Name: utility,
 				Value: level,
@@ -372,7 +447,7 @@ export class GameProvider {
 		if (state.verbose) Log.Warn("Loaded data for {@Name}", player.Name);
 
 		return {
-			level: 1,
+			level: profile.Data.level,
 			money: profile.Data.money,
 			utilityLevels: profile.Data.utilityLevels,
 		};

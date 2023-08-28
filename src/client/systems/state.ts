@@ -1,14 +1,4 @@
-import {
-	Balance,
-	BelongsTo,
-	Client,
-	Level,
-	OpenStatus,
-	OwnedBy,
-	Renderable,
-	Upgrade,
-	Utility,
-} from "shared/components";
+import { Balance, BelongsTo, Level, OpenStatus, OwnedBy, Renderable, Upgrade, Utility } from "shared/components";
 import { ServerEntityIdToClient, getNextLevelCost, updateUtilityInfo } from "client/methods";
 import { AnyEntity, World, useThrottle } from "@rbxts/matter";
 import { FormatCompact } from "@rbxts/format-number";
@@ -58,10 +48,12 @@ function state(world: World, state: ClientState) {
 		}
 	}
 
-	for (const [id, _level] of world.queryChanged(Level)) {
-		const ownedBy = getOrError(world, id, OwnedBy, "Level does not have OwnedBy component");
-		if (ownedBy.player !== player) continue;
-		state.levelId = id;
+	for (const [id, level] of world.queryChanged(Level)) {
+		if (!level.old && level.new) {
+			const ownedBy = getOrError(world, id, OwnedBy, "Level does not have OwnedBy component");
+			if (ownedBy.player !== player) continue;
+			state.levelId = id;
+		}
 	}
 
 	for (const [id, balance] of world.queryChanged(Balance)) {

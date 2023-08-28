@@ -125,6 +125,7 @@ function level(world: World, state: ServerState) {
 		levelModel.SetAttribute("Owner", player.UserId);
 		levelModel.Parent = Workspace.Levels;
 
+		if (!world.contains(id)) continue;
 		world.insert(
 			id,
 			Renderable({ model: levelModel }),
@@ -135,7 +136,6 @@ function level(world: World, state: ServerState) {
 				open: false,
 			}),
 		);
-		if (!world.contains(id)) continue;
 		const model = getOrError(world, id, Renderable, "Level does not have Renderable component");
 
 		const utilities: { utility: Utility; model: BaseUtility }[] = [];
@@ -219,6 +219,7 @@ function level(world: World, state: ServerState) {
 		if (!npc.old && npc.new) {
 			if (!world.contains(id)) continue;
 			const belongsTo = getOrError(world, id, BelongsTo, "NPC does not have BelongsTo component");
+			if (!world.contains(belongsTo.levelId)) continue;
 			const level = getOrError(world, belongsTo.levelId, Level);
 			const { spawnRate, maxCustomers, maxEmployees } = level;
 			const npcType = npc.new.type;

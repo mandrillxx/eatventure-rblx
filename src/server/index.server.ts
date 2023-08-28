@@ -160,7 +160,7 @@ async function bootstrap() {
 			profile.Release();
 		}
 		state.rewardContainers.delete(player.UserId);
-		gameProvider.saveAndCleanup(player);
+		gameProvider.saveAndCleanup(player, state);
 	}
 
 	for (let i = 1; i < 5; i++) {
@@ -272,6 +272,10 @@ async function bootstrap() {
 	setupPurchases(state, world);
 
 	Network.setStoreStatus.server.connect((player, open) => {
+		if (!open) {
+			gameProvider.switchLevel(player, state, 2);
+		}
+
 		gameProvider.addEvent(player, {
 			type: open ? "openStore" : "closeStore",
 			ran: false,

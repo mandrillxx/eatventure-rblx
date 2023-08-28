@@ -5,11 +5,12 @@ import { ClientState } from "shared/clientState";
 import { Players } from "@rbxts/services";
 import { World } from "@rbxts/matter";
 import Maid from "@rbxts/maid";
+import Log from "@rbxts/log";
 
 const player = Players.LocalPlayer;
 
 function utility(world: World, state: ClientState) {
-	const maid = new Maid();
+	let maid: Maid | undefined;
 
 	for (const [id, utility] of world.queryChanged(Utility)) {
 		if (!utility.old && utility.new) {
@@ -20,43 +21,50 @@ function utility(world: World, state: ClientState) {
 				OwnedBy,
 				"Utility does not have OwnedBy component",
 			);
-			if (ownedBy.player !== player) continue;
+			if (ownedBy.player !== player) {
+				Log.Info("Ownedby player is not player");
+				continue;
+			}
 			const renderable = getOrError(world, id, Renderable, "Utility {@ID} does not have a Renderable component");
 			const model = renderable.model as BaseUtility;
-			maid.GiveTask(
-				model.ClickDetector.MouseHoverEnter.Connect(() => {
-					model.SelectionBox.Visible = true;
-				}),
-			);
-			maid.GiveTask(
-				model.ClickDetector.MouseHoverLeave.Connect(() => {
-					model.SelectionBox.Visible = false;
-				}),
-			);
-			maid.GiveTask(
-				model.ClickDetector.MouseClick.Connect(() => {
-					const utilInfo = player
-						.FindFirstChildOfClass("PlayerGui")!
-						.FindFirstChild("UtilityInfo")! as UtilityInfoInstance;
-					const utility = getOrError(world, id, Utility, "Utility {@ID} no longer exists");
-					state.utilityUpgrade = fetchComponent(world, id, Utility);
-					const nextLevelCost = getNextLevelCost(world, id);
-					const balance = getOrError(
-						world,
-						state.playerId!,
-						Balance,
-						"Player {@ID} does not have a Balance component",
-					);
-					utilInfo.Background.Upgrade.BackgroundColor3 =
-						balance.balance >= nextLevelCost ? Color3.fromRGB(76, 229, 11) : Color3.fromRGB(229, 20, 5);
-					updateUtilityInfo(utilInfo, utility, world, id);
-					utilInfo.Adornee = utilInfo.Adornee === model ? undefined : model;
-					utilInfo.Enabled = utilInfo.Adornee === model;
-				}),
-			);
+			maid = new Maid();
+			task.delay(0.5, () => {
+				if (!maid) return;
+				maid.GiveTask(
+					model.ClickDetector.MouseHoverEnter.Connect(() => {
+						model.SelectionBox.Visible = true;
+					}),
+				);
+				maid.GiveTask(
+					model.ClickDetector.MouseHoverLeave.Connect(() => {
+						model.SelectionBox.Visible = false;
+					}),
+				);
+				maid.GiveTask(
+					model.ClickDetector.MouseClick.Connect(() => {
+						const utilInfo = player
+							.FindFirstChildOfClass("PlayerGui")!
+							.FindFirstChild("UtilityInfo")! as UtilityInfoInstance;
+						const utility = getOrError(world, id, Utility, "Utility {@ID} no longer exists");
+						state.utilityUpgrade = fetchComponent(world, id, Utility);
+						const nextLevelCost = getNextLevelCost(world, id);
+						const balance = getOrError(
+							world,
+							state.playerId!,
+							Balance,
+							"Player {@ID} does not have a Balance component",
+						);
+						utilInfo.Background.Upgrade.BackgroundColor3 =
+							balance.balance >= nextLevelCost ? Color3.fromRGB(76, 229, 11) : Color3.fromRGB(229, 20, 5);
+						updateUtilityInfo(utilInfo, utility, world, id);
+						utilInfo.Adornee = utilInfo.Adornee === model ? undefined : model;
+						utilInfo.Enabled = utilInfo.Adornee === model;
+					}),
+				);
+			});
 		}
 		if (utility.old && !utility.new) {
-			maid.DoCleaning();
+			if (maid) maid.DoCleaning();
 		}
 	}
 }

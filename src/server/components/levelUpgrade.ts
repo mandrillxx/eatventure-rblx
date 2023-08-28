@@ -179,19 +179,20 @@ export function handleUpgrade(
 	world: World,
 	state: ServerState,
 ) {
+	if (!world.contains(levelId)) return;
 	const profile = getProfile(state, player);
 	const ownsUpgrade = has(profile.Data.purchasedUpgrades, upgrade.identifier);
 	const otherUpgrades = getAllUpgradesForPlayer(world, playerId);
 	const upgradeId = world.spawn(upgrade.patch({ purchased: ownsUpgrade }), BelongsTo({ playerId, levelId }));
-	const sortedUpgrades = [...otherUpgrades, { componentId: upgradeId, component: upgrade }].sort(
-		(a, b) => a.component.cost <= b.component.cost,
-	);
+	// const sortedUpgrades = [...otherUpgrades, { componentId: upgradeId, component: upgrade }].sort(
+	// 	(a, b) => a.component.cost <= b.component.cost,
+	// );
 	const upgradeInfo = (
 		player.FindFirstChildOfClass("PlayerGui")!.FindFirstChild("Overlay")! as ScreenGui
 	).FindFirstChild("Upgrades") as UpgradesFrame;
 	updateUpgrades({
 		firstRun,
-		upgrades: sortedUpgrades,
+		// upgrades: sortedUpgrades,
 		world,
 		playerId,
 		profile,
