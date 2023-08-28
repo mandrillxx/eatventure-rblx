@@ -309,8 +309,9 @@ type BaseLevel = Model & {
 
 type BasePlayer = Player & {
 	leaderstats: Folder & {
-		Money: NumberValue;
+		Money: StringValue;
 	};
+	Money: NumberValue;
 	Utilities: Folder & {
 		[utilName: string]: IntValue;
 	};

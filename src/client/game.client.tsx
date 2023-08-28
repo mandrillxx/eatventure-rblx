@@ -171,7 +171,7 @@ function bootstrap() {
 
 	const soundtrack = setupSoundtrack();
 
-	const money = (player as BasePlayer).leaderstats.Money;
+	const money = (player as BasePlayer).Money;
 	const update = (value?: number) => state.update("balance", value ?? money.Value);
 	update();
 	money.Changed.Connect((newValue) => {

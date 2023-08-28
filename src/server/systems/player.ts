@@ -1,3 +1,4 @@
+import { FormatCompact } from "@rbxts/format-number";
 import { ServerState } from "server/index.server";
 import { getOrError } from "shared/util";
 import { Balance } from "shared/components";
@@ -16,7 +17,11 @@ function player(world: World, state: ServerState) {
 					balance.new.balance,
 					balance.old?.balance,
 				);
-			(client.player as BasePlayer).leaderstats.Money.Value = balance.new.balance;
+			(client.player as BasePlayer).leaderstats.Money.Value = FormatCompact(
+				balance.new.balance,
+				balance.new.balance > 100_000 ? 1 : 2,
+			);
+			(client.player as BasePlayer).Money.Value = balance.new.balance;
 		}
 	}
 }

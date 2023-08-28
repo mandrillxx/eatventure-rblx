@@ -189,10 +189,15 @@ async function bootstrap() {
 				Name: "Utilities",
 				Parent: player,
 			});
+			New("StringValue")({
+				Value: "0",
+				Name: "Money",
+				Parent: leaderstats,
+			});
 			New("NumberValue")({
 				Value: 0,
 				Name: "Money",
-				Parent: leaderstats,
+				Parent: player,
 			});
 			const utilityInfo = ReplicatedStorage.Assets.UtilityInfo.Clone();
 			const upgradeInfo = ReplicatedStorage.Assets.UpgradeInfo.Clone();

@@ -12,6 +12,7 @@ import {
 } from "shared/components";
 import { NPCDisplayNames, getOrError, randomNpcName, weightedRandomIndex } from "shared/util";
 import { AnyEntity, World } from "@rbxts/matter";
+import { FormatCompact } from "@rbxts/format-number";
 import { ServerState } from "server/index.server";
 import { Provider } from "@rbxts/proton";
 import { Network } from "shared/network";
@@ -354,7 +355,8 @@ export class GameProvider {
 			profile.Release();
 			return;
 		}
-		player.leaderstats.Money.Value = profile.Data.money;
+		player.leaderstats.Money.Value = FormatCompact(profile.Data.money, profile.Data.money > 100_000 ? 0 : 2);
+		player.Money.Value = profile.Data.money;
 
 		profile.Data.utilityLevels.forEach((level, utility) => {
 			New("IntValue")({
