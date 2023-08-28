@@ -45,6 +45,7 @@ type NewOverlayGui = ScreenGui & {
 	Gamepasses: GamepassesFrame;
 	PlayerInfo: PlayerInfoFrame;
 	Upgrades: UpgradesFrame;
+	Settings: SettingsFrame;
 	OpenSettings: TextButton;
 	OpenShop: TextButton;
 	OpenPasses: TextButton;
@@ -82,10 +83,50 @@ type SliderGui = Frame & {
 };
 
 type SettingsFrame = Frame & {
-	UIListLayout: UIListLayout;
-	Music: SliderGui;
-	SoundFX: SliderGui;
-	Title: TextLabel;
+	Close: Frame & {
+		ImageButton: ImageButton;
+	};
+	Content: Frame & {
+		Body: Frame & {
+			CloseStore: ImageButton;
+			OpenStore: ImageButton;
+			Cash: Frame & {
+				Text: Frame & UIText;
+				Extras: Frame & {
+					Button: Frame & {
+						ImageButton: ImageButton;
+					};
+				};
+			};
+			Gems: Frame & {
+				Text: Frame & UIText;
+				Extras: Frame & {
+					Button: Frame & {
+						ImageButton: ImageButton;
+					};
+				};
+			};
+			Music: Frame & {
+				Holder: Frame & {
+					Amount: IntValue;
+				};
+			};
+			PlaylistControls: Frame & {
+				Skip: ImageButton;
+				PlayPause: ImageButton & {
+					BtnImage: Frame & {
+						ImageLabel: ImageLabel;
+					};
+				};
+				Rewind: ImageButton;
+			};
+			SoundFX: Frame & {
+				Holder: Frame & {
+					Amount: IntValue;
+				};
+			};
+		};
+	};
 };
 
 type EmployeesFolder = Folder & Employees;

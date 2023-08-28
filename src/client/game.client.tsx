@@ -1,4 +1,5 @@
 import { MarketplaceService, Players, ReplicatedStorage, SoundService, UserInputService } from "@rbxts/services";
+import { SoundEffect, Upgrade } from "shared/components";
 import { receiveReplication } from "./receiveReplication";
 import { withHookDetection } from "@rbxts/roact-hooked";
 import { CharacterRigR15 } from "@rbxts/promise-character";
@@ -7,12 +8,10 @@ import { ClientState } from "shared/clientState";
 import { Soundtrack } from "shared/soundtrack";
 import { AnyEntity } from "@rbxts/matter";
 import { Network } from "shared/network";
-import { Upgrade } from "shared/components";
 import { Proton } from "@rbxts/proton";
 import { start } from "shared/start";
 import Log, { Logger } from "@rbxts/log";
 import Roact from "@rbxts/roact";
-import Menu from "./components/menu";
 
 Proton.awaitStart();
 
@@ -95,68 +94,88 @@ function setupUtilityGui() {
 function DevProducts(overlay: NewOverlayGui) {
 	const devProducts = overlay.DevProducts;
 	devProducts.Close.ImageButton.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		devProducts.Visible = false;
 	});
 	devProducts.Content.Body["1000Cash"].MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		MarketplaceService.PromptProductPurchase(player, 1622826603);
 	});
 	devProducts.Content.Body["5000Cash"].MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		MarketplaceService.PromptProductPurchase(player, 1622826775);
 	});
 	devProducts.Content.Body["12500Cash"].MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		MarketplaceService.PromptProductPurchase(player, 1622827106);
 	});
 	devProducts.Content.Body["100kCash"].MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		MarketplaceService.PromptProductPurchase(player, 1622827784);
 	});
 	devProducts.Content.Body["250kCash"].MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		MarketplaceService.PromptProductPurchase(player, 1622828375);
 	});
 	devProducts.Content.Body["500kCash"].MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		MarketplaceService.PromptProductPurchase(player, 1622828653);
 	});
 	devProducts.Content.Body["1mCash"].MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		MarketplaceService.PromptProductPurchase(player, 1622829199);
 	});
 	devProducts.Content.Body["5m2x"].MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		MarketplaceService.PromptProductPurchase(player, 1622821560);
 	});
 	devProducts.Content.Body["30m2x"].MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		MarketplaceService.PromptProductPurchase(player, 1622829980);
 	});
 	devProducts.Content.Body["60m2x"].MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		MarketplaceService.PromptProductPurchase(player, 1622830142);
 	});
 	overlay.OpenShop.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		devProducts.Visible = !devProducts.Visible;
-		const { Gamepasses, Upgrades } = overlay;
+		const { Gamepasses, Upgrades, Settings } = overlay;
 		Gamepasses.Visible = false;
 		Upgrades.Visible = false;
+		Settings.Visible = false;
 	});
 }
 
 function Gamepasses(overlay: NewOverlayGui) {
 	const gamepasses = overlay.Gamepasses;
 	gamepasses.Close.ImageButton.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		gamepasses.Visible = false;
 	});
 	gamepasses.Content.Body["2xMoney"].MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		MarketplaceService.PromptGamePassPurchase(player, 240978094);
 	});
 	gamepasses.Content.Body["HigherLuck"].MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		MarketplaceService.PromptGamePassPurchase(player, 240979761);
 	});
 	gamepasses.Content.Body["VIP"].MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		MarketplaceService.PromptGamePassPurchase(player, 240981135);
 	});
 	gamepasses.Content.Body["FasterEmployee"].MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		MarketplaceService.PromptGamePassPurchase(player, 240978991);
 	});
 	overlay.OpenPasses.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		gamepasses.Visible = !gamepasses.Visible;
-		const { Upgrades, DevProducts } = overlay;
+		const { Upgrades, DevProducts, Settings } = overlay;
 		Upgrades.Visible = false;
 		DevProducts.Visible = false;
+		Settings.Visible = false;
 	});
 }
 
@@ -175,17 +194,76 @@ function PlayerInfo(overlay: NewOverlayGui) {
 function Upgrades(overlay: NewOverlayGui) {
 	const upgrades = overlay.Upgrades;
 	upgrades.Close.ImageButton.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		upgrades.Visible = false;
 	});
 	overlay.OpenUpgrades.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		upgrades.Visible = !upgrades.Visible;
-		const { Gamepasses, DevProducts } = overlay;
+		const { Gamepasses, DevProducts, Settings } = overlay;
 		Gamepasses.Visible = false;
+		DevProducts.Visible = false;
+		Settings.Visible = false;
+	});
+}
+
+function Settings(overlay: NewOverlayGui, soundtrack: Soundtrack) {
+	const settings = overlay.Settings;
+	settings.Close.ImageButton.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		settings.Visible = false;
+	});
+	settings.Content.Body.CloseStore.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		Network.setStoreStatus.client.fire(false);
+	});
+	settings.Content.Body.OpenStore.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		Network.setStoreStatus.client.fire(true);
+	});
+	settings.Content.Body.Cash.Extras.Button.ImageButton.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		settings.Visible = false;
+		overlay.DevProducts.Visible = true;
+	});
+	settings.Content.Body.Gems.Extras.Button.ImageButton.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		settings.Visible = false;
+		overlay.DevProducts.Visible = true;
+	});
+	settings.Content.Body.Music.Holder.Amount.Changed.Connect((value) => {
+		SoundService.Soundtrack.Volume = value / 100;
+	});
+	settings.Content.Body.SoundFX.Holder.Amount.Changed.Connect((value) => {
+		SoundService.SoundFX.Volume = value / 100;
+	});
+	settings.Content.Body.PlaylistControls.Rewind.MouseButton1Click.Connect(() => {
+		soundtrack.Shuffle();
+	});
+	settings.Content.Body.PlaylistControls.PlayPause.MouseButton1Click.Connect(() => {
+		const playing = soundtrack.Playing;
+		if (playing) {
+			settings.Content.Body.PlaylistControls.PlayPause.BtnImage.ImageLabel.Image = "rbxassetid://14585111287";
+			soundtrack.Pause();
+		} else {
+			settings.Content.Body.PlaylistControls.PlayPause.BtnImage.ImageLabel.Image = "rbxassetid://14585110274";
+			soundtrack.Play();
+		}
+	});
+	settings.Content.Body.PlaylistControls.Skip.MouseButton1Click.Connect(() => {
+		soundtrack.Skip();
+	});
+	overlay.OpenSettings.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		settings.Visible = !settings.Visible;
+		const { Gamepasses, Upgrades, DevProducts } = overlay;
+		Gamepasses.Visible = false;
+		Upgrades.Visible = false;
 		DevProducts.Visible = false;
 	});
 }
 
-function guiFunctions() {
+function guiFunctions(soundtrack: Soundtrack) {
 	const playerGui = player.FindFirstChildOfClass("PlayerGui")!;
 	const overlayGui = playerGui.FindFirstChild("Overlay") as NewOverlayGui;
 
@@ -193,6 +271,7 @@ function guiFunctions() {
 	PlayerInfo(overlayGui);
 	Gamepasses(overlayGui);
 	Upgrades(overlayGui);
+	Settings(overlayGui, soundtrack);
 }
 
 function setupGuiFunctions(soundtrack: Soundtrack) {
@@ -202,7 +281,7 @@ function setupGuiFunctions(soundtrack: Soundtrack) {
 		Network.upgradeUtility.client.fire(utilityInfo.Adornee! as Model);
 	});
 
-	guiFunctions();
+	guiFunctions(soundtrack);
 }
 
 function bootstrap() {
@@ -224,8 +303,6 @@ function bootstrap() {
 	});
 
 	setupGuiFunctions(soundtrack);
-
-	Roact.mount(<Menu state={state} />, player.FindFirstChildOfClass("PlayerGui")!);
 
 	Network.setState.client.connect((state) => {
 		state = { ...state };

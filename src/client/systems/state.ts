@@ -60,7 +60,16 @@ function state(world: World, state: ClientState) {
 				const playerGui = player.FindFirstChildOfClass("PlayerGui")!;
 				const overlay = playerGui.FindFirstChild("Overlay") as NewOverlayGui;
 				const playerInfo = overlay.PlayerInfo;
+				const settings = overlay.Settings;
 				playerInfo.Bars.Progress.Cash.Text.TextLabel.Text = `$${FormatCompact(
+					balance.new.balance,
+					balance.new.balance > 1_000_000 ? 1 : 2,
+				)}`;
+				settings.Content.Body.Cash.Text.TextLabel.Text = `$${FormatCompact(
+					balance.new.balance,
+					balance.new.balance > 1_000_000 ? 1 : 2,
+				)}`;
+				settings.Content.Body.Cash.Text["TextLabel - Stroke"].Text = `$${FormatCompact(
 					balance.new.balance,
 					balance.new.balance > 1_000_000 ? 1 : 2,
 				)}`;

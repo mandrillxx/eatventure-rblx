@@ -92,20 +92,16 @@ export class Soundtrack {
 		return this;
 	}
 
-	public Skip(To = this.Active === this.Songs.size() ? 1 : this.Active + 1): Sound {
-		if (!this.Songs[this.Active] || !this.Songs[To]) {
-			this.Shuffle();
-			return this.Skip(To);
-		}
+	public Skip(): Sound {
+		const index = !this.Songs[this.Active + 1] ? 0 : this.Active + 1;
+		const nextInQueue = this.Songs[index];
 		FadeOut(this.Songs[this.Active]);
 
-		const NextSong: Sound = this.Songs[To];
-
-		FadeIn(NextSong);
-		this.Active = To;
+		FadeIn(nextInQueue);
+		this.Active = index;
 		this.Play();
 
-		return NextSong;
+		return nextInQueue;
 	}
 
 	public Shuffle(): ThisType<Soundtrack> {
