@@ -40,6 +40,17 @@ interface SoundService extends Instance {
 	SoundFX: SoundGroup;
 }
 
+type NewOverlayGui = ScreenGui & {
+	DevProducts: DevProductsFrame;
+	Gamepasses: GamepassesFrame;
+	PlayerInfo: PlayerInfoFrame;
+	Upgrades: UpgradesFrame;
+	OpenSettings: TextButton;
+	OpenShop: TextButton;
+	OpenPasses: TextButton;
+	OpenUpgrades: TextButton;
+};
+
 type OverlayGui = ScreenGui & {
 	PlaylistControls: Frame & {
 		Frame: Frame & {
@@ -314,5 +325,186 @@ type BasePlayer = Player & {
 	Money: NumberValue;
 	Utilities: Folder & {
 		[utilName: string]: IntValue;
+	};
+};
+
+type DevProductsFrame = Frame & {
+	Content: Frame & {
+		Body: Frame & {
+			["1000Cash"]: TextButton & {
+				Content: Frame & {
+					Button: Frame & {
+						TextButton: TextButton;
+					};
+				};
+			};
+			["5000Cash"]: TextButton & {
+				Content: Frame & {
+					Button: Frame & {
+						TextButton: TextButton;
+					};
+				};
+			};
+			["12500Cash"]: TextButton & {
+				Content: Frame & {
+					Button: Frame & {
+						TextButton: TextButton;
+					};
+				};
+			};
+			["100kCash"]: TextButton & {
+				Content: Frame & {
+					Button: Frame & {
+						TextButton: TextButton;
+					};
+				};
+			};
+			["250kCash"]: TextButton & {
+				Content: Frame & {
+					Button: Frame & {
+						TextButton: TextButton;
+					};
+				};
+			};
+			["500kCash"]: TextButton & {
+				Content: Frame & {
+					Button: Frame & {
+						TextButton: TextButton;
+					};
+				};
+			};
+			["1mCash"]: TextButton & {
+				Content: Frame & {
+					Button: Frame & {
+						TextButton: TextButton;
+					};
+				};
+			};
+			["5m2x"]: TextButton & {
+				Content: Frame & {
+					Button: Frame & {
+						TextButton: TextButton;
+					};
+				};
+			};
+			["30m2x"]: TextButton & {
+				Content: Frame & {
+					Button: Frame & {
+						TextButton: TextButton;
+					};
+				};
+			};
+			["60m2x"]: TextButton & {
+				Content: Frame & {
+					Button: Frame & {
+						TextButton: TextButton;
+					};
+				};
+			};
+		};
+	};
+	Close: Frame & {
+		ImageButton: ImageButton;
+	};
+};
+
+type GamepassesFrame = Frame & {
+	Content: Frame & {
+		Body: Frame & {
+			["2xMoney"]: TextButton & {
+				Content: Frame & {
+					Button: Frame & {
+						TextButton: TextButton;
+					};
+				};
+			};
+			HigherLuck: TextButton & {
+				Content: Frame & {
+					Button: Frame & {
+						TextButton: TextButton;
+					};
+				};
+			};
+			VIP: TextButton & {
+				Content: Frame & {
+					Button: Frame & {
+						TextButton: TextButton;
+					};
+				};
+			};
+			FasterEmployee: TextButton & {
+				Content: Frame & {
+					Button: Frame & {
+						TextButton: TextButton;
+					};
+				};
+			};
+		};
+	};
+	Close: Frame & {
+		ImageButton: ImageButton;
+	};
+};
+
+type UIText = {
+	TextLabel: TextLabel;
+	["TextLabel - Stroke"]: TextLabel;
+};
+
+type UpgradesFrame = Frame & {
+	Content: Frame & {
+		Body: Frame & {
+			BaseUpgrade: Frame & {
+				Content: Frame & {
+					Title: Frame & {
+						Text: Frame & UIText;
+					};
+					Description: Frame & {
+						Text: Frame & UIText;
+					};
+					AlreadyOwn: ImageButton & {
+						BtnImage: Frame & {
+							Text: Frame & UIText;
+						};
+					};
+					CantAfford: ImageButton & {
+						BtnImage: Frame & {
+							Text: Frame & UIText;
+						};
+					};
+					Purchase: ImageButton & {
+						BtnImage: Frame & {
+							Text: Frame & UIText;
+						};
+					};
+					ImageLabel: ImageLabel;
+				};
+			};
+		};
+	};
+	Close: Frame & {
+		ImageButton: ImageButton;
+	};
+};
+
+type PlayerInfoFrame = Frame & {
+	Bars: Frame & {
+		Progress: Frame & {
+			Cash: Frame & {
+				Text: Frame & UIText;
+			};
+			Gems: Frame & {
+				Text: Frame & UIText;
+			};
+		};
+	};
+	Info: Frame & {
+		Username: Frame & {
+			Text: Frame & UIText;
+		};
+		Counter: ImageLabel & {
+			Text: Frame & UIText;
+		};
+		ImageLabel: ImageLabel;
 	};
 };

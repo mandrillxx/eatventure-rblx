@@ -1,6 +1,7 @@
 import { Balance, BelongsTo, Level, OpenStatus, OwnedBy, Upgrade, Utility } from "shared/components";
 import { ServerEntityIdToClient, getNextLevelCost, updateUtilityInfo } from "client/methods";
 import { World, useThrottle } from "@rbxts/matter";
+import { FormatCompact } from "@rbxts/format-number";
 import { ClientState } from "shared/clientState";
 import { getOrError } from "shared/util";
 import { Players } from "@rbxts/services";
@@ -56,9 +57,14 @@ function state(world: World, state: ClientState) {
 	for (const [id, balance] of world.queryChanged(Balance)) {
 		if (balance.new) {
 			if (id === state.playerId) {
-				const utilityInfo = player
-					.FindFirstChildOfClass("PlayerGui")!
-					.FindFirstChild("UtilityInfo")! as UtilityInfoInstance;
+				const playerGui = player.FindFirstChildOfClass("PlayerGui")!;
+				const overlay = playerGui.FindFirstChild("Overlay") as NewOverlayGui;
+				const playerInfo = overlay.PlayerInfo;
+				playerInfo.Bars.Progress.Cash.Text.TextLabel.Text = `$${FormatCompact(
+					balance.new.balance,
+					balance.new.balance > 1_000_000 ? 1 : 2,
+				)}`;
+				const utilityInfo = playerGui.FindFirstChild("UtilityInfo")! as UtilityInfoInstance;
 				const utility = state.utilityUpgrade;
 				if (!utility || !utilityInfo.Enabled || utilityInfo.Adornee?.Name !== utility.component.type) continue;
 				const nextLevelCost = getNextLevelCost(world, utility.componentId);

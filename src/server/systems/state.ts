@@ -45,9 +45,8 @@ function state(world: World, state: ServerState) {
 			const player = client.player;
 			const profile = getProfile(player);
 			profile.Data.money = balance.new.balance;
-			const upgradeInfo = player
-				.FindFirstChildOfClass("PlayerGui")!
-				.FindFirstChild("UpgradeInfo")! as UpgradeInfoInstance;
+			const upgradeInfo = (player.FindFirstChildOfClass("PlayerGui")!.FindFirstChild("Overlay")! as NewOverlayGui)
+				.Upgrades;
 			updateUpgrades({
 				firstRun: false,
 				world,
@@ -64,9 +63,8 @@ function state(world: World, state: ServerState) {
 			const client = getOrError(world, belongsTo.playerId, Client);
 			const player = client.player;
 			const profile = getProfile(player);
-			const upgradeInfo = player
-				.FindFirstChildOfClass("PlayerGui")!
-				.FindFirstChild("UpgradeInfo")! as UpgradeInfoInstance;
+			const upgradeInfo = (player.FindFirstChildOfClass("PlayerGui")!.FindFirstChild("Overlay")! as NewOverlayGui)
+				.Upgrades;
 			updateUpgrades({
 				firstRun: false,
 				world,

@@ -5,6 +5,7 @@ import { FormatCompact } from "@rbxts/format-number";
 import { ServerState } from "server/index.server";
 import { IProfile } from "server/data/PurchaseHandler";
 import { Profile } from "@rbxts/profileservice/globals";
+import Log from "@rbxts/log";
 
 function getProfile(state: ServerState, player: Player) {
 	const profile = state.profiles.get(player);
@@ -70,6 +71,7 @@ export function saveUpgrade(
 	balance: Balance,
 	profile: Profile<IProfile, unknown>,
 	upgrade: ComponentInfo<typeof Upgrade>,
+	upgradeInfo: UpgradesFrame,
 ) {
 	const newestUpgrade = getOrError(world, upgrade.componentId, Upgrade);
 	if (newestUpgrade.ran) return;
@@ -80,6 +82,12 @@ export function saveUpgrade(
 	const handleUpgrade = () => {
 		world.insert(upgrade.componentId, newestUpgrade.patch({ purchased: true, ran: true }));
 		task.delay(1, () => runUpgrade(world, upgrade.componentId, playerId));
+		const upgradeFrame = upgradeInfo.Content.Body.FindFirstChild(tostring(upgrade.componentId));
+		if (!upgradeFrame) {
+			Log.Warn("Cannot remove upgrade frame");
+			return;
+		}
+		upgradeFrame.Destroy();
 	};
 
 	if (!newestUpgrade.ran && firstRun && hasUpgrade) {
@@ -111,13 +119,13 @@ export function updateUpgrades({
 	world: World;
 	playerId: AnyEntity;
 	profile: Profile<IProfile, unknown>;
-	upgradeInfo: UpgradeInfoInstance;
+	upgradeInfo: UpgradesFrame;
 }) {
 	const _upgrades = upgrades ?? getAllUpgradesForPlayer(world, playerId);
-	const baseUpgrade = upgradeInfo.UpgradeFrame.Upgrades.BaseUpgrade;
+	const baseUpgrade = upgradeInfo.Content.Body.BaseUpgrade;
 	const balance = getOrError(world, playerId, Balance);
 	if (firstRun) {
-		for (const child of upgradeInfo.UpgradeFrame.Upgrades.GetChildren()) {
+		for (const child of upgradeInfo.Content.Body.GetChildren()) {
 			if (child.IsA("Frame") && child.Name !== "BaseUpgrade") {
 				child.Destroy();
 			}
@@ -125,32 +133,38 @@ export function updateUpgrades({
 		_upgrades.forEach((upgrade) => {
 			const newUpgrade = baseUpgrade.Clone();
 			const ownsUpgrade = has(profile.Data.purchasedUpgrades, upgrade.component.identifier);
+			if (ownsUpgrade) return;
 			newUpgrade.Visible = true;
 			newUpgrade.Name = tostring(upgrade.componentId);
-			newUpgrade.Purchase.Text = `$${FormatCompact(upgrade.component.cost, 0)}`;
-			newUpgrade.Title.Text = `${upgrade.component.title} ${ownsUpgrade ? "(Owned)" : ""}`;
-			newUpgrade.Description.Text = upgrade.component.description;
-			newUpgrade.ImageLabel.Image = upgrade.component.image;
-			newUpgrade.Purchase.BackgroundColor3 =
+			newUpgrade.Content.Purchase.Visible = false;
+			newUpgrade.Content.AlreadyOwn.Visible = false;
+			newUpgrade.Content.CantAfford.Visible = false;
+			const button =
 				balance.balance >= upgrade.component.cost && !ownsUpgrade
-					? Color3.fromRGB(66, 132, 255)
+					? newUpgrade.Content.Purchase
 					: ownsUpgrade
-					? Color3.fromRGB(13, 13, 13)
-					: Color3.fromRGB(65, 65, 65);
-			newUpgrade.Purchase.TextColor3 =
-				!ownsUpgrade && balance.balance >= upgrade.component.cost && !ownsUpgrade
-					? Color3.fromRGB(255, 255, 255)
-					: ownsUpgrade
-					? Color3.fromRGB(245, 255, 97)
-					: Color3.fromRGB(255, 22, 14);
+					? newUpgrade.Content.AlreadyOwn
+					: newUpgrade.Content.CantAfford;
+
+			button.BtnImage.Text.TextLabel.Text = `$${FormatCompact(upgrade.component.cost, 0)}`;
+			button.BtnImage.Text["TextLabel - Stroke"].Text = `$${FormatCompact(upgrade.component.cost, 0)}`;
+			button.Visible = true;
+			newUpgrade.Content.Title.Text.TextLabel.Text = `${upgrade.component.title} ${ownsUpgrade ? "(Owned)" : ""}`;
+			newUpgrade.Content.Title.Text["TextLabel - Stroke"].Text = `${upgrade.component.title} ${
+				ownsUpgrade ? "(Owned)" : ""
+			}`;
+			newUpgrade.Content.Description.Text.TextLabel.Text = upgrade.component.description;
+			newUpgrade.Content.Description.Text["TextLabel - Stroke"].Text = upgrade.component.description;
+			newUpgrade.Content.ImageLabel.Image = upgrade.component.image;
 			newUpgrade.LayoutOrder = upgrade.componentId;
-			newUpgrade.Parent = upgradeInfo.UpgradeFrame.Upgrades;
-			const save = (firstRun: boolean) => saveUpgrade(firstRun, world, playerId, balance, profile, upgrade);
+			newUpgrade.Parent = upgradeInfo.Content.Body;
+			const save = (firstRun: boolean) =>
+				saveUpgrade(firstRun, world, playerId, balance, profile, upgrade, upgradeInfo);
 			if (firstRun) {
 				save(true);
 			}
 			if (!ownsUpgrade)
-				newUpgrade.Purchase.MouseButton1Click.Connect(() => {
+				button.MouseButton1Click.Connect(() => {
 					save(false);
 				});
 		});
@@ -173,9 +187,9 @@ export function handleUpgrade(
 	const sortedUpgrades = [...otherUpgrades, { componentId: upgradeId, component: upgrade }].sort(
 		(a, b) => a.component.cost <= b.component.cost,
 	);
-	const upgradeInfo = player
-		.FindFirstChildOfClass("PlayerGui")!
-		.FindFirstChild("UpgradeInfo")! as UpgradeInfoInstance;
+	const upgradeInfo = (
+		player.FindFirstChildOfClass("PlayerGui")!.FindFirstChild("Overlay")! as ScreenGui
+	).FindFirstChild("Upgrades") as UpgradesFrame;
 	updateUpgrades({
 		firstRun,
 		upgrades: sortedUpgrades,
