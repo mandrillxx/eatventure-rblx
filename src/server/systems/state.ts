@@ -1,8 +1,8 @@
 import { Balance, BelongsTo, Client, OwnedBy, Renderable, Upgrade, Utility } from "shared/components";
-import { AnyEntity, World } from "@rbxts/matter";
 import { updateUpgrades } from "server/components/levelUpgrade";
 import { ServerState } from "server/index.server";
 import { getOrError } from "shared/util";
+import { World } from "@rbxts/matter";
 import { New } from "@rbxts/fusion";
 import Log from "@rbxts/log";
 
@@ -14,30 +14,6 @@ function state(world: World, state: ServerState) {
 		}
 		return profile;
 	};
-
-	for (const [id, balance] of world.queryChanged(Balance)) {
-		if (balance.new) {
-			const client = getOrError(world, id, Client);
-			const levelId = state.levels.get(client.player.UserId)!.levelId;
-			const levelModel = getOrError(world, levelId, Renderable).model as BaseLevel;
-
-			for (const _utility of levelModel.Utilities.GetChildren()) {
-				const utilityId = _utility.GetAttribute("serverId") as AnyEntity;
-				const utility = getOrError(world, utilityId, Utility);
-				const { baseUpgradeCost, xpLevel } = utility;
-				if (xpLevel + 1 > 250) continue;
-				const xpBias = xpLevel > 100 ? 1.205 : 1.2;
-				const nextLevelCost = baseUpgradeCost * (xpBias ** xpLevel - 1);
-				if (balance.new.balance >= nextLevelCost) {
-					if (state.verbose) Log.Info("Utility {@ID} can be upgraded, showing GUI", utilityId);
-					(_utility as BaseUtility).UpgradeGui.Enabled = true;
-				} else if (balance.new.balance < nextLevelCost && (_utility as BaseUtility).UpgradeGui.Enabled) {
-					if (state.verbose) Log.Info("Utility {@ID} can no longer be upgraded, hiding GUI", utilityId);
-					(_utility as BaseUtility).UpgradeGui.Enabled = false;
-				}
-			}
-		}
-	}
 
 	for (const [id, balance] of world.queryChanged(Balance)) {
 		if (balance.new) {

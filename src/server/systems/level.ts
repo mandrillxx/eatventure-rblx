@@ -141,6 +141,7 @@ function level(world: World, state: ServerState) {
 		const utilities: { utility: Utility; model: BaseUtility }[] = [];
 		for (const utility of levelModel.Utilities.GetChildren()) {
 			const upgradeGui = ReplicatedStorage.Assets.UpgradeGui.Clone() as UpgradeGuiInstance;
+			upgradeGui.Enabled = false;
 			upgradeGui.Adornee = utility as Model;
 			upgradeGui.Parent = utility;
 			const utilModel = utility as BaseUtility;

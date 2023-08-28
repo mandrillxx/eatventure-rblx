@@ -1,6 +1,16 @@
-import { Balance, BelongsTo, Level, OpenStatus, OwnedBy, Upgrade, Utility } from "shared/components";
+import {
+	Balance,
+	BelongsTo,
+	Client,
+	Level,
+	OpenStatus,
+	OwnedBy,
+	Renderable,
+	Upgrade,
+	Utility,
+} from "shared/components";
 import { ServerEntityIdToClient, getNextLevelCost, updateUtilityInfo } from "client/methods";
-import { World, useThrottle } from "@rbxts/matter";
+import { AnyEntity, World, useThrottle } from "@rbxts/matter";
 import { FormatCompact } from "@rbxts/format-number";
 import { ClientState } from "shared/clientState";
 import { getOrError } from "shared/util";
@@ -108,6 +118,32 @@ function state(world: World, state: ClientState) {
 			}
 			openUpgrades.TextLabel.Text = tostring(upgradesCanAfford);
 			openUpgrades.TextLabel.Visible = true;
+		}
+	}
+
+	for (const [id, balance] of world.queryChanged(Balance)) {
+		if (id !== state.playerId! || !state.levelId) continue;
+		if (balance.new) {
+			const levelModel = getOrError(
+				world,
+				state.levelId!,
+				Renderable,
+				"level does not contain renderable component",
+			).model as BaseLevel;
+
+			for (const _utility of levelModel.Utilities.GetChildren()) {
+				const utilityId = ServerEntityIdToClient(state, _utility.GetAttribute("serverId") as AnyEntity)!;
+				const utility = getOrError(world, utilityId, Utility, "cannot find utility component");
+				const { baseUpgradeCost, xpLevel } = utility;
+				if (xpLevel + 1 > 250) continue;
+				const xpBias = xpLevel > 100 ? 1.205 : 1.2;
+				const nextLevelCost = baseUpgradeCost * (xpBias ** xpLevel - 1);
+				if (balance.new.balance >= nextLevelCost) {
+					(_utility as BaseUtility).UpgradeGui.Enabled = true;
+				} else if (balance.new.balance < nextLevelCost && (_utility as BaseUtility).UpgradeGui.Enabled) {
+					(_utility as BaseUtility).UpgradeGui.Enabled = false;
+				}
+			}
 		}
 	}
 }
