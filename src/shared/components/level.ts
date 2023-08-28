@@ -5,6 +5,7 @@ import { Utility } from ".";
 
 export const Level = component<{
 	name: keyof Levels;
+	prestigeCost: number;
 	maxEmployees: number;
 	maxCustomers: number;
 	eventRate: number;

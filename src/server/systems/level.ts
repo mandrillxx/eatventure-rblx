@@ -46,7 +46,7 @@ function level(world: World, state: ServerState) {
 		});
 
 		levelModel = levelModel.Clone();
-		levelModel.PivotTo(plot.Attachment.WorldCFrame);
+		levelModel.PivotTo(plot.GetPivot());
 		state.playerIndex++;
 
 		const destinations: ComponentInfo<typeof Destination>[] = [];

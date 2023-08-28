@@ -11,12 +11,12 @@ import {
 	NPC,
 } from "shared/components";
 import { NPCDisplayNames, getOrError, randomNpcName, weightedRandomIndex } from "shared/util";
+import { Players, ReplicatedStorage } from "@rbxts/services";
 import { AnyEntity, World } from "@rbxts/matter";
 import { FormatCompact } from "@rbxts/format-number";
 import { ServerState } from "server/index.server";
 import { Provider } from "@rbxts/proton";
 import { Network } from "shared/network";
-import { Players } from "@rbxts/services";
 import { Balance } from "shared/components";
 import { Queue } from "@rbxts/stacks-and-queues";
 import { Foods } from "shared/globals";
@@ -385,9 +385,12 @@ export class GameProvider {
 
 	private loadLevel(world: World, playerId: AnyEntity, client: Client, level: number, character: Model) {
 		const levelName = `Level${level}` as keyof Levels;
+		const prestigeCost = (ReplicatedStorage.Assets.Levels.FindFirstChild(levelName)! as BaseLevel).Settings
+			.PrestigeCost.Value;
 		const levelId = world.spawn(
 			Level({
 				name: levelName,
+				prestigeCost,
 				maxCustomers: 2,
 				maxEmployees: 1,
 				eventRate: 1,

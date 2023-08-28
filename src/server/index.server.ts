@@ -13,7 +13,7 @@ import { served10Customers, served1000Customers, earned100k, earned10m, maxedUti
 import { DataStoreService, PhysicsService, Players, ReplicatedStorage } from "@rbxts/services";
 import { PlayerStatisticEventsDefinition, PlayerStatisticsDefinition } from "./data/PlayerStatisticsDefinition";
 import { BadgeRewardGranter, RecurringTimeLockedRewardContainer } from "@rbxts/reward-containers";
-import { BelongsTo, Client, Renderable, Upgrade } from "shared/components";
+import { BelongsTo, Client, Level, Renderable, Upgrade } from "shared/components";
 import { PlayerStatisticAchievementsDefinition } from "./data/BadgeHandler";
 import { rewardsOpeningCoordinator } from "./data/RewardHandler";
 import { IProfile, setupPurchases } from "./data/PurchaseHandler";
@@ -181,6 +181,26 @@ async function bootstrap() {
 	};
 
 	function playerAdded(player: Player) {
+		function handleGui(playerId: AnyEntity) {
+			const overlay = player.FindFirstChildOfClass("PlayerGui")!.FindFirstChild("Overlay") as NewOverlayGui;
+			const renovate = overlay.Renovate;
+			renovate.Content.Footer.Purchase.MouseButton1Click.Connect(() => {
+				const levelId = state.levels.get(player.UserId);
+				if (!levelId) {
+					Log.Warn("Could not find level for player {@Player}", player);
+					return;
+				}
+				const balance = getOrError(world, playerId, Balance);
+				const level = getOrError(world, levelId.levelId, Level);
+				if (balance.balance >= level.prestigeCost) {
+					const profile = state.profiles.get(player)!;
+					profile.Data.level += 1;
+					world.insert(playerId, Balance({ balance: 0 }));
+					gameProvider.switchLevel(player, state, 2);
+				}
+			});
+		}
+
 		function handleRewards() {
 			const _rewardsOpeningCoordinator = rewardsOpeningCoordinator();
 			const rewardContainerForPlayer = RecurringTimeLockedRewardContainer.create(
@@ -226,6 +246,7 @@ async function bootstrap() {
 				state.clients.set(player.UserId, playerEntity);
 				gameProvider.setup(playerEntity, world, state, model);
 				character.SetAttribute("entityId", playerEntity);
+				handleGui(playerEntity);
 			});
 		}
 

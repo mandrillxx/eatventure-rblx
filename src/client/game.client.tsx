@@ -140,10 +140,11 @@ function DevProducts(overlay: NewOverlayGui) {
 	overlay.OpenShop.MouseButton1Click.Connect(() => {
 		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		devProducts.Visible = !devProducts.Visible;
-		const { Gamepasses, Upgrades, Settings } = overlay;
+		const { Gamepasses, Upgrades, Settings, Renovate } = overlay;
 		Gamepasses.Visible = false;
 		Upgrades.Visible = false;
 		Settings.Visible = false;
+		Renovate.Visible = false;
 	});
 }
 
@@ -172,10 +173,11 @@ function Gamepasses(overlay: NewOverlayGui) {
 	overlay.OpenPasses.MouseButton1Click.Connect(() => {
 		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		gamepasses.Visible = !gamepasses.Visible;
-		const { Upgrades, DevProducts, Settings } = overlay;
+		const { Upgrades, DevProducts, Settings, Renovate } = overlay;
 		Upgrades.Visible = false;
 		DevProducts.Visible = false;
 		Settings.Visible = false;
+		Renovate.Visible = false;
 	});
 }
 
@@ -200,10 +202,11 @@ function Upgrades(overlay: NewOverlayGui) {
 	overlay.OpenUpgrades.MouseButton1Click.Connect(() => {
 		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		upgrades.Visible = !upgrades.Visible;
-		const { Gamepasses, DevProducts, Settings } = overlay;
+		const { Gamepasses, DevProducts, Settings, Renovate } = overlay;
 		Gamepasses.Visible = false;
 		DevProducts.Visible = false;
 		Settings.Visible = false;
+		Renovate.Visible = false;
 	});
 }
 
@@ -256,10 +259,35 @@ function Settings(overlay: NewOverlayGui, soundtrack: Soundtrack) {
 	overlay.OpenSettings.MouseButton1Click.Connect(() => {
 		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		settings.Visible = !settings.Visible;
-		const { Gamepasses, Upgrades, DevProducts } = overlay;
+		const { Gamepasses, Upgrades, DevProducts, Renovate } = overlay;
 		Gamepasses.Visible = false;
 		Upgrades.Visible = false;
 		DevProducts.Visible = false;
+		Renovate.Visible = false;
+	});
+}
+
+function Renovate(overlay: NewOverlayGui) {
+	const renovate = overlay.Renovate;
+
+	renovate.Content.Footer.Decline.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		renovate.Visible = false;
+	});
+
+	renovate.Close.ImageButton.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		renovate.Visible = false;
+	});
+
+	overlay.OpenRenovate.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		renovate.Visible = !renovate.Visible;
+		const { Upgrades, DevProducts, Settings, Gamepasses } = overlay;
+		Upgrades.Visible = false;
+		DevProducts.Visible = false;
+		Settings.Visible = false;
+		Gamepasses.Visible = false;
 	});
 }
 
@@ -271,6 +299,7 @@ function guiFunctions(soundtrack: Soundtrack) {
 	PlayerInfo(overlayGui);
 	Gamepasses(overlayGui);
 	Upgrades(overlayGui);
+	Renovate(overlayGui);
 	Settings(overlayGui, soundtrack);
 }
 

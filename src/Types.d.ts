@@ -49,6 +49,7 @@ interface SoundService extends Instance {
 type NewOverlayGui = ScreenGui & {
 	DevProducts: DevProductsFrame;
 	Gamepasses: GamepassesFrame;
+	Renovate: RenovateFrame;
 	PlayerInfo: PlayerInfoFrame;
 	Upgrades: UpgradesFrame;
 	Settings: SettingsFrame;
@@ -56,6 +57,7 @@ type NewOverlayGui = ScreenGui & {
 	OpenShop: TextButton;
 	OpenPasses: TextButton;
 	OpenUpgrades: TextButton;
+	OpenRenovate: TextButton;
 };
 
 type OverlayGui = ScreenGui & {
@@ -367,6 +369,9 @@ type BaseLevel = Model & {
 		Wait: ComputedAnchorPoint;
 		[key: string]: ComputedAnchorPoint;
 	};
+	Settings: Folder & {
+		PrestigeCost: NumberValue;
+	};
 };
 
 type BasePlayer = Player & {
@@ -452,6 +457,24 @@ type DevProductsFrame = Frame & {
 					};
 				};
 			};
+		};
+	};
+	Close: Frame & {
+		ImageButton: ImageButton;
+	};
+};
+
+type RenovateFrame = Frame & {
+	Content: Frame & {
+		Footer: Frame & {
+			NotReady: TextButton;
+			CantAfford: TextButton & {
+				BtnText: Frame & UIText;
+			};
+			Purchase: TextButton & {
+				BtnText: Frame & UIText;
+			};
+			Decline: TextButton;
 		};
 	};
 	Close: Frame & {

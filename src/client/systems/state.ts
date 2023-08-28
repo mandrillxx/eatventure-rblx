@@ -19,8 +19,10 @@ function state(world: World, state: ClientState) {
 		}
 	}
 	for (const [id, utility] of world.queryChanged(Utility)) {
+		const belongsTo = getOrError(world, id, BelongsTo, "Utility does not have BelongsTo component");
+		if (belongsTo.playerId !== state.playerId) continue;
+
 		if (utility.new) {
-			const belongsTo = getOrError(world, id, BelongsTo, "Utility does not have BelongsTo component");
 			const ownedBy = getOrError(
 				world,
 				ServerEntityIdToClient(state, belongsTo.levelId)!,
@@ -53,12 +55,37 @@ function state(world: World, state: ClientState) {
 			const ownedBy = getOrError(world, id, OwnedBy, "Level does not have OwnedBy component");
 			if (ownedBy.player !== player) continue;
 			state.levelId = id;
+			const renovate = (player.FindFirstChildOfClass("PlayerGui")!.FindFirstChild("Overlay")! as NewOverlayGui)
+				.Renovate;
+			renovate.Content.Footer.Purchase.BtnText.TextLabel.Text = `$${FormatCompact(level.new.prestigeCost, 1)}`;
+			renovate.Content.Footer.Purchase.BtnText["TextLabel - Stroke"].Text = `$${FormatCompact(
+				level.new.prestigeCost,
+				1,
+			)}`;
+			renovate.Content.Footer.CantAfford.BtnText.TextLabel.Text = `$${FormatCompact(level.new.prestigeCost, 1)}`;
+			renovate.Content.Footer.CantAfford.BtnText["TextLabel - Stroke"].Text = `$${FormatCompact(
+				level.new.prestigeCost,
+				1,
+			)}`;
 		}
 	}
 
 	for (const [id, balance] of world.queryChanged(Balance)) {
 		if (id !== state.playerId!) continue;
 		if (balance.new) {
+			const level = getOrError(world, state.levelId!, Level, "Level does not have Level component");
+			const renovate = (player.FindFirstChildOfClass("PlayerGui")!.FindFirstChild("Overlay")! as NewOverlayGui)
+				.Renovate;
+			if (balance.new.balance >= level.prestigeCost) {
+				renovate.Content.Footer.Purchase.Visible = true;
+				renovate.Content.Footer.NotReady.Visible = false;
+				renovate.Content.Footer.CantAfford.Visible = false;
+			} else {
+				renovate.Content.Footer.Purchase.Visible = false;
+				renovate.Content.Footer.NotReady.Visible = false;
+				renovate.Content.Footer.CantAfford.Visible = true;
+			}
+
 			const playerGui = player.FindFirstChildOfClass("PlayerGui")!;
 			const overlay = playerGui.FindFirstChild("Overlay") as NewOverlayGui;
 			const playerInfo = overlay.PlayerInfo;
