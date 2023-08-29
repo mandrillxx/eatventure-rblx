@@ -1,4 +1,11 @@
-import { MarketplaceService, Players, ReplicatedStorage, SoundService, UserInputService } from "@rbxts/services";
+import {
+	MarketplaceService,
+	Players,
+	ReplicatedStorage,
+	SoundService,
+	StarterGui,
+	UserInputService,
+} from "@rbxts/services";
 import { SoundEffect, Upgrade } from "shared/components";
 import { receiveReplication } from "./receiveReplication";
 import { withHookDetection } from "@rbxts/roact-hooked";
@@ -321,6 +328,8 @@ function bootstrap() {
 
 	setupUtilityGui();
 	setupSprinting();
+
+	StarterGui.SetCore("ResetButtonCallback", false);
 
 	const soundtrack = setupSoundtrack();
 

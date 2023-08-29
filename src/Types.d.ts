@@ -525,35 +525,37 @@ type UIText = {
 	["TextLabel - Stroke"]: TextLabel;
 };
 
+type BaseGuiUpgrade = Frame & {
+	Content: Frame & {
+		Title: Frame & {
+			Text: Frame & UIText;
+		};
+		Description: Frame & {
+			Text: Frame & UIText;
+		};
+		AlreadyOwn: ImageButton & {
+			BtnImage: Frame & {
+				Text: Frame & UIText;
+			};
+		};
+		CantAfford: ImageButton & {
+			BtnImage: Frame & {
+				Text: Frame & UIText;
+			};
+		};
+		Purchase: ImageButton & {
+			BtnImage: Frame & {
+				Text: Frame & UIText;
+			};
+		};
+		ImageLabel: ImageLabel;
+	};
+};
+
 type UpgradesFrame = Frame & {
 	Content: Frame & {
 		Body: Frame & {
-			BaseUpgrade: Frame & {
-				Content: Frame & {
-					Title: Frame & {
-						Text: Frame & UIText;
-					};
-					Description: Frame & {
-						Text: Frame & UIText;
-					};
-					AlreadyOwn: ImageButton & {
-						BtnImage: Frame & {
-							Text: Frame & UIText;
-						};
-					};
-					CantAfford: ImageButton & {
-						BtnImage: Frame & {
-							Text: Frame & UIText;
-						};
-					};
-					Purchase: ImageButton & {
-						BtnImage: Frame & {
-							Text: Frame & UIText;
-						};
-					};
-					ImageLabel: ImageLabel;
-				};
-			};
+			BaseUpgrade: BaseGuiUpgrade;
 		};
 	};
 	Close: Frame & {
