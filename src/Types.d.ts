@@ -266,6 +266,8 @@ type BaseUtility = Model & {
 
 type Levels = {
 	Level1: BaseLevel;
+	Level2: BaseLevel;
+	Level3: BaseLevel;
 };
 
 type NPC = import("@rbxts/promise-character").CharacterRigR15 & {
@@ -579,7 +581,7 @@ type PlayerInfoFrame = Frame & {
 			Text: Frame & UIText;
 		};
 		Counter: ImageLabel & {
-			Text: Frame & UIText;
+			InfoText: Frame & UIText;
 		};
 		ImageLabel: ImageLabel;
 	};

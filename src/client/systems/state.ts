@@ -58,8 +58,11 @@ function state(world: World, state: ClientState) {
 			const ownedBy = getOrError(world, id, OwnedBy, "Level does not have OwnedBy component");
 			if (ownedBy.player !== player) continue;
 			state.levelId = id;
-			const renovate = (player.FindFirstChildOfClass("PlayerGui")!.FindFirstChild("Overlay")! as NewOverlayGui)
-				.Renovate;
+			const overlay = player.FindFirstChildOfClass("PlayerGui")!.FindFirstChild("Overlay")! as NewOverlayGui;
+			const renovate = overlay.Renovate;
+			const playerInfo = overlay.PlayerInfo;
+			playerInfo.Info.Counter.InfoText.TextLabel.Text = level.new.name.sub(-1, -1);
+			playerInfo.Info.Counter.InfoText["TextLabel - Stroke"].Text = level.new.name.sub(-1, -1);
 			renovate.Content.Footer.Purchase.BtnText.TextLabel.Text = `$${FormatCompact(level.new.prestigeCost, 1)}`;
 			renovate.Content.Footer.Purchase.BtnText["TextLabel - Stroke"].Text = `$${FormatCompact(
 				level.new.prestigeCost,
