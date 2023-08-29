@@ -212,7 +212,12 @@ function employee(world: World, state: ServerState) {
 															running: false,
 															finished: () => {
 																world.remove(id, Serving, Speech);
-																if (!world.contains(customer.npcId)) return;
+																if (
+																	!world.contains(customer.npcId) ||
+																	!world.contains(id) ||
+																	!world.contains(serverEntityId)
+																)
+																	return;
 																world.insert(
 																	customer.npcId,
 																	customer.customer.patch({ servedBy: undefined }),

@@ -87,17 +87,14 @@ export class GameProvider {
 		}
 
 		const playersPlot = getPlayerPlot(session.player.player);
-		if (!playersPlot) {
-			Log.Fatal("Could not find plot for player {@Player}, cannot clear", session.player.player);
-			return;
-		}
-
-		state.plots.set(playersPlot.position, {
-			playerId: undefined,
-			playerUserId: undefined,
-			levelId: undefined,
-			position: playersPlot.position,
-		});
+		if (playersPlot) {
+			state.plots.set(playersPlot.position, {
+				playerId: undefined,
+				playerUserId: undefined,
+				levelId: undefined,
+				position: playersPlot.position,
+			});
+		} else Log.Fatal("2 Could not find plot for player {@Player}, cannot clear", session.player.player);
 
 		if (world.contains(levelId)) world.despawn(levelId);
 	}

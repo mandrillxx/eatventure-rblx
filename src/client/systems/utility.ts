@@ -5,7 +5,6 @@ import { ClientState } from "shared/clientState";
 import { Players } from "@rbxts/services";
 import { World } from "@rbxts/matter";
 import Maid from "@rbxts/maid";
-import Log from "@rbxts/log";
 
 const player = Players.LocalPlayer;
 
@@ -21,10 +20,7 @@ function utility(world: World, state: ClientState) {
 				OwnedBy,
 				"Utility does not have OwnedBy component",
 			);
-			if (ownedBy.player !== player) {
-				Log.Info("Ownedby player is not player");
-				continue;
-			}
+			if (ownedBy.player !== player) continue;
 			const renderable = getOrError(world, id, Renderable, "Utility {@ID} does not have a Renderable component");
 			const model = renderable.model as BaseUtility;
 			maid = new Maid();

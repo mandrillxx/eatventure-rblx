@@ -5,6 +5,7 @@ import { FormatCompact } from "@rbxts/format-number";
 import { ClientState } from "shared/clientState";
 import { getOrError } from "shared/util";
 import { Players } from "@rbxts/services";
+import Log from "@rbxts/log";
 
 const player = Players.LocalPlayer as BasePlayer;
 
@@ -20,9 +21,10 @@ function state(world: World, state: ClientState) {
 	}
 	for (const [id, utility] of world.queryChanged(Utility)) {
 		const belongsTo = getOrError(world, id, BelongsTo, "Utility does not have BelongsTo component");
-		if (belongsTo.playerId !== state.playerId) continue;
+		if (ServerEntityIdToClient(state, belongsTo.playerId) !== state.playerId) continue;
 
 		if (utility.new) {
+			if (!world.contains(ServerEntityIdToClient(state, belongsTo.levelId)!)) continue;
 			const ownedBy = getOrError(
 				world,
 				ServerEntityIdToClient(state, belongsTo.levelId)!,
@@ -34,6 +36,7 @@ function state(world: World, state: ClientState) {
 				.FindFirstChildOfClass("PlayerGui")!
 				.FindFirstChild("UtilityInfo")! as UtilityInfoInstance;
 			if (!utilityInfo.Enabled || utilityInfo.Adornee?.Name !== utility.new.type) continue;
+			if (!world.contains(id) || !world.contains(state.playerId!)) continue;
 			const newUtility = getOrError(world, id, Utility, "Utility no longer exists");
 			const nextLevelCost = getNextLevelCost(world, id, newUtility);
 			const balance = getOrError(
@@ -73,6 +76,7 @@ function state(world: World, state: ClientState) {
 	for (const [id, balance] of world.queryChanged(Balance)) {
 		if (id !== state.playerId!) continue;
 		if (balance.new) {
+			if (!world.contains(state.levelId!)) continue;
 			const level = getOrError(world, state.levelId!, Level, "Level does not have Level component");
 			const renovate = (player.FindFirstChildOfClass("PlayerGui")!.FindFirstChild("Overlay")! as NewOverlayGui)
 				.Renovate;
@@ -143,6 +147,7 @@ function state(world: World, state: ClientState) {
 	for (const [id, balance] of world.queryChanged(Balance)) {
 		if (id !== state.playerId! || !state.levelId) continue;
 		if (balance.new) {
+			if (!world.contains(state.levelId!)) continue;
 			const levelModel = getOrError(
 				world,
 				state.levelId!,
@@ -152,6 +157,10 @@ function state(world: World, state: ClientState) {
 
 			for (const _utility of levelModel.Utilities.GetChildren()) {
 				const utilityId = ServerEntityIdToClient(state, _utility.GetAttribute("serverId") as AnyEntity)!;
+				if (!world.contains(utilityId)) {
+					Log.Warn("Utility {@UtilityId} no longer exists", utilityId);
+					continue;
+				}
 				const utility = getOrError(world, utilityId, Utility, "cannot find utility component");
 				const { baseUpgradeCost, xpLevel } = utility;
 				if (xpLevel + 1 > 250) continue;

@@ -142,9 +142,9 @@ async function bootstrap() {
 			}
 		}
 		const playersPlot = getPlayerPlot(player);
-		if (!playersPlot) {
-			Log.Warn("Could not find plot for player {@Player}, cannot clear", player);
-		} else {
+		if (!playersPlot && state.verbose) {
+			Log.Warn("1 Could not find plot for player {@Player}, cannot clear", player);
+		} else if (playersPlot) {
 			state.plots.set(playersPlot.position, {
 				playerId: undefined,
 				playerUserId: undefined,
@@ -182,9 +182,10 @@ async function bootstrap() {
 
 	function playerAdded(player: Player) {
 		function handleGui(playerId: AnyEntity) {
-			const overlay = player.FindFirstChildOfClass("PlayerGui")!.FindFirstChild("Overlay") as NewOverlayGui;
+			const overlay = player.FindFirstChildOfClass("PlayerGui")!.WaitForChild("Overlay") as NewOverlayGui;
 			const renovate = overlay.Renovate;
 			renovate.Content.Footer.Purchase.MouseButton1Click.Connect(() => {
+				Log.Info("Player {@Player} is purchasing level", player);
 				const levelId = state.levels.get(player.UserId);
 				if (!levelId) {
 					Log.Warn("Could not find level for player {@Player}", player);
@@ -193,11 +194,12 @@ async function bootstrap() {
 				const balance = getOrError(world, playerId, Balance);
 				const level = getOrError(world, levelId.levelId, Level);
 				if (balance.balance >= level.prestigeCost) {
+					Log.Info("Prestiging player {@Player}", player.Name);
 					const profile = state.profiles.get(player)!;
 					profile.Data.level += 1;
 					world.insert(playerId, Balance({ balance: 0 }));
 					gameProvider.switchLevel(player, state, 2);
-				}
+				} else Log.Info("Player {@Player} cannot afford level", player);
 			});
 		}
 
