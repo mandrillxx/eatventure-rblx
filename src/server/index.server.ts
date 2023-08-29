@@ -295,10 +295,6 @@ async function bootstrap() {
 	setupPurchases(state, world);
 
 	Network.setStoreStatus.server.connect((player, open) => {
-		if (!open) {
-			gameProvider.switchLevel(player, state, 2);
-		}
-
 		gameProvider.addEvent(player, {
 			type: open ? "openStore" : "closeStore",
 			ran: false,

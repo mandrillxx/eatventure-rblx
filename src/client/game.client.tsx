@@ -277,11 +277,6 @@ function Settings(overlay: NewOverlayGui, soundtrack: Soundtrack) {
 function Renovate(overlay: NewOverlayGui) {
 	const renovate = overlay.Renovate;
 
-	renovate.Content.Footer.Decline.MouseButton1Click.Connect(() => {
-		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
-		renovate.Visible = false;
-	});
-
 	renovate.Close.ImageButton.MouseButton1Click.Connect(() => {
 		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		renovate.Visible = false;
