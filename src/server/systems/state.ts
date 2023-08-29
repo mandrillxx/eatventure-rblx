@@ -1,5 +1,5 @@
 import { Balance, BelongsTo, Client, OwnedBy, Renderable, Upgrade, Utility } from "shared/components";
-import { updateUpgrades } from "server/components/levelUpgrade";
+import { runUpgrade, updateUpgrades } from "server/components/levelUpgrade";
 import { ServerState } from "server/index.server";
 import { getOrError } from "shared/util";
 import { World } from "@rbxts/matter";
@@ -48,6 +48,10 @@ function state(world: World, state: ServerState) {
 				upgradeInfo,
 				profile,
 			});
+		}
+		if (!upgrade.old && upgrade.new && upgrade.new.purchased) {
+			const belongsTo = getOrError(world, id, BelongsTo);
+			runUpgrade(world, id, belongsTo.playerId);
 		}
 	}
 

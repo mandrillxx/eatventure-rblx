@@ -32,7 +32,7 @@ function has(set: Set<number>, value: number) {
 	return false;
 }
 
-function runUpgrade(world: World, upgradeId: AnyEntity, playerId: AnyEntity) {
+export function runUpgrade(world: World, upgradeId: AnyEntity, playerId: AnyEntity) {
 	const upgrade = getOrError(world, upgradeId, Upgrade);
 	const belongsTo = getOrError(world, upgradeId, BelongsTo);
 	const levelId = belongsTo.levelId;
