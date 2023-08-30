@@ -132,11 +132,16 @@ function state(world: World, state: ClientState) {
 				balance.new.balance > 1_000_000 ? 1 : 2,
 			)}`;
 			const utilityInfo = playerGui.FindFirstChild("UtilityInfo")! as UtilityInfoInstance;
+			const utilityUnlock = playerGui.FindFirstChild("UnlockGui")! as UnlockGuiInstance;
 			const utility = state.utilityUpgrade;
 			if (!utility || !utilityInfo.Enabled || utilityInfo.Adornee?.Name !== utility.component.type) continue;
 			const nextLevelCost = getNextLevelCost(world, utility.componentId);
 			utilityInfo.Background.Upgrade.BackgroundColor3 =
 				balance.new.balance >= nextLevelCost && utility.component.xpLevel < 150
+					? Color3.fromRGB(76, 229, 11)
+					: Color3.fromRGB(229, 20, 5);
+			utilityUnlock.Background.Unlock.BackgroundColor3 =
+				balance.new.balance >= utility.component.unlockCost
 					? Color3.fromRGB(76, 229, 11)
 					: Color3.fromRGB(229, 20, 5);
 		}
@@ -190,7 +195,11 @@ function state(world: World, state: ClientState) {
 				}
 				const xpBias = xpLevel > 100 ? 1.2025 : 1.2;
 				const nextLevelCost = baseUpgradeCost * (xpBias ** xpLevel - 1);
-				if (balance.new.balance >= nextLevelCost && utility.xpLevel < 150 && utility.unlocked) {
+
+				if (
+					(!utility.unlocked && balance.new.balance >= utility.unlockCost) ||
+					(balance.new.balance >= nextLevelCost && utility.xpLevel < 150 && utility.unlocked)
+				) {
 					(_utility as BaseUtility).UpgradeGui.Enabled = true;
 				} else if (balance.new.balance < nextLevelCost && (_utility as BaseUtility).UpgradeGui.Enabled) {
 					(_utility as BaseUtility).UpgradeGui.Enabled = false;

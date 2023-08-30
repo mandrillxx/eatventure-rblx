@@ -25,7 +25,7 @@ function utility(world: World, state: ClientState) {
 			);
 			maid.GiveTask(
 				model.ClickDetector.MouseClick.Connect(() => {
-					world.spawn(SoundEffect({ sound: "Upgrade", meantFor: player }));
+					world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 					const utilInfo = player
 						.FindFirstChildOfClass("PlayerGui")!
 						.FindFirstChild("UtilityInfo")! as UtilityInfoInstance;
@@ -61,7 +61,7 @@ function utility(world: World, state: ClientState) {
 			const renderable = getOrError(world, id, Renderable, "Utility {@ID} does not have a Renderable component");
 			const model = renderable.model as BaseUtility;
 			if (!utility.new.unlocked) {
-				model.SelectionBox.SurfaceTransparency = 0;
+				model.SelectionBox.SurfaceTransparency = 0.15;
 				task.delay(0.5, () => {
 					maid.GiveTask(
 						model.ClickDetector.MouseClick.Connect(() => {
@@ -77,6 +77,7 @@ function utility(world: World, state: ClientState) {
 								.FindFirstChildOfClass("PlayerGui")!
 								.FindFirstChild("UnlockGui")! as UnlockGuiInstance;
 							const utility = getOrError(world, id, Utility, "Utility {@ID} no longer exists");
+							if (utility.unlocked) return;
 							state.utilityUpgrade = fetchComponent(world, id, Utility);
 
 							unlockGui.Background.Unlock.BackgroundColor3 =
@@ -100,7 +101,8 @@ function utility(world: World, state: ClientState) {
 			const unlockGui = player
 				.FindFirstChildOfClass("PlayerGui")!
 				.FindFirstChild("UnlockGui")! as UnlockGuiInstance;
-			task.delay(0.4, () => (unlockGui.Enabled = false));
+			unlockGui.Enabled = false;
+			unlockGui.Adornee = undefined;
 
 			setupUtilityGui(model, id);
 		}

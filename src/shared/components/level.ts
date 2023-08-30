@@ -23,6 +23,7 @@ export const Upgrade = component<{
 	title: string;
 	description: string;
 	image: string;
+	forLevel: number;
 	document: {
 		amount?: number;
 		machine?: string;
@@ -34,7 +35,7 @@ export const Upgrade = component<{
 export type Upgrade = ReturnType<typeof Upgrade>;
 
 export const HasUtilities = component<{
-	utilities: { utility: Utility; model: BaseUtility }[];
+	utilities: { utility: ComponentInfo<typeof Utility>; model: BaseUtility }[];
 }>("HasUtilities");
 export type HasUtilities = ReturnType<typeof HasUtilities>;
 

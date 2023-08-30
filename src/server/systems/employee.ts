@@ -151,7 +151,8 @@ function employee(world: World, state: ServerState) {
 						customer.customer.patch({ servedBy: id }),
 					);
 
-					const timeToTakeOrder = utility.utility.orderDelay / level.workRate;
+					const newUtility = getOrError(world, utility.utility.componentId, Utility);
+					const timeToTakeOrder = newUtility.orderDelay / level.workRate;
 					const destinationIndex = getDestinationByCustomer(world, customer.npcId)!.instance.Name.sub(-1, -1);
 					const destination = (
 						levelModel.EmployeeAnchors.FindFirstChild(

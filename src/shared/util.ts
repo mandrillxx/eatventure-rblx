@@ -44,14 +44,14 @@ export function getOrError<T extends ComponentCtor>(
 	return componentInstance;
 }
 
-export function weightedRandomIndex<T extends { utility: { weight: number; type: string } }>(array: Array<T>) {
+export function weightedRandomIndex<T extends { weight: number; type: string }>(array: Array<T>) {
 	let totalWeight = 0;
 	const weights = new Map<number, string>();
 	for (const item of array) {
-		totalWeight += item.utility.weight;
-		for (let i = 0; i < item.utility.weight; i++) {
+		totalWeight += item.weight;
+		for (let i = 0; i < item.weight; i++) {
 			const nextAvailableIndex = weights.size() + 1;
-			weights.set(nextAvailableIndex, item.utility.type);
+			weights.set(nextAvailableIndex, item.type);
 		}
 	}
 	const random = math.random(1, totalWeight);

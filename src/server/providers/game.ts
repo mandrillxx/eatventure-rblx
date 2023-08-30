@@ -9,6 +9,7 @@ import {
 	Level,
 	Wants,
 	NPC,
+	Utility,
 } from "shared/components";
 import { NPCDisplayNames, getOrError, randomNpcName, weightedRandomIndex } from "shared/util";
 import { Players, ReplicatedStorage } from "@rbxts/services";
@@ -329,7 +330,13 @@ export class GameProvider {
 						HasUtilities,
 						"Level does not have HasUtilities component",
 					);
-					const utilityName = weightedRandomIndex(hasUtilities.utilities);
+					const utilities: Utility[] = [];
+					for (const _utility of hasUtilities.utilities) {
+						const utility = getOrError(world, _utility.utility.componentId, Utility);
+						utilities.push(utility);
+					}
+					const filtered = utilities.filter((util) => util.unlocked);
+					const utilityName = weightedRandomIndex(filtered);
 					if (state.verbose)
 						Log.Warn("Chose utility {@UtilityName} for customer {@CustomerName}", utilityName, name);
 					if (!utilityName) {

@@ -18,7 +18,8 @@ function getProfile(state: ServerState, player: Player) {
 function getAllUpgradesForPlayer(world: World, playerId: AnyEntity) {
 	const upgrades: ComponentInfo<typeof Upgrade>[] = [];
 	for (const [id, upgrade, belongsTo] of world.query(Upgrade, BelongsTo)) {
-		if (belongsTo.playerId === playerId) {
+		const level = getOrError(world, belongsTo.levelId, Level);
+		if (belongsTo.playerId === playerId && upgrade.forLevel === tonumber(level.name.sub(-1, -1))) {
 			upgrades.push({ componentId: id, component: upgrade });
 		}
 	}
@@ -45,8 +46,14 @@ export function runUpgrade(world: World, upgradeId: AnyEntity, playerId: AnyEnti
 		case "NewCustomer":
 			world.insert(levelId, level.patch({ maxCustomers: level.maxCustomers + upgrade.document.amount! }));
 			break;
+		case "SetCustomer":
+			world.insert(levelId, level.patch({ maxCustomers: upgrade.document.amount! }));
+			break;
 		case "NewEmployee":
 			world.insert(levelId, level.patch({ maxEmployees: level.maxEmployees + upgrade.document.amount! }));
+			break;
+		case "SetEmployee":
+			world.insert(levelId, level.patch({ maxEmployees: upgrade.document.amount! }));
 			break;
 		case "UpdateWorkRate":
 			world.insert(levelId, level.patch({ workRate: level.workRate * upgrade.document.amount! }));

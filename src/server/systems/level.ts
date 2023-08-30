@@ -138,7 +138,7 @@ function level(world: World, state: ServerState) {
 		);
 		const model = getOrError(world, id, Renderable, "Level does not have Renderable component");
 
-		const utilities: { utility: Utility; model: BaseUtility }[] = [];
+		const utilities: { utility: ComponentInfo<typeof Utility>; model: BaseUtility }[] = [];
 		for (const utility of levelModel.Utilities.GetChildren()) {
 			const hasUtilityUnlocked = profile.Data.purchasedUtilities.has(utility.Name);
 			const upgradeGui = ReplicatedStorage.Assets.UpgradeGui.Clone() as UpgradeGuiInstance;
@@ -147,7 +147,7 @@ function level(world: World, state: ServerState) {
 			upgradeGui.Parent = utility;
 			const utilModel = utility as BaseUtility;
 			if (!hasUtilityUnlocked) {
-				utilModel.SelectionBox.SurfaceTransparency = 0;
+				utilModel.SelectionBox.SurfaceTransparency = 0.15;
 				utilModel.SelectionBox.Visible = true;
 			}
 			const product = utilModel.Makes.Value as Foods;
@@ -191,7 +191,7 @@ function level(world: World, state: ServerState) {
 			);
 			utility.SetAttribute("serverId", utilityId);
 			utilities.push({
-				utility: utilityComponent,
+				utility: { component: utilityComponent, componentId: utilityId },
 				model: utility as BaseUtility,
 			});
 			world.insert(
