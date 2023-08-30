@@ -10,7 +10,8 @@ export const Product = component<{
 export type Product = ReturnType<typeof Product>;
 
 export const Utility = component<{
-	type: string; //"Oven" | "IceCreamMaker" | "Fryer" | "DrinkMaker";
+	type: string;
+	machineName: string;
 	unlocked: boolean;
 	unlockCost: number;
 	level: ComponentInfo<typeof Level>;

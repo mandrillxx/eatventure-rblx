@@ -29,6 +29,7 @@ function utility(world: World, state: ClientState) {
 					const utilInfo = player
 						.FindFirstChildOfClass("PlayerGui")!
 						.FindFirstChild("UtilityInfo")! as UtilityInfoInstance;
+					if (!world.contains(id)) return;
 					const utility = getOrError(world, id, Utility, "Utility {@ID} no longer exists");
 					state.utilityUpgrade = fetchComponent(world, id, Utility);
 					const nextLevelCost = getNextLevelCost(world, id);
@@ -66,6 +67,7 @@ function utility(world: World, state: ClientState) {
 					maid.GiveTask(
 						model.ClickDetector.MouseClick.Connect(() => {
 							world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+							if (!world.contains(id)) return;
 							const balance = getOrError(
 								world,
 								state.playerId!,

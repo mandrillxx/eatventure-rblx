@@ -1,4 +1,4 @@
-import { Balance, BelongsTo, Client, OwnedBy, Renderable, Upgrade, Utility } from "shared/components";
+import { Balance, BelongsTo, Client, Level, OwnedBy, Renderable, Upgrade, Utility } from "shared/components";
 import { runUpgrade, updateUpgrades } from "server/components/levelUpgrade";
 import { ServerState } from "server/index.server";
 import { getOrError } from "shared/util";
@@ -52,6 +52,13 @@ function state(world: World, state: ServerState) {
 		if (!upgrade.old && upgrade.new && upgrade.new.purchased) {
 			const belongsTo = getOrError(world, id, BelongsTo);
 			runUpgrade(world, id, belongsTo.playerId);
+		}
+	}
+
+	for (const [id, level] of world.queryChanged(Level)) {
+		if (level.old && level.new && level.old.displayName !== level.new.displayName) {
+			const levelModel = getOrError(world, id, Renderable).model as BaseLevel;
+			levelModel.Sign.Sign.SurfaceGui.TextLabel.Text = level.new.displayName;
 		}
 	}
 

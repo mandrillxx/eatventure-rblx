@@ -8,6 +8,7 @@ import Log from "@rbxts/log";
 
 export interface IProfile {
 	level: number;
+	levelName: string;
 	money: number;
 	gems: number;
 	logInTimes: number;

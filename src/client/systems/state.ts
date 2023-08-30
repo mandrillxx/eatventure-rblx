@@ -155,6 +155,7 @@ function state(world: World, state: ClientState) {
 
 			let upgradesCanAfford = 0;
 			for (const [_id, upgrade, belongsTo] of world.query(Upgrade, BelongsTo)) {
+				if (!world.contains(belongsTo.levelId) || !world.contains(state.levelId)) continue;
 				if (ServerEntityIdToClient(state, belongsTo.levelId) !== state.levelId) continue;
 				const level = getOrError(world, state.levelId!, Level);
 				if (

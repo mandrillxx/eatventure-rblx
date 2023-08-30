@@ -10,6 +10,7 @@ import {
 	Wants,
 	NPC,
 	Utility,
+	Employee,
 } from "shared/components";
 import { NPCDisplayNames, getOrError, randomNpcName, weightedRandomIndex } from "shared/util";
 import { Players, ReplicatedStorage } from "@rbxts/services";
@@ -17,6 +18,8 @@ import { AnyEntity, World } from "@rbxts/matter";
 import { FormatCompact } from "@rbxts/format-number";
 import { ServerState } from "server/index.server";
 import { Provider } from "@rbxts/proton";
+import { IProfile } from "server/data/PurchaseHandler";
+import { Profile } from "@rbxts/profileservice/globals";
 import { Network } from "shared/network";
 import { Balance } from "shared/components";
 import { Queue } from "@rbxts/stacks-and-queues";
@@ -28,6 +31,7 @@ import Log from "@rbxts/log";
 interface PlayerData {
 	level: number;
 	money: number;
+	profile: Profile<IProfile, unknown>;
 	utilityLevels?: Map<string, number>;
 }
 
@@ -41,6 +45,7 @@ interface PlayerSession {
 	maid: Maid;
 	world: World;
 	queue: Queue<Event>;
+	profile: Profile<IProfile, unknown>;
 	player: IPlayer;
 }
 
@@ -52,7 +57,7 @@ interface IPlayer {
 }
 
 interface Event {
-	type: "newCustomer" | "newEmployee" | "closeStore" | "openStore" | "setLevel";
+	type: "newCustomer" | "newEmployee" | "closeStore" | "openStore" | "setLevel" | "resetEmployees";
 	args?: {
 		level?: number;
 		npc?: NPCDisplayNames;
@@ -124,7 +129,8 @@ export class GameProvider {
 
 		const newLevelId = this.loadLevel(
 			world,
-			entity,
+			session.profile,
+			session.player.entity,
 			session.player.client,
 			level,
 			player.Character || player.CharacterAdded.Wait()[0],
@@ -150,7 +156,15 @@ export class GameProvider {
 
 		const newLevel = getOrError(world, newLevelId, Level, "Level component not found on new level entity");
 		task.delay(1, () => {
-			this.beginGameplayLoop(world, state, session.player.client, entity, newLevel, newLevelId);
+			this.beginGameplayLoop(
+				world,
+				playerData.profile,
+				state,
+				session.player.client,
+				entity,
+				newLevel,
+				newLevelId,
+			);
 		});
 	}
 
@@ -177,7 +191,7 @@ export class GameProvider {
 			return;
 		}
 		const playerInventory = this.loadPlayerInventory(client);
-		const levelId = this.loadLevel(world, playerEntity, client, playerData.level, character);
+		const levelId = this.loadLevel(world, playerData.profile, playerEntity, client, playerData.level, character);
 		if (!world.contains(levelId)) {
 			Log.Error("Level {@LevelId} could not be found", levelId);
 			return;
@@ -191,7 +205,7 @@ export class GameProvider {
 			}),
 		);
 		task.delay(1, () => {
-			this.beginGameplayLoop(world, state, client, playerEntity, level, levelId);
+			this.beginGameplayLoop(world, playerData.profile, state, client, playerEntity, level, levelId);
 		});
 	}
 
@@ -210,6 +224,7 @@ export class GameProvider {
 
 	private beginGameplayLoop(
 		world: World,
+		profile: Profile<IProfile, unknown>,
 		state: ServerState,
 		client: Client,
 		entity: AnyEntity,
@@ -219,6 +234,7 @@ export class GameProvider {
 		const session: PlayerSession = {
 			maid: new Maid(),
 			queue: new Queue(),
+			profile,
 			world,
 			player: {
 				player: client.player,
@@ -297,6 +313,12 @@ export class GameProvider {
 				}
 				case "closeStore": {
 					toggleStore(false);
+					break;
+				}
+				case "resetEmployees": {
+					for (const [id, _employee] of world.query(Employee)) {
+						world.despawn(id);
+					}
 					break;
 				}
 				case "newEmployee": {
@@ -389,13 +411,21 @@ export class GameProvider {
 		);
 	}
 
-	private loadLevel(world: World, playerId: AnyEntity, client: Client, level: number, character: Model) {
+	private loadLevel(
+		world: World,
+		profile: Profile<IProfile, unknown>,
+		playerId: AnyEntity,
+		client: Client,
+		level: number,
+		character: Model,
+	) {
 		const levelName = `Level${level}` as keyof Levels;
 		const prestigeCost = (ReplicatedStorage.Assets.Levels.FindFirstChild(levelName)! as BaseLevel).Settings
 			.PrestigeCost.Value;
 		const levelId = world.spawn(
 			Level({
 				name: levelName,
+				displayName: profile.Data.levelName,
 				prestigeCost,
 				maxCustomers: 2,
 				maxEmployees: 1,
@@ -456,6 +486,7 @@ export class GameProvider {
 		if (state.verbose) Log.Warn("Loaded data for {@Name}", player.Name);
 
 		return {
+			profile,
 			level: profile.Data.level,
 			money: profile.Data.money,
 			utilityLevels: profile.Data.utilityLevels,

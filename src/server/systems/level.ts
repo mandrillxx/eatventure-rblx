@@ -122,6 +122,7 @@ function level(world: World, state: ServerState) {
 		);
 
 		levelModel.Name = `${level.name}_${player.UserId}`;
+		levelModel.Sign.Sign.SurfaceGui.TextLabel.Text = level.displayName;
 		levelModel.SetAttribute("Owner", player.UserId);
 		levelModel.Parent = Workspace.Levels;
 
@@ -151,6 +152,7 @@ function level(world: World, state: ServerState) {
 				utilModel.SelectionBox.Visible = true;
 			}
 			const product = utilModel.Makes.Value as Foods;
+			const machineName = utilModel.MachineName.Value;
 			const amount = utilModel.Amount.Value;
 			const utilLevel = player.Utilities.FindFirstChild(utility.Name) as IntValue | undefined;
 			const xpLevel = utilLevel
@@ -170,6 +172,7 @@ function level(world: World, state: ServerState) {
 				type: utility.Name,
 				unlocked: hasUtilityUnlocked,
 				unlockCost,
+				machineName,
 				makes: Product({ product, amount }),
 				every,
 				level: { componentId: id, component: level },

@@ -24,7 +24,7 @@ export function ClientEntityIdToServer(state: ClientState, id: AnyEntity) {
 }
 
 export function updateUtilityUnlockInfo(instance: UnlockGuiInstance, utility: Utility) {
-	instance.Background.Type.Text = utility.type;
+	instance.Background.Type.Text = utility.machineName;
 	instance.Background.Unlock.Text = `Unlock ($${FormatCompact(utility.unlockCost, 2)})`;
 	instance.Background.Unlock.MouseButton1Click.Connect(() => {
 		Network.unlockUtility.client.fire(instance.Adornee as Model);
@@ -41,7 +41,7 @@ export function updateUtilityInfo(instance: UtilityInfoInstance, utility: Utilit
 	const reward = FormatCompact(utility.reward * (xpBias ** utility.xpLevel - 1) * 5 * 0.2 * rewardMultiplier, 1);
 	const nextLevelCost = FormatCompact(getNextLevelCost(world, utilityId), 2);
 	instance.Background.Level.Text = `Level ${utility.xpLevel}`;
-	instance.Background.Type.Text = tostring(utility.type);
+	instance.Background.Type.Text = utility.machineName;
 	instance.Background.Reward.Text = `$${reward}`;
 	instance.Background.Every.Text = `${utility.every}s`;
 	instance.Background.Min.Text = tostring(utility.xpLevel);

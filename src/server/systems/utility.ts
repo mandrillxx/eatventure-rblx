@@ -12,6 +12,7 @@ const handleUnlock = (world: World, player: Player, state: ServerState, id: AnyE
 	const newUtility = getOrError(world, id, Utility, "Utility no longer exists");
 	if (newUtility.unlocked) return;
 	if (balance.balance < newUtility.unlockCost) {
+		world.spawn(SoundEffect({ sound: "Fail", meantFor: player }));
 		Log.Warn(
 			"{@Player} tried to unlock utility {@Utility} but doesn't have enough money",
 			player.Name,

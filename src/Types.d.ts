@@ -53,11 +53,13 @@ type NewOverlayGui = ScreenGui & {
 	PlayerInfo: PlayerInfoFrame;
 	Upgrades: UpgradesFrame;
 	Settings: SettingsFrame;
+	Restaurant: RestaurantFrame;
 	OpenSettings: TextButton;
 	OpenShop: TextButton;
 	OpenPasses: TextButton;
 	OpenUpgrades: TextButton;
 	OpenRenovate: TextButton;
+	OpenRestaurant: TextButton;
 };
 
 type OverlayGui = ScreenGui & {
@@ -88,6 +90,34 @@ type SliderGui = Frame & {
 		Slider: ImageLabel;
 	};
 	Title: TextLabel;
+};
+
+type RestaurantFrame = Frame & {
+	Close: Frame & {
+		ImageButton: ImageButton;
+	};
+	Content: Frame & {
+		Body: Frame & {
+			ResetEmployees: TextButton;
+			RestaurantName: Frame & {
+				Text: Frame & {
+					TextLabel: TextLabel;
+				};
+				StoreName: TextBox;
+			};
+			Stats: Frame & {
+				MoneyEarned: Frame & {
+					Title: TextLabel;
+				};
+				CustomersServed: Frame & {
+					Title: TextLabel;
+				};
+			};
+		};
+		Footer: Frame & {
+			Save: TextButton;
+		};
+	};
 };
 
 type SettingsFrame = Frame & {
@@ -264,6 +294,7 @@ type BaseUtility = Model & {
 	SelectionBox: SelectionBox;
 	ClickDetector: ClickDetector;
 	Makes: StringValue;
+	MachineName: StringValue;
 	Amount: IntValue;
 	Every: IntValue;
 	OrderDelay: IntValue;
@@ -383,6 +414,13 @@ type BaseLevel = Model & {
 	};
 	Settings: Folder & {
 		PrestigeCost: NumberValue;
+	};
+	Sign: Model & {
+		Sign: BasePart & {
+			SurfaceGui: SurfaceGui & {
+				TextLabel: TextLabel;
+			};
+		};
 	};
 };
 

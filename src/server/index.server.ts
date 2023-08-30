@@ -14,9 +14,9 @@ import { DataStoreService, PhysicsService, Players, ReplicatedStorage } from "@r
 import { PlayerStatisticEventsDefinition, PlayerStatisticsDefinition } from "./data/PlayerStatisticsDefinition";
 import { BadgeRewardGranter, RecurringTimeLockedRewardContainer } from "@rbxts/reward-containers";
 import { getLevelUtilityAmount, getPlayerMaxedUtilities } from "shared/methods";
-import { BelongsTo, Client, Level, Renderable, Upgrade } from "shared/components";
 import { PlayerStatisticAchievementsDefinition } from "./data/BadgeHandler";
 import { rewardsOpeningCoordinator } from "./data/RewardHandler";
+import { Client, Level, Renderable } from "shared/components";
 import { IProfile, setupPurchases } from "./data/PurchaseHandler";
 import { GameProvider } from "./providers/game";
 import { getOrError } from "shared/util";
@@ -74,6 +74,7 @@ export interface ServerState {
 
 const ProfileTemplate: IProfile = {
 	level: 1,
+	levelName: "Restaurant",
 	money: 0,
 	gems: 5,
 	logInTimes: 0,
@@ -186,6 +187,13 @@ async function bootstrap() {
 		function handleGui(playerId: AnyEntity) {
 			const overlay = player.FindFirstChildOfClass("PlayerGui")!.WaitForChild("Overlay") as NewOverlayGui;
 			const renovate = overlay.Renovate;
+			const restaurant = overlay.Restaurant;
+			restaurant.Content.Body.ResetEmployees.MouseButton1Click.Connect(() => {
+				gameProvider.addEvent(player, {
+					type: "resetEmployees",
+					ran: false,
+				});
+			});
 			renovate.Content.Footer.Purchase.MouseButton1Click.Connect(() => {
 				Log.Info("Player {@Player} is purchasing level", player);
 				const levelId = state.levels.get(player.UserId);
@@ -318,23 +326,16 @@ async function bootstrap() {
 		});
 	});
 
-	Network.purchaseUpgrade.server.connect((player, upgradeId) => {
-		Log.Info("Player {@Player} is purchasing upgrade {@UpgradeId}", player, upgradeId);
-		if (!world.contains(upgradeId)) {
-			return Log.Warn(
-				"Player {@Player} is purchasing upgrade {@UpgradeId} which does not exist",
-				player,
-				upgradeId,
-			);
+	Network.setStoreName.server.connect((player, name) => {
+		const levelId = state.levels.get(player.UserId);
+		if (!levelId) {
+			Log.Warn("Could not find level for player {@Player}", player);
+			return;
 		}
-		const upgrade = getOrError(world, upgradeId, Upgrade);
-		const belongsTo = getOrError(world, upgradeId, BelongsTo);
-		Log.Info(
-			"Player {@Player} is purchasing upgrade {@Upgrade} which belongs to {@PlayerId}",
-			player,
-			upgrade,
-			belongsTo.playerId,
-		);
+		const level = getOrError(world, levelId.levelId, Level);
+		const profile = state.profiles.get(player)!;
+		world.insert(levelId.levelId, level.patch({ displayName: name }));
+		profile.Data.levelName = name;
 	});
 
 	Network.retrieveStatistics.server.handle((player) => {

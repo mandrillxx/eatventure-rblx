@@ -1,4 +1,4 @@
-import { Balance, BelongsTo, Level, Upgrade, Utility } from "shared/components";
+import { Balance, BelongsTo, Client, Level, SoundEffect, Upgrade, Utility } from "shared/components";
 import { ComponentInfo, getOrError } from "shared/util";
 import { AnyEntity, World } from "@rbxts/matter";
 import { FormatCompact } from "@rbxts/format-number";
@@ -87,6 +87,8 @@ export function saveUpgrade(
 		: newestUpgrade.purchased;
 
 	const handleUpgrade = () => {
+		const client = getOrError(world, playerId, Client);
+		world.spawn(SoundEffect({ sound: "Upgrade", meantFor: client.player }));
 		world.insert(upgrade.componentId, newestUpgrade.patch({ purchased: true, ran: true }));
 		task.delay(1, () => runUpgrade(world, upgrade.componentId, playerId));
 		const upgradeFrame = upgradeInfo.Content.Body.FindFirstChild(tostring(upgrade.componentId));
