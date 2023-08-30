@@ -156,7 +156,13 @@ function state(world: World, state: ClientState) {
 			let upgradesCanAfford = 0;
 			for (const [_id, upgrade, belongsTo] of world.query(Upgrade, BelongsTo)) {
 				if (ServerEntityIdToClient(state, belongsTo.levelId) !== state.levelId) continue;
-				if (upgrade.cost <= balance.new.balance && !upgrade.purchased && !upgrade.ran) {
+				const level = getOrError(world, state.levelId!, Level);
+				if (
+					upgrade.cost <= balance.new.balance &&
+					!upgrade.purchased &&
+					!upgrade.ran &&
+					upgrade.forLevel === tonumber(level.name.sub(-1, -1))
+				) {
 					upgradesCanAfford++;
 				}
 			}

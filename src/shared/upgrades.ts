@@ -295,7 +295,7 @@ export const Upgrades: Upgrade[] = [
 		purchased: false,
 		ran: false,
 		document: {
-			amount: 5,
+			amount: 4,
 		},
 	}),
 	Upgrade({
@@ -344,6 +344,20 @@ export const Upgrades: Upgrade[] = [
 	Upgrade({
 		identifier: 25,
 		forLevel: 2,
+		type: "SetEmployee",
+		title: "Extra overtime",
+		description: "+1 Employee",
+		image: "rbxassetid://14620186666",
+		cost: 75_000,
+		purchased: false,
+		ran: false,
+		document: {
+			amount: 3,
+		},
+	}),
+	Upgrade({
+		identifier: 26,
+		forLevel: 2,
 		type: "UpdateProfit",
 		title: "New supplier",
 		description: "Chicken profit x2",
@@ -357,7 +371,21 @@ export const Upgrades: Upgrade[] = [
 		},
 	}),
 	Upgrade({
-		identifier: 25,
+		identifier: 27,
+		forLevel: 2,
+		type: "NewCustomer",
+		title: "Good day",
+		description: "+1 Customer",
+		image: "rbxassetid://14620197157",
+		cost: 1_000_000,
+		purchased: false,
+		ran: false,
+		document: {
+			amount: 1,
+		},
+	}),
+	Upgrade({
+		identifier: 28,
 		forLevel: 2,
 		type: "UpdateEventRate",
 		title: "Speedy service",

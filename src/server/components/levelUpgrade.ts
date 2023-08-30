@@ -152,8 +152,8 @@ export function updateUpgrades({
 		const button =
 			balance.balance >= upgrade.component.cost ? upgradeFrame.Content.Purchase : upgradeFrame.Content.CantAfford;
 
-		button.BtnImage.Text.TextLabel.Text = `$${FormatCompact(upgrade.component.cost, 0)}`;
-		button.BtnImage.Text["TextLabel - Stroke"].Text = `$${FormatCompact(upgrade.component.cost, 0)}`;
+		button.BtnImage.Text.TextLabel.Text = `$${FormatCompact(upgrade.component.cost, 1)}`;
+		button.BtnImage.Text["TextLabel - Stroke"].Text = `$${FormatCompact(upgrade.component.cost, 1)}`;
 		button.Visible = true;
 		upgradeFrame.Content.Title.Text.TextLabel.Text = upgrade.component.title;
 		upgradeFrame.Content.Title.Text["TextLabel - Stroke"].Text = upgrade.component.title;
