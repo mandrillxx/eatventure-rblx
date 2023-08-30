@@ -12,6 +12,7 @@ export type Product = ReturnType<typeof Product>;
 export const Utility = component<{
 	type: string; //"Oven" | "IceCreamMaker" | "Fryer" | "DrinkMaker";
 	unlocked: boolean;
+	unlockCost: number;
 	level: ComponentInfo<typeof Level>;
 	weight: number;
 	xpLevel: number;

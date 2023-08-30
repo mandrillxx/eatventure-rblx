@@ -184,10 +184,13 @@ function state(world: World, state: ClientState) {
 				}
 				const utility = getOrError(world, utilityId, Utility, "cannot find utility component");
 				const { baseUpgradeCost, xpLevel } = utility;
-				if (xpLevel + 1 > 150) continue;
+				if (xpLevel + 1 > 150) {
+					(_utility as BaseUtility).UpgradeGui.Enabled = false;
+					continue;
+				}
 				const xpBias = xpLevel > 100 ? 1.2025 : 1.2;
 				const nextLevelCost = baseUpgradeCost * (xpBias ** xpLevel - 1);
-				if (balance.new.balance >= nextLevelCost) {
+				if (balance.new.balance >= nextLevelCost && utility.xpLevel < 150 && utility.unlocked) {
 					(_utility as BaseUtility).UpgradeGui.Enabled = true;
 				} else if (balance.new.balance < nextLevelCost && (_utility as BaseUtility).UpgradeGui.Enabled) {
 					(_utility as BaseUtility).UpgradeGui.Enabled = false;

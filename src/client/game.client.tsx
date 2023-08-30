@@ -88,8 +88,8 @@ function setupUtilityGui() {
 				const utilityInfo = player
 					.FindFirstChildOfClass("PlayerGui")!
 					.WaitForChild("UtilityInfo")! as UtilityInfoInstance;
-				const adornee = utilityInfo.Adornee;
-				if (adornee && !target.IsDescendantOf(adornee)) {
+				const utilityInfoAdornee = utilityInfo.Adornee;
+				if (utilityInfoAdornee && !target.IsDescendantOf(utilityInfoAdornee)) {
 					utilityInfo.Adornee = undefined;
 					utilityInfo.Enabled = false;
 				}

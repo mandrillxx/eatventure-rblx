@@ -78,6 +78,7 @@ const ProfileTemplate: IProfile = {
 	gems: 5,
 	logInTimes: 0,
 	purchasedUpgrades: new Set(),
+	purchasedUtilities: new Set<string>().add("Microwave").add("CarrotStation"),
 	utilityLevels: new Map(),
 };
 
@@ -286,8 +287,10 @@ async function bootstrap() {
 				Parent: player,
 			});
 			const utilityInfo = ReplicatedStorage.Assets.UtilityInfo.Clone();
+			const unlockInfo = ReplicatedStorage.Assets.UnlockGui.Clone();
 			const upgradeInfo = ReplicatedStorage.Assets.UpgradeInfo.Clone();
 			utilityInfo.Parent = player.FindFirstChildOfClass("PlayerGui")!;
+			unlockInfo.Parent = player.FindFirstChildOfClass("PlayerGui")!;
 			upgradeInfo.Parent = player.FindFirstChildOfClass("PlayerGui")!;
 		});
 

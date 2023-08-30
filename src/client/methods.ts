@@ -3,6 +3,7 @@ import { FormatCompact } from "@rbxts/format-number";
 import { ClientState } from "shared/clientState";
 import { getOrError } from "shared/util";
 import { Utility } from "shared/components";
+import { Network } from "shared/network";
 
 export function getNextLevelCost(world: World, id: AnyEntity, utility?: Utility) {
 	const newUtility = utility ?? getOrError(world, id, Utility, "Utility no longer exists");
@@ -20,6 +21,14 @@ export function ClientEntityIdToServer(state: ClientState, id: AnyEntity) {
 	for (const [key, value] of state.entityIdMap) {
 		if (value === id) return key as unknown as AnyEntity;
 	}
+}
+
+export function updateUtilityUnlockInfo(instance: UnlockGuiInstance, utility: Utility) {
+	instance.Background.Type.Text = utility.type;
+	instance.Background.Unlock.Text = `Unlock ($${FormatCompact(utility.unlockCost, 2)})`;
+	instance.Background.Unlock.MouseButton1Click.Connect(() => {
+		Network.unlockUtility.client.fire(instance.Adornee as Model);
+	});
 }
 
 export function updateUtilityInfo(instance: UtilityInfoInstance, utility: Utility, world: World, utilityId: AnyEntity) {

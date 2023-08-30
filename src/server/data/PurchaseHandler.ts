@@ -2,7 +2,7 @@ import { MarketplaceService, Players } from "@rbxts/services";
 import { AnyEntity, World } from "@rbxts/matter";
 import { ServerState } from "server/index.server";
 import { getOrError } from "shared/util";
-import { Balance, Upgrade } from "shared/components";
+import { Balance } from "shared/components";
 import { Profile } from "@rbxts/profileservice/globals";
 import Log from "@rbxts/log";
 
@@ -12,6 +12,7 @@ export interface IProfile {
 	gems: number;
 	logInTimes: number;
 	purchasedUpgrades: Set<number>;
+	purchasedUtilities: Set<string>;
 	utilityLevels: Map<string, number>;
 }
 

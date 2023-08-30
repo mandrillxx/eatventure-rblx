@@ -140,11 +140,16 @@ function level(world: World, state: ServerState) {
 
 		const utilities: { utility: Utility; model: BaseUtility }[] = [];
 		for (const utility of levelModel.Utilities.GetChildren()) {
+			const hasUtilityUnlocked = profile.Data.purchasedUtilities.has(utility.Name);
 			const upgradeGui = ReplicatedStorage.Assets.UpgradeGui.Clone() as UpgradeGuiInstance;
 			upgradeGui.Enabled = false;
 			upgradeGui.Adornee = utility as Model;
 			upgradeGui.Parent = utility;
 			const utilModel = utility as BaseUtility;
+			if (!hasUtilityUnlocked) {
+				utilModel.SelectionBox.SurfaceTransparency = 0;
+				utilModel.SelectionBox.Visible = true;
+			}
 			const product = utilModel.Makes.Value as Foods;
 			const amount = utilModel.Amount.Value;
 			const utilLevel = player.Utilities.FindFirstChild(utility.Name) as IntValue | undefined;
@@ -157,12 +162,14 @@ function level(world: World, state: ServerState) {
 				  }).Value;
 			const every = utilModel.Every.Value / (xpLevel >= 50 ? 2 : 1);
 			const orderDelay = utilModel.OrderDelay.Value;
+			const unlockCost = utilModel.UnlockCost.Value;
 			const reward = utilModel.Reward.Value;
 			const weight = utilModel.Weight.Value;
 			const baseUpgradeCost = utilModel.BaseUpgrade.Value;
 			const utilityComponent = Utility({
 				type: utility.Name,
-				unlocked: true,
+				unlocked: hasUtilityUnlocked,
+				unlockCost,
 				makes: Product({ product, amount }),
 				every,
 				level: { componentId: id, component: level },

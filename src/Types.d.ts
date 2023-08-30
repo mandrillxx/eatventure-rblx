@@ -156,6 +156,7 @@ type Assets = Folder & {
 	UtilityInfo: UtilityInfoInstance;
 	UpgradeInfo: UpgradeInfoInstance;
 	UpgradeGui: UpgradeGuiInstance;
+	UnlockGui: UnlockGuiInstance;
 	Animate: Script;
 };
 
@@ -192,6 +193,14 @@ type UpgradeGuiInstance = BillboardGui & {
 		UICorner: UICorner;
 		UIPadding: UIPadding;
 		ImageLabel: ImageLabel;
+	};
+};
+
+type UnlockGuiInstance = BillboardGui & {
+	Background: Frame & {
+		UICorner: UICorner;
+		Unlock: TextButton;
+		Type: TextLabel;
 	};
 };
 
@@ -261,6 +270,7 @@ type BaseUtility = Model & {
 	Reward: NumberValue;
 	Weight: IntValue;
 	BaseUpgrade: NumberValue;
+	UnlockCost: NumberValue;
 	UpgradeGui: UpgradeGuiInstance;
 };
 

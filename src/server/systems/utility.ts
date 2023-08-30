@@ -6,6 +6,23 @@ import { Network } from "shared/network";
 import Maid from "@rbxts/maid";
 import Log from "@rbxts/log";
 
+const handleUnlock = (world: World, player: Player, state: ServerState, id: AnyEntity) => {
+	const playerId = state.clients.get(player.UserId)!;
+	const balance = getOrError(world, playerId, Balance, "Player {@ID} does not have a Balance component");
+	const newUtility = getOrError(world, id, Utility, "Utility no longer exists");
+	if (newUtility.unlocked) return;
+	if (balance.balance < newUtility.unlockCost) {
+		Log.Warn(
+			"{@Player} tried to unlock utility {@Utility} but doesn't have enough money",
+			player.Name,
+			newUtility.type,
+		);
+		return;
+	}
+	world.insert(playerId, balance.patch({ balance: balance.balance - newUtility.unlockCost }));
+	world.insert(id, newUtility.patch({ unlocked: true }));
+};
+
 const handleUpgrade = (world: World, player: Player, state: ServerState, id: AnyEntity) => {
 	const playerId = state.clients.get(player.UserId)!;
 	const client = getOrError(world, playerId, Client);
@@ -35,7 +52,9 @@ const handleUpgrade = (world: World, player: Player, state: ServerState, id: Any
 		newUtility.patch({ xpLevel: nextLevel, every: newUtility.every / everyRate }),
 		SoundEffect({ sound: "Upgrade", meantFor: client.player }),
 	);
-	if (nextLevel >= 150) state.playerStatisticsProvider.recordEvent(player, "utilitiesMaxed", 1);
+	if (nextLevel >= 150) {
+		state.playerStatisticsProvider.recordEvent(player, "utilitiesMaxed", 1);
+	}
 };
 
 function utility(world: World, state: ServerState) {
@@ -51,6 +70,21 @@ function utility(world: World, state: ServerState) {
 				const maid = new Maid();
 				const levelId = utility.new.level.componentId;
 				maid.GiveTask(
+					Network.unlockUtility.server.connect((requestedPlayer, adornee) => {
+						if (!world.contains(id) || !world.contains(levelId)) return;
+						const ownedBy = getOrError(world, levelId, OwnedBy);
+						const player = ownedBy.player;
+						const profile = state.profiles.get(player);
+						if (!profile) {
+							Log.Warn("Player {@ID} does not have a profile, cannot save unlock", player.UserId);
+							return;
+						}
+						profile.Data.purchasedUtilities.add(adornee.Name);
+						if (player !== requestedPlayer || !adornee || adornee.Name !== model.Name) return;
+						handleUnlock(world, player, state, id);
+					}),
+				);
+				maid.GiveTask(
 					Network.upgradeUtility.server.connect((requestedPlayer, adornee) => {
 						if (!world.contains(id) || !world.contains(levelId)) return;
 						const ownedBy = getOrError(world, levelId, OwnedBy);
@@ -61,6 +95,12 @@ function utility(world: World, state: ServerState) {
 				);
 				maids.set(id, maid);
 			}
+		}
+		if (utility.old && utility.new && !utility.old.unlocked && utility.new.unlocked) {
+			const renderable = getOrError(world, id, Renderable, "Utility {@ID} does not have a Renderable component");
+			const model = renderable.model as BaseUtility;
+			model.SelectionBox.SurfaceTransparency = 0.8;
+			model.SelectionBox.Visible = false;
 		}
 		if (utility.old && !utility.new) {
 			if (maids.has(id)) {
