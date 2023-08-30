@@ -469,7 +469,9 @@ type DevProductsFrame = Frame & {
 type RenovateFrame = Frame & {
 	Content: Frame & {
 		Footer: Frame & {
-			NotReady: TextButton;
+			NotReady: TextButton & {
+				BtnText: Frame & UIText;
+			};
 			CantAfford: TextButton & {
 				BtnText: Frame & UIText;
 			};

@@ -109,7 +109,7 @@ export class GameProvider {
 		});
 	}
 
-	switchLevel(player: Player, state: ServerState, level: number) {
+	switchLevel(player: Player, state: ServerState, level: number, skipMoney: boolean = false) {
 		const session = this.getPlayerSession(player);
 
 		if (!session) {
@@ -138,12 +138,14 @@ export class GameProvider {
 			Log.Fatal("Player data could not be loaded for {@Name}", session.player.player.Name);
 			return;
 		}
-		world.insert(
-			entity,
-			Balance({
-				balance: playerData.money,
-			}),
-		);
+		if (!skipMoney) {
+			world.insert(
+				entity,
+				Balance({
+					balance: playerData.money,
+				}),
+			);
+		}
 
 		const newLevel = getOrError(world, newLevelId, Level, "Level component not found on new level entity");
 		task.delay(1, () => {

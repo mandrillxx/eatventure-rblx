@@ -1,6 +1,5 @@
 import { AnyEntity, component } from "@rbxts/matter";
 import { CharacterRigR15 } from "@rbxts/promise-character";
-import { ComponentInfo } from "shared/util";
 
 export const Client = component<{
 	player: Player;

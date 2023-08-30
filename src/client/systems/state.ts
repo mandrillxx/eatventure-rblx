@@ -1,5 +1,6 @@
 import { Balance, BelongsTo, Level, OpenStatus, OwnedBy, Renderable, Upgrade, Utility } from "shared/components";
 import { ServerEntityIdToClient, getNextLevelCost, updateUtilityInfo } from "client/methods";
+import { getLevelUtilityAmount, getPlayerMaxedUtilities } from "shared/methods";
 import { AnyEntity, World, useThrottle } from "@rbxts/matter";
 import { FormatCompact } from "@rbxts/format-number";
 import { ClientState } from "shared/clientState";
@@ -46,7 +47,7 @@ function state(world: World, state: ClientState) {
 				"Player {@ID} does not have a Balance component",
 			);
 			utilityInfo.Background.Upgrade.BackgroundColor3 =
-				balance.balance >= nextLevelCost && newUtility.xpLevel + 1 < 250
+				balance.balance >= nextLevelCost && newUtility.xpLevel + 1 < 150
 					? Color3.fromRGB(76, 229, 11)
 					: Color3.fromRGB(229, 20, 5);
 			updateUtilityInfo(utilityInfo, utility.new, world, id);
@@ -81,11 +82,30 @@ function state(world: World, state: ClientState) {
 		if (balance.new) {
 			if (!world.contains(state.levelId!)) continue;
 			const level = getOrError(world, state.levelId!, Level, "Level does not have Level component");
-			const renovate = (player.FindFirstChildOfClass("PlayerGui")!.FindFirstChild("Overlay")! as NewOverlayGui)
-				.Renovate;
+			const playerMaxedUtilities = getPlayerMaxedUtilities(world, state.playerId!, state.levelId!);
+			const levelUtilities = getLevelUtilityAmount(world, state.levelId!);
+			const playerGui = player.FindFirstChildOfClass("PlayerGui")!;
+			const overlay = playerGui.FindFirstChild("Overlay") as NewOverlayGui;
+			const renovate = overlay.Renovate;
+
+			const prestigeCost = `$${FormatCompact(level.prestigeCost, 1)}`;
+			const canPrestige = playerMaxedUtilities >= levelUtilities;
+			const prestigeRequirements = `(${playerMaxedUtilities}/${levelUtilities})`;
+			renovate.Content.Footer.Purchase.BtnText.TextLabel.Text = `${prestigeCost} ${prestigeRequirements}`;
+			renovate.Content.Footer.Purchase.BtnText[
+				"TextLabel - Stroke"
+			].Text = `${prestigeCost} ${prestigeRequirements}`;
+			renovate.Content.Footer.NotReady.BtnText.TextLabel.Text = `${prestigeCost} ${prestigeRequirements}`;
+			renovate.Content.Footer.NotReady.BtnText[
+				"TextLabel - Stroke"
+			].Text = `${prestigeCost} ${prestigeRequirements}`;
+			renovate.Content.Footer.CantAfford.BtnText.TextLabel.Text = `${prestigeCost} ${prestigeRequirements}`;
+			renovate.Content.Footer.CantAfford.BtnText[
+				"TextLabel - Stroke"
+			].Text = `${prestigeCost} ${prestigeRequirements}`;
 			if (balance.new.balance >= level.prestigeCost) {
-				renovate.Content.Footer.Purchase.Visible = true;
-				renovate.Content.Footer.NotReady.Visible = false;
+				renovate.Content.Footer.Purchase.Visible = canPrestige;
+				renovate.Content.Footer.NotReady.Visible = !canPrestige;
 				renovate.Content.Footer.CantAfford.Visible = false;
 			} else {
 				renovate.Content.Footer.Purchase.Visible = false;
@@ -93,8 +113,6 @@ function state(world: World, state: ClientState) {
 				renovate.Content.Footer.CantAfford.Visible = true;
 			}
 
-			const playerGui = player.FindFirstChildOfClass("PlayerGui")!;
-			const overlay = playerGui.FindFirstChild("Overlay") as NewOverlayGui;
 			const playerInfo = overlay.PlayerInfo;
 			const settings = overlay.Settings;
 			playerInfo.Bars.Progress.Cash.Text.TextLabel.Text = `$${FormatCompact(
@@ -118,7 +136,7 @@ function state(world: World, state: ClientState) {
 			if (!utility || !utilityInfo.Enabled || utilityInfo.Adornee?.Name !== utility.component.type) continue;
 			const nextLevelCost = getNextLevelCost(world, utility.componentId);
 			utilityInfo.Background.Upgrade.BackgroundColor3 =
-				balance.new.balance >= nextLevelCost && utility.component.xpLevel < 250
+				balance.new.balance >= nextLevelCost && utility.component.xpLevel < 150
 					? Color3.fromRGB(76, 229, 11)
 					: Color3.fromRGB(229, 20, 5);
 		}
@@ -166,8 +184,8 @@ function state(world: World, state: ClientState) {
 				}
 				const utility = getOrError(world, utilityId, Utility, "cannot find utility component");
 				const { baseUpgradeCost, xpLevel } = utility;
-				if (xpLevel + 1 > 250) continue;
-				const xpBias = xpLevel > 100 ? 1.205 : 1.2;
+				if (xpLevel + 1 > 150) continue;
+				const xpBias = xpLevel > 100 ? 1.2025 : 1.2;
 				const nextLevelCost = baseUpgradeCost * (xpBias ** xpLevel - 1);
 				if (balance.new.balance >= nextLevelCost) {
 					(_utility as BaseUtility).UpgradeGui.Enabled = true;

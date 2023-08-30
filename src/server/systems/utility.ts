@@ -12,10 +12,10 @@ const handleUpgrade = (world: World, player: Player, state: ServerState, id: Any
 	const balance = getOrError(world, playerId, Balance, "Player {@ID} does not have a Balance component");
 	const newUtility = getOrError(world, id, Utility, "Utility no longer exists");
 	const { baseUpgradeCost, xpLevel } = newUtility;
-	const xpBias = xpLevel > 100 ? 1.205 : 1.2;
+	const xpBias = xpLevel > 100 ? 1.2025 : 1.2;
 	const nextLevelCost = baseUpgradeCost * (xpBias ** xpLevel - 1);
 	if (state.verbose) Log.Info("Next level cost: {@Cost} | {@Balance}", nextLevelCost, balance.balance);
-	if (newUtility.xpLevel >= 250) {
+	if (newUtility.xpLevel >= 150) {
 		world.insert(id, SoundEffect({ sound: "Fail", meantFor: client.player }));
 		Log.Warn("Utility {@UtilityID} is already max level", id);
 		return;
@@ -35,7 +35,7 @@ const handleUpgrade = (world: World, player: Player, state: ServerState, id: Any
 		newUtility.patch({ xpLevel: nextLevel, every: newUtility.every / everyRate }),
 		SoundEffect({ sound: "Upgrade", meantFor: client.player }),
 	);
-	if (nextLevel >= 250) state.playerStatisticsProvider.recordEvent(player, "utilitiesMaxed", 1);
+	if (nextLevel >= 150) state.playerStatisticsProvider.recordEvent(player, "utilitiesMaxed", 1);
 };
 
 function utility(world: World, state: ServerState) {

@@ -165,7 +165,15 @@ function Gamepasses(overlay: NewOverlayGui) {
 		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		MarketplaceService.PromptGamePassPurchase(player, 240978094);
 	});
+	gamepasses.Content.Body["2xMoney"].Content.Button.TextButton.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		MarketplaceService.PromptGamePassPurchase(player, 240978094);
+	});
 	gamepasses.Content.Body["HigherLuck"].MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		MarketplaceService.PromptGamePassPurchase(player, 240979761);
+	});
+	gamepasses.Content.Body["HigherLuck"].Content.Button.TextButton.MouseButton1Click.Connect(() => {
 		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		MarketplaceService.PromptGamePassPurchase(player, 240979761);
 	});
@@ -173,7 +181,15 @@ function Gamepasses(overlay: NewOverlayGui) {
 		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		MarketplaceService.PromptGamePassPurchase(player, 240981135);
 	});
+	gamepasses.Content.Body["VIP"].Content.Button.TextButton.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		MarketplaceService.PromptGamePassPurchase(player, 240981135);
+	});
 	gamepasses.Content.Body["FasterEmployee"].MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		MarketplaceService.PromptGamePassPurchase(player, 240978991);
+	});
+	gamepasses.Content.Body["FasterEmployee"].Content.Button.TextButton.MouseButton1Click.Connect(() => {
 		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		MarketplaceService.PromptGamePassPurchase(player, 240978991);
 	});

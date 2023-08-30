@@ -13,6 +13,7 @@ import { served10Customers, served1000Customers, earned100k, earned10m, maxedUti
 import { DataStoreService, PhysicsService, Players, ReplicatedStorage } from "@rbxts/services";
 import { PlayerStatisticEventsDefinition, PlayerStatisticsDefinition } from "./data/PlayerStatisticsDefinition";
 import { BadgeRewardGranter, RecurringTimeLockedRewardContainer } from "@rbxts/reward-containers";
+import { getLevelUtilityAmount, getPlayerMaxedUtilities } from "shared/methods";
 import { BelongsTo, Client, Level, Renderable, Upgrade } from "shared/components";
 import { PlayerStatisticAchievementsDefinition } from "./data/BadgeHandler";
 import { rewardsOpeningCoordinator } from "./data/RewardHandler";
@@ -191,20 +192,33 @@ async function bootstrap() {
 					Log.Warn("Could not find level for player {@Player}", player);
 					return;
 				}
+				const playerMaxedUtilities = getPlayerMaxedUtilities(world, playerId, levelId.levelId);
+				const levelUtilities = getLevelUtilityAmount(world, levelId.levelId);
+				if (playerMaxedUtilities < levelUtilities) {
+					Log.Warn(
+						"Player {@Player} tried to prestige while only havnig {@Maxed}/{Maxed2}",
+						player.Name,
+						playerMaxedUtilities,
+						levelUtilities,
+					);
+					return;
+				}
 				const balance = getOrError(world, playerId, Balance);
 				const level = getOrError(world, levelId.levelId, Level);
 				if (balance.balance >= level.prestigeCost) {
 					Log.Info("Prestiging player {@Player}", player.Name);
+					world.insert(playerId, Balance({ balance: 0 }));
+					(player as BasePlayer).leaderstats.Money.Value = "0";
 					const profile = state.profiles.get(player)!;
 					profile.Data.level += 1;
-					world.insert(playerId, Balance({ balance: 0 }));
-					gameProvider.switchLevel(player, state, 2);
+					gameProvider.switchLevel(player, state, 2, true);
 				} else Log.Info("Player {@Player} cannot afford level", player);
 			});
 		}
 
 		function handleRewards() {
 			const _rewardsOpeningCoordinator = rewardsOpeningCoordinator();
+
 			const rewardContainerForPlayer = RecurringTimeLockedRewardContainer.create(
 				"DailyRewardContainer",
 				3 * 60 * 60,
