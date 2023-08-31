@@ -190,10 +190,10 @@ async function bootstrap() {
 			const renovate = overlay.Renovate;
 			const restaurant = overlay.Restaurant;
 			restaurant.Content.Body.ResetEmployees.MouseButton1Click.Connect(() => {
-				gameProvider.addEvent(player, {
-					type: "resetEmployees",
-					ran: false,
-				});
+				// gameProvider.addEvent(player, {
+				// 	type: "resetEmployees",
+				// 	ran: false,
+				// });
 			});
 			renovate.Content.Footer.Purchase.MouseButton1Click.Connect(() => {
 				Log.Info("Player {@Player} is purchasing level", player);
@@ -321,7 +321,7 @@ async function bootstrap() {
 	setupPurchases(state, world);
 
 	Network.redeemCode.server.handle((player, code) => {
-		if (code === "test1") {
+		const redeem = (amount: number) => {
 			const playerId = state.clients.get(player.UserId);
 			if (!playerId) {
 				world.spawn(SoundEffect({ sound: "Fail", meantFor: player }));
@@ -344,9 +344,22 @@ async function bootstrap() {
 				Balance,
 				"Could not find balance for player while redeeming code",
 			);
-			world.insert(playerId, balance.patch({ balance: balance.balance + 1_000 }));
+			world.insert(playerId, balance.patch({ balance: balance.balance + amount }));
 			world.spawn(SoundEffect({ sound: "CodeRedeem", meantFor: player }));
 			profile.Data.codesRedeemed.add(code);
+		};
+
+		if (code === "RELEASE") {
+			redeem(1_000);
+			return "success";
+		} else if (code === "BETA") {
+			redeem(25_000);
+			return "success";
+		} else if (code === "DEV") {
+			redeem(100_000);
+			return "success";
+		} else if (code === "TIKTOK") {
+			redeem(5_000);
 			return "success";
 		}
 		world.spawn(SoundEffect({ sound: "Fail", meantFor: player }));

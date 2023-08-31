@@ -11,6 +11,7 @@ import { receiveReplication } from "./receiveReplication";
 import { withHookDetection } from "@rbxts/roact-hooked";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { ComponentInfo } from "shared/util";
+import { FormatCompact } from "@rbxts/format-number";
 import { ClientState } from "shared/clientState";
 import { Soundtrack } from "shared/soundtrack";
 import { AnyEntity } from "@rbxts/matter";
@@ -19,7 +20,6 @@ import { Proton } from "@rbxts/proton";
 import { start } from "shared/start";
 import Log, { Logger } from "@rbxts/log";
 import Roact from "@rbxts/roact";
-import { FormatCompact } from "@rbxts/format-number";
 
 Proton.awaitStart();
 
@@ -233,7 +233,7 @@ async function Gamepasses(overlay: NewOverlayGui) {
 			codes.Content.Body.Status.TextLabel.Visible = true;
 			codes.Content.Body.Status.TextLabel.TextColor3 = Color3.fromRGB(14, 232, 14);
 			codes.Content.Body.Status.TextLabel.Text = "Redeemed!";
-			task.delay(1.5, () => (codes.Visible = false));
+			task.delay(0.7, () => (codes.Visible = false));
 		} else if (status === "used") {
 			codes.Content.Body.Status.TextLabel.Visible = true;
 			codes.Content.Body.Status.TextLabel.TextColor3 = Color3.fromRGB(250, 120, 0);

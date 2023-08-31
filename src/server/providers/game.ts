@@ -316,8 +316,8 @@ export class GameProvider {
 					break;
 				}
 				case "resetEmployees": {
-					for (const [id, _employee] of world.query(Employee)) {
-						world.despawn(id);
+					for (const [id, _employee, belongsTo] of world.query(Employee, BelongsTo)) {
+						if (belongsTo.levelId === levelId) world.despawn(id);
 					}
 					break;
 				}
