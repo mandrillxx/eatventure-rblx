@@ -54,6 +54,7 @@ type NewOverlayGui = ScreenGui & {
 	Upgrades: UpgradesFrame;
 	Settings: SettingsFrame;
 	Restaurant: RestaurantFrame;
+	Codes: CodesFrame;
 	OpenSettings: TextButton;
 	OpenShop: TextButton;
 	OpenPasses: TextButton;
@@ -90,6 +91,23 @@ type SliderGui = Frame & {
 		Slider: ImageLabel;
 	};
 	Title: TextLabel;
+};
+
+type CodesFrame = Frame & {
+	Content: Frame & {
+		Body: Frame & {
+			Code: TextBox;
+			Status: Frame & {
+				TextLabel: TextLabel;
+			};
+		};
+		Footer: Frame & {
+			Submit: TextButton;
+		};
+	};
+	Close: Frame & {
+		ImageButton: ImageButton;
+	};
 };
 
 type RestaurantFrame = Frame & {
@@ -172,6 +190,7 @@ type CustomersFolder = Folder & Customers;
 
 type Sounds = {
 	UIClick: Sound;
+	CodeRedeem: Sound;
 	MoneyPickup: Sound;
 	Upgrade: Sound;
 	Fail: Sound;
@@ -565,6 +584,9 @@ type GamepassesFrame = Frame & {
 					};
 				};
 			};
+		};
+		Footer: {
+			Codes: TextButton;
 		};
 	};
 	Close: Frame & {

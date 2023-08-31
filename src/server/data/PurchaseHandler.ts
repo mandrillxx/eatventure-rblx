@@ -12,6 +12,7 @@ export interface IProfile {
 	money: number;
 	gems: number;
 	logInTimes: number;
+	codesRedeemed: Set<string>;
 	purchasedUpgrades: Set<number>;
 	purchasedUtilities: Set<string>;
 	utilityLevels: Map<string, number>;

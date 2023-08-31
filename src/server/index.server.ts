@@ -10,13 +10,13 @@ import {
 	PlayerStatisticAchievementsManager,
 } from "@rbxts/player-statistic-achievements";
 import { served10Customers, served1000Customers, earned100k, earned10m, maxedUtility } from "./data/BadgeHandler";
-import { DataStoreService, PhysicsService, Players, ReplicatedStorage } from "@rbxts/services";
+import { DataStoreService, PhysicsService, Players, ReplicatedStorage, TextService } from "@rbxts/services";
 import { PlayerStatisticEventsDefinition, PlayerStatisticsDefinition } from "./data/PlayerStatisticsDefinition";
 import { BadgeRewardGranter, RecurringTimeLockedRewardContainer } from "@rbxts/reward-containers";
 import { getLevelUtilityAmount, getPlayerMaxedUtilities } from "shared/methods";
+import { Client, Level, Renderable, SoundEffect } from "shared/components";
 import { PlayerStatisticAchievementsDefinition } from "./data/BadgeHandler";
 import { rewardsOpeningCoordinator } from "./data/RewardHandler";
-import { Client, Level, Renderable } from "shared/components";
 import { IProfile, setupPurchases } from "./data/PurchaseHandler";
 import { GameProvider } from "./providers/game";
 import { getOrError } from "shared/util";
@@ -74,10 +74,11 @@ export interface ServerState {
 
 const ProfileTemplate: IProfile = {
 	level: 1,
-	levelName: "Restaurant",
+	levelName: "Cafe",
 	money: 0,
 	gems: 5,
 	logInTimes: 0,
+	codesRedeemed: new Set(),
 	purchasedUpgrades: new Set(),
 	purchasedUtilities: new Set<string>().add("Microwave").add("CarrotStation"),
 	utilityLevels: new Map(),
@@ -319,6 +320,39 @@ async function bootstrap() {
 	collision();
 	setupPurchases(state, world);
 
+	Network.redeemCode.server.handle((player, code) => {
+		if (code === "test1") {
+			const playerId = state.clients.get(player.UserId);
+			if (!playerId) {
+				world.spawn(SoundEffect({ sound: "Fail", meantFor: player }));
+				Log.Warn("Could not find player for player {@Player}, cannot redeem code", player);
+				return "fail";
+			}
+			const profile = state.profiles.get(player);
+			if (!profile) {
+				world.spawn(SoundEffect({ sound: "Fail", meantFor: player }));
+				Log.Warn("Could not find profile for player {@Player}, cannot redeem code", player);
+				return "fail";
+			}
+			if (profile.Data.codesRedeemed.has(code)) {
+				world.spawn(SoundEffect({ sound: "Fail", meantFor: player }));
+				return "used";
+			}
+			const balance = getOrError(
+				world,
+				playerId,
+				Balance,
+				"Could not find balance for player while redeeming code",
+			);
+			world.insert(playerId, balance.patch({ balance: balance.balance + 1_000 }));
+			world.spawn(SoundEffect({ sound: "CodeRedeem", meantFor: player }));
+			profile.Data.codesRedeemed.add(code);
+			return "success";
+		}
+		world.spawn(SoundEffect({ sound: "Fail", meantFor: player }));
+		return "fail";
+	});
+
 	Network.setStoreStatus.server.connect((player, open) => {
 		gameProvider.addEvent(player, {
 			type: open ? "openStore" : "closeStore",
@@ -334,8 +368,9 @@ async function bootstrap() {
 		}
 		const level = getOrError(world, levelId.levelId, Level);
 		const profile = state.profiles.get(player)!;
-		world.insert(levelId.levelId, level.patch({ displayName: name }));
-		profile.Data.levelName = name;
+		const filteredName = TextService.FilterStringAsync(name, player.UserId).GetNonChatStringForBroadcastAsync();
+		world.insert(levelId.levelId, level.patch({ displayName: filteredName }));
+		profile.Data.levelName = filteredName;
 	});
 
 	Network.retrieveStatistics.server.handle((player) => {

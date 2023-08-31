@@ -148,16 +148,17 @@ function DevProducts(overlay: NewOverlayGui) {
 	overlay.OpenShop.MouseButton1Click.Connect(() => {
 		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		devProducts.Visible = !devProducts.Visible;
-		const { Gamepasses, Upgrades, Settings, Renovate, Restaurant } = overlay;
+		const { Gamepasses, Upgrades, Settings, Renovate, Restaurant, Codes } = overlay;
 		Gamepasses.Visible = false;
 		Upgrades.Visible = false;
 		Settings.Visible = false;
 		Renovate.Visible = false;
 		Restaurant.Visible = false;
+		Codes.Visible = false;
 	});
 }
 
-function Gamepasses(overlay: NewOverlayGui) {
+async function Gamepasses(overlay: NewOverlayGui) {
 	const gamepasses = overlay.Gamepasses;
 	gamepasses.Close.ImageButton.MouseButton1Click.Connect(() => {
 		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
@@ -195,15 +196,53 @@ function Gamepasses(overlay: NewOverlayGui) {
 		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		MarketplaceService.PromptGamePassPurchase(player, 240978991);
 	});
-	overlay.OpenPasses.MouseButton1Click.Connect(() => {
+	gamepasses.Content.Footer.Codes.MouseButton1Click.Connect(() => {
 		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
-		gamepasses.Visible = !gamepasses.Visible;
-		const { Upgrades, DevProducts, Settings, Renovate, Restaurant } = overlay;
+		const { Upgrades, DevProducts, Settings, Renovate, Restaurant, Codes } = overlay;
+		gamepasses.Visible = false;
 		Upgrades.Visible = false;
 		DevProducts.Visible = false;
 		Settings.Visible = false;
 		Renovate.Visible = false;
 		Restaurant.Visible = false;
+		Codes.Content.Body.Status.TextLabel.Visible = false;
+		Codes.Visible = true;
+	});
+	overlay.OpenPasses.MouseButton1Click.Connect(() => {
+		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+		gamepasses.Visible = !gamepasses.Visible;
+		const { Upgrades, DevProducts, Settings, Renovate, Restaurant, Codes } = overlay;
+		Upgrades.Visible = false;
+		DevProducts.Visible = false;
+		Settings.Visible = false;
+		Renovate.Visible = false;
+		Restaurant.Visible = false;
+		Codes.Visible = false;
+	});
+
+	const codes = overlay.Codes;
+
+	codes.Content.Footer.Submit.MouseButton1Click.Connect(async () => {
+		const inputtedCode = codes.Content.Body.Code.Text;
+		const status = await Network.redeemCode.client.invoke(inputtedCode);
+		if (status === "fail") {
+			codes.Content.Body.Status.TextLabel.Visible = true;
+			codes.Content.Body.Status.TextLabel.TextColor3 = Color3.fromRGB(242, 14, 14);
+			codes.Content.Body.Status.TextLabel.Text = "Invalid code!";
+		} else if (status === "success") {
+			codes.Content.Body.Status.TextLabel.Visible = true;
+			codes.Content.Body.Status.TextLabel.TextColor3 = Color3.fromRGB(14, 232, 14);
+			codes.Content.Body.Status.TextLabel.Text = "Redeemed!";
+			task.delay(1.5, () => (codes.Visible = false));
+		} else if (status === "used") {
+			codes.Content.Body.Status.TextLabel.Visible = true;
+			codes.Content.Body.Status.TextLabel.TextColor3 = Color3.fromRGB(250, 120, 0);
+			codes.Content.Body.Status.TextLabel.Text = "Already used";
+		}
+	});
+
+	codes.Close.ImageButton.MouseButton1Click.Connect(() => {
+		codes.Visible = false;
 	});
 }
 
@@ -228,12 +267,13 @@ function Upgrades(overlay: NewOverlayGui) {
 	overlay.OpenUpgrades.MouseButton1Click.Connect(() => {
 		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		upgrades.Visible = !upgrades.Visible;
-		const { Gamepasses, DevProducts, Settings, Renovate, Restaurant } = overlay;
+		const { Gamepasses, DevProducts, Settings, Renovate, Restaurant, Codes } = overlay;
 		Gamepasses.Visible = false;
 		DevProducts.Visible = false;
 		Settings.Visible = false;
 		Renovate.Visible = false;
 		Restaurant.Visible = false;
+		Codes.Visible = false;
 	});
 }
 
@@ -286,12 +326,13 @@ function Settings(overlay: NewOverlayGui, soundtrack: Soundtrack) {
 	overlay.OpenSettings.MouseButton1Click.Connect(() => {
 		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		settings.Visible = !settings.Visible;
-		const { Gamepasses, Upgrades, DevProducts, Renovate, Restaurant } = overlay;
+		const { Gamepasses, Upgrades, DevProducts, Renovate, Restaurant, Codes } = overlay;
 		Gamepasses.Visible = false;
 		Upgrades.Visible = false;
 		DevProducts.Visible = false;
 		Renovate.Visible = false;
 		Restaurant.Visible = false;
+		Codes.Visible = false;
 	});
 }
 
@@ -306,12 +347,13 @@ function Renovate(overlay: NewOverlayGui) {
 	overlay.OpenRenovate.MouseButton1Click.Connect(() => {
 		world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
 		renovate.Visible = !renovate.Visible;
-		const { Upgrades, DevProducts, Settings, Gamepasses, Restaurant } = overlay;
+		const { Upgrades, DevProducts, Settings, Gamepasses, Restaurant, Codes } = overlay;
 		Upgrades.Visible = false;
 		DevProducts.Visible = false;
 		Settings.Visible = false;
 		Gamepasses.Visible = false;
 		Restaurant.Visible = false;
+		Codes.Visible = false;
 	});
 }
 
@@ -344,12 +386,13 @@ async function Restaurant(overlay: NewOverlayGui) {
 				)}`;
 			});
 		}
-		const { Upgrades, DevProducts, Settings, Gamepasses, Renovate } = overlay;
+		const { Upgrades, DevProducts, Settings, Gamepasses, Renovate, Codes } = overlay;
 		Upgrades.Visible = false;
 		DevProducts.Visible = false;
 		Settings.Visible = false;
 		Gamepasses.Visible = false;
 		Renovate.Visible = false;
+		Codes.Visible = false;
 	});
 }
 
@@ -357,13 +400,13 @@ async function guiFunctions(soundtrack: Soundtrack) {
 	const playerGui = player.FindFirstChildOfClass("PlayerGui")!;
 	const overlayGui = playerGui.FindFirstChild("Overlay") as NewOverlayGui;
 
+	await Gamepasses(overlayGui);
+	await Restaurant(overlayGui);
 	DevProducts(overlayGui);
 	PlayerInfo(overlayGui);
-	Gamepasses(overlayGui);
 	Upgrades(overlayGui);
 	Renovate(overlayGui);
 	Settings(overlayGui, soundtrack);
-	await Restaurant(overlayGui);
 }
 
 function setupGuiFunctions(soundtrack: Soundtrack) {
