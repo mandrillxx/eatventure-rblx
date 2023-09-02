@@ -136,6 +136,9 @@ dependencies:
   '@rbxts/variant':
     specifier: ^1.0.2
     version: 1.0.2
+  '@rbxts/zenui-core':
+    specifier: ^0.8.1
+    version: 0.8.1
   '@rbxts/zircon':
     specifier: ^1.0.9
     version: 1.0.9(@rbxts/types@1.0.708)
@@ -592,6 +595,15 @@ packages:
 
   /@rbxts/variant@1.0.2:
     resolution: {integrity: sha512-cLfjIheMFmII0YMlLbChjD+jj3jcmLhcli2xXdGXCE1WIt6txOYqehaLZcUxyK6D6tFL727txhaseKu+3Hiazg==}
+    dev: false
+
+  /@rbxts/zenui-core@0.8.1:
+    resolution: {integrity: sha512-l7rdCtUptCYotuW2DCswmGpQktguWpA1ZW55YEkGZNI7wD+jXxjEgghiswWrWh6WdUhMfn4WnnCZLBeEL8tk2w==}
+    dependencies:
+      '@rbxts/roact': 1.4.4-ts.0
+      '@rbxts/services': 1.5.1
+      '@rbxts/t': 3.1.0
+      '@rbxts/variant': 1.0.2
     dev: false
 
   /@rbxts/zircon@1.0.9(@rbxts/types@1.0.708):

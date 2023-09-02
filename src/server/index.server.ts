@@ -374,6 +374,11 @@ async function bootstrap() {
 	});
 
 	Network.setStoreName.server.connect((player, name) => {
+		if (name.size() < 3) {
+			if (state.verbose)
+				Log.Warn("Player {@Player} tried to set store name to {@Name} but it is too short", player, name);
+			return;
+		}
 		const levelId = state.levels.get(player.UserId);
 		if (!levelId) {
 			Log.Warn("Could not find level for player {@Player}", player);

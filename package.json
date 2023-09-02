@@ -68,6 +68,7 @@
     "@rbxts/testez": "0.4.2-ts.0",
     "@rbxts/validate-tree": "^2.0.2",
     "@rbxts/variant": "^1.0.2",
+    "@rbxts/zenui-core": "^0.8.1",
     "@rbxts/zircon": "^1.0.9",
     "@rbxts/zirconium": "^1.1.0"
   }

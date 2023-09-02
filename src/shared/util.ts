@@ -32,7 +32,7 @@ export function getOrError<T extends ComponentCtor>(
 	logType: "warn" | "info" | "error" = "error",
 	...args: object[]
 ) {
-	if (!world.contains(id)) throw "World does not contain entity";
+	if (!world.contains(id)) throw `World does not contain entity - ${errorMessage}`;
 	const componentInstance = world.get(id, component);
 
 	if (!componentInstance) {

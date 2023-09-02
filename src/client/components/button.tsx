@@ -44,22 +44,20 @@ const buttonTextSizes: { [key in VariantProps["TextSize"]]: string } = {
 
 function Button({ Text, Bold, TextSize, Type, Size, onActivated }: ButtonProps) {
 	return (
-		<Div className="w-full h-full">
-			<UIButton
-				Text={Text}
-				Event={{
-					MouseButton1Click: () => {
-						onActivated();
-					},
-				}}
-				className={`${buttonTypes[Type] ?? buttonTypes["Default"]} ${buttonSizes[Size] ?? buttonSizes["sm"]} ${
-					buttonTextSizes[TextSize] ?? buttonTextSizes["sm"]
-				} ${
-					Bold ? "font-bold" : "font-medium"
-				} text-center inline-flex items-center justify-center rounded-md transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 disabled:pointer-events-none disabled:opacity-50 dark:focus-visible:ring-neutral-800`}
-			/>
-		</Div>
+		<UIButton
+			Text={Text}
+			Event={{
+				MouseButton1Click: () => {
+					onActivated();
+				},
+			}}
+			className={`${buttonTypes[Type] ?? buttonTypes["Default"]} ${buttonSizes[Size] ?? buttonSizes["sm"]} ${
+				buttonTextSizes[TextSize] ?? buttonTextSizes["sm"]
+			} ${
+				Bold ? "font-bold" : "font-medium"
+			} text-center inline-flex items-center justify-center rounded-md transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 disabled:pointer-events-none disabled:opacity-50 dark:focus-visible:ring-neutral-800`}
+		/>
 	);
 }
 
-export default Button;
+export = Button;

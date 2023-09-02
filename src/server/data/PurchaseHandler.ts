@@ -29,25 +29,25 @@ export function setupPurchases(state: ServerState, world: World) {
 	const SETTINGS: Settings = {
 		Products: {
 			"1622826603": (playerId, balance) => {
-				addBalance(playerId, balance, 1_000);
-			},
-			"1622826775": (playerId, balance) => {
-				addBalance(playerId, balance, 5_000);
-			},
-			"1622827106": (playerId, balance) => {
-				addBalance(playerId, balance, 12_500);
-			},
-			"1622827784": (playerId, balance) => {
 				addBalance(playerId, balance, 100_000);
 			},
-			"1622828375": (playerId, balance) => {
-				addBalance(playerId, balance, 250_000);
-			},
-			"1622828653": (playerId, balance) => {
+			"1622826775": (playerId, balance) => {
 				addBalance(playerId, balance, 500_000);
 			},
+			"1622827106": (playerId, balance) => {
+				addBalance(playerId, balance, 10_000_000);
+			},
+			"1622827784": (playerId, balance) => {
+				addBalance(playerId, balance, 500_000_000);
+			},
+			"1622828375": (playerId, balance) => {
+				addBalance(playerId, balance, 100_000_000_000);
+			},
+			"1622828653": (playerId, balance) => {
+				addBalance(playerId, balance, 500_000_000_000);
+			},
 			"1622829199": (playerId, balance) => {
-				addBalance(playerId, balance, 1_000_000);
+				addBalance(playerId, balance, 1_000_000_000_000);
 			},
 		},
 		PurchaseIdLog: 50,
