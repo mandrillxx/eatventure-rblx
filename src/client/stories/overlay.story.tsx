@@ -1,28 +1,17 @@
-import { IRoactStoryWithControls } from "client/flipbook";
-import { withHookDetection } from "@rbxts/roact-hooked";
-import UIOverlay from "client/components/overlay";
+import type { ReactStory } from "client/flipbook";
 import * as ReactRoblox from "@rbxts/react-roblox";
 import Roact from "@rbxts/roact";
 
-Roact.setGlobalConfig({
-	elementTracing: true,
-	internalTypeChecks: true,
-	propValidation: true,
-	typeChecks: true,
+const OverlayStoryComponent = Roact.memo(() => {
+	return <textbutton Text="Overlay" />;
 });
 
-interface IControls {}
-
-withHookDetection(Roact);
-const story: IRoactStoryWithControls<IControls> = {
-	controls: {},
+const OverlayStory: ReactStory = {
+	name: "OverlayStory.story",
+	react: Roact,
 	reactRoblox: ReactRoblox,
-	name: "Overlay.story",
-	roact: Roact,
-	story: ({ controls }) => {
-		return <UIOverlay />;
-	},
-	summary: "The entire main game overlay UI",
+	story: <OverlayStoryComponent />,
+	summary: `OverlayStory story.`,
 };
 
-export = story;
+export = OverlayStory;

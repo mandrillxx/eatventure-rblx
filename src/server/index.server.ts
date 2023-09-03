@@ -256,24 +256,28 @@ async function bootstrap() {
 		}
 
 		function characterAdded(character: Model) {
-			promiseR15(character).andThen(async (model) => {
-				const playerEntity = world.spawn(
-					Client({
-						player,
-						document: {
-							coinMultiplier: 1.0,
-						},
-					}),
-					Balance({
-						balance: 0,
-					}),
-					Renderable({ model }),
-				);
-				state.clients.set(player.UserId, playerEntity);
-				gameProvider.setup(playerEntity, world, state, model);
-				character.SetAttribute("entityId", playerEntity);
-				handleGui(playerEntity);
-			});
+			promiseR15(character)
+				.andThen(async (model) => {
+					const playerEntity = world.spawn(
+						Client({
+							player,
+							document: {
+								coinMultiplier: 1.0,
+							},
+						}),
+						Balance({
+							balance: 0,
+						}),
+						Renderable({ model }),
+					);
+					state.clients.set(player.UserId, playerEntity);
+					gameProvider.setup(playerEntity, world, state, model);
+					character.SetAttribute("entityId", playerEntity);
+					handleGui(playerEntity);
+				})
+				.catch(() => {
+					player.Kick("Failed to load character data");
+				});
 		}
 
 		task.spawn(() => {

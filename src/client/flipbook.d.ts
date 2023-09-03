@@ -1,44 +1,50 @@
+import * as ReactRoblox from "@rbxts/react-roblox";
 import Roact from "@rbxts/roact";
 
-type IRoact = typeof Roact;
+type React = typeof Roact;
+type ReactRoblox = typeof ReactRoblox;
 
-interface IStoryProps<T extends object> {
+interface StoryProperties<T extends object> {
 	controls: T;
 }
 
-export interface IStorybook {
+/**
+ * A storybook interface. Used for telling Flipbook
+ * the information about your stories.
+ */
+export interface Storybook {
 	name?: string;
-	roact?: IRoact;
-	storyRoots: Array<Instance>;
+	react: React;
+	reactRoblox: ReactRoblox;
+	storyRoots: ReadonlyArray<Instance>;
 }
 
-export interface IRoactStory {
+interface BaseFunctionStory {
 	name?: string;
-	roact: IRoact;
+	summary?: string;
+}
+
+interface BaseStory extends BaseFunctionStory {
+	react: React;
+	reactRoblox: ReactRoblox;
+}
+
+export interface ReactStory extends BaseStory {
 	story: Roact.Element;
-	summary?: string;
 }
 
-export interface IRoactStoryWithControls<T extends object> {
+export interface ReactStoryWith<T extends object> extends BaseStory {
 	controls: T;
-	name?: string;
-	roact: IRoact;
-	story: Roact.Element | ((props: IStoryProps<T>) => Roact.Element);
-	summary?: string;
-	reactRoblox: typeof import("@rbxts/react-roblox");
+	story: Roact.Element | Roact.FunctionComponent<StoryProperties<T>>;
 }
 
-export interface IFunctionalStory {
-	name?: string;
+export interface FunctionStory extends BaseFunctionStory {
 	story: (target: GuiObject) => () => void;
-	summary?: string;
 }
 
-export interface IFunctionalStoryWithControls<T extends object> {
+export interface FunctionStoryWith<T extends object> extends BaseFunctionStory {
 	controls: T;
-	name?: string;
-	story: (target: GuiObject, props: IStoryProps<T>) => () => void;
-	summary?: string;
+	story: (target: GuiObject, properties: StoryProperties<T>) => () => void;
 }
 
 export type HoarcekatStory = (target: GuiObject) => () => void;

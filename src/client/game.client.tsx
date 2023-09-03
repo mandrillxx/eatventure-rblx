@@ -8,7 +8,6 @@ import {
 } from "@rbxts/services";
 import { SoundEffect, Upgrade } from "shared/components";
 import { receiveReplication } from "./receiveReplication";
-import { withHookDetection } from "@rbxts/roact-hooked";
 import { CharacterRigR15 } from "@rbxts/promise-character";
 import { ComponentInfo } from "shared/util";
 import { FormatCompact } from "@rbxts/format-number";
@@ -422,7 +421,6 @@ function setupGuiFunctions(soundtrack: Soundtrack) {
 }
 
 function bootstrap() {
-	withHookDetection(Roact);
 	while (!state.playerId) {
 		task.wait(0.1);
 	}
@@ -442,8 +440,6 @@ function bootstrap() {
 	});
 
 	setupGuiFunctions(soundtrack);
-
-	const root = createRoot(new Instance("Folder"));
 
 	Network.setState.client.connect((state) => {
 		state = { ...state };
