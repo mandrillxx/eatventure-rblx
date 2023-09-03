@@ -50,63 +50,75 @@ function utility(world: World, state: ClientState) {
 	}
 
 	for (const [id, utility] of world.queryChanged(Utility)) {
-		const belongsTo = getOrError(world, id, BelongsTo, "Utility does not have BelongsTo component");
-		const ownedBy = getOrError(
-			world,
-			ServerEntityIdToClient(state, belongsTo.levelId)!,
-			OwnedBy,
-			"Utility does not have OwnedBy component",
-		);
-		if (ownedBy.player !== player) continue;
-		if (!utility.old && utility.new) {
-			const renderable = getOrError(world, id, Renderable, "Utility {@ID} does not have a Renderable component");
-			const model = renderable.model as BaseUtility;
-			if (!utility.new.unlocked) {
-				model.SelectionBox.SurfaceTransparency = 0.15;
-				task.delay(0.5, () => {
-					maid.GiveTask(
-						model.ClickDetector.MouseClick.Connect(() => {
-							world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
-							if (!world.contains(id)) return;
-							const balance = getOrError(
-								world,
-								state.playerId!,
-								Balance,
-								"Player {@ID} does not have a Balance component",
-							);
+		if (utility.new) {
+			const belongsTo = getOrError(world, id, BelongsTo, "Utility does not have BelongsTo component");
+			const ownedBy = getOrError(
+				world,
+				ServerEntityIdToClient(state, belongsTo.levelId)!,
+				OwnedBy,
+				"Utility does not have OwnedBy component",
+			);
+			if (ownedBy.player !== player) continue;
+			if (!utility.old && utility.new) {
+				const renderable = getOrError(
+					world,
+					id,
+					Renderable,
+					"Utility {@ID} does not have a Renderable component",
+				);
+				const model = renderable.model as BaseUtility;
+				if (!utility.new.unlocked) {
+					model.SelectionBox.SurfaceTransparency = 0.15;
+					task.delay(0.5, () => {
+						maid.GiveTask(
+							model.ClickDetector.MouseClick.Connect(() => {
+								world.spawn(SoundEffect({ sound: "UIClick", meantFor: player }));
+								if (!world.contains(id)) return;
+								const balance = getOrError(
+									world,
+									state.playerId!,
+									Balance,
+									"Player {@ID} does not have a Balance component",
+								);
 
-							const unlockGui = player
-								.FindFirstChildOfClass("PlayerGui")!
-								.FindFirstChild("UnlockGui")! as UnlockGuiInstance;
-							const utility = getOrError(world, id, Utility, "Utility {@ID} no longer exists");
-							if (utility.unlocked) return;
-							state.utilityUpgrade = fetchComponent(world, id, Utility);
+								const unlockGui = player
+									.FindFirstChildOfClass("PlayerGui")!
+									.FindFirstChild("UnlockGui")! as UnlockGuiInstance;
+								const utility = getOrError(world, id, Utility, "Utility {@ID} no longer exists");
+								if (utility.unlocked) return;
+								state.utilityUpgrade = fetchComponent(world, id, Utility);
 
-							unlockGui.Background.Unlock.BackgroundColor3 =
-								balance.balance >= model.UnlockCost.Value
-									? Color3.fromRGB(76, 229, 11)
-									: Color3.fromRGB(229, 20, 5);
-							updateUtilityUnlockInfo(unlockGui, utility);
-							unlockGui.Adornee = unlockGui.Adornee === model ? undefined : model;
-							unlockGui.Enabled = unlockGui.Adornee === model;
-						}),
-					);
-				});
-				continue;
+								unlockGui.Background.Unlock.BackgroundColor3 =
+									balance.balance >= model.UnlockCost.Value
+										? Color3.fromRGB(76, 229, 11)
+										: Color3.fromRGB(229, 20, 5);
+								updateUtilityUnlockInfo(unlockGui, utility);
+								unlockGui.Adornee = unlockGui.Adornee === model ? undefined : model;
+								unlockGui.Enabled = unlockGui.Adornee === model;
+							}),
+						);
+					});
+					continue;
+				}
+				setupUtilityGui(model, id);
 			}
-			setupUtilityGui(model, id);
-		}
-		if (utility.old && utility.new && !utility.old.unlocked && utility.new.unlocked) {
-			const renderable = getOrError(world, id, Renderable, "Utility {@ID} does not have a Renderable component");
-			const model = renderable.model as BaseUtility;
-			maid.DoCleaning();
-			const unlockGui = player
-				.FindFirstChildOfClass("PlayerGui")!
-				.FindFirstChild("UnlockGui")! as UnlockGuiInstance;
-			unlockGui.Enabled = false;
-			unlockGui.Adornee = undefined;
+			if (utility.old && utility.new && !utility.old.unlocked && utility.new.unlocked) {
+				const renderable = getOrError(
+					world,
+					id,
+					Renderable,
+					"Utility {@ID} does not have a Renderable component",
+				);
+				const model = renderable.model as BaseUtility;
+				maid.DoCleaning();
+				const unlockGui = player
+					.FindFirstChildOfClass("PlayerGui")!
+					.FindFirstChild("UnlockGui")! as UnlockGuiInstance;
+				unlockGui.Enabled = false;
+				unlockGui.Adornee = undefined;
 
-			setupUtilityGui(model, id);
+				setupUtilityGui(model, id);
+			}
 		}
 		if (utility.old && !utility.new) {
 			maid.DoCleaning();

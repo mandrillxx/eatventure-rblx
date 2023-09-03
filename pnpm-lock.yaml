@@ -57,7 +57,7 @@ dependencies:
     version: 1.0.4
   '@rbxts/pretty-roact-hooks':
     specifier: ^3.1.1
-    version: 3.1.1(@rbxts/flipper@2.0.1)(@rbxts/roact-hooked@2.6.0)(@rbxts/roact@1.4.4-ts.0)
+    version: 3.1.1(@rbxts/flipper@2.0.1)(@rbxts/react-ts@1.0.1)(@rbxts/roact-hooked@2.6.0)
   '@rbxts/profileservice':
     specifier: ^1.4.1
     version: 1.4.1
@@ -67,6 +67,9 @@ dependencies:
   '@rbxts/proton':
     specifier: ^0.7.0
     version: 0.7.0
+  '@rbxts/react-roblox':
+    specifier: ^0.1.2
+    version: 0.1.2
   '@rbxts/reward-containers':
     specifier: ^1.0.1
     version: 1.0.1
@@ -74,17 +77,20 @@ dependencies:
     specifier: ^0.3.0
     version: 0.3.0
   '@rbxts/roact':
-    specifier: 1.4.4-ts.0
-    version: 1.4.4-ts.0
+    specifier: npm:@rbxts/react-ts
+    version: /@rbxts/react-ts@1.0.1
   '@rbxts/roact-hooked':
     specifier: ^2.6.0
-    version: 2.6.0(@rbxts/roact@1.4.4-ts.0)
+    version: 2.6.0(@rbxts/react-ts@1.0.1)
   '@rbxts/roact-hooks':
     specifier: 0.4.1-ts.3
     version: 0.4.1-ts.3
   '@rbxts/roact-rodux':
     specifier: 0.2.2-ts.8
-    version: 0.2.2-ts.8(@rbxts/roact@1.4.4-ts.0)(@rbxts/rodux@3.0.0-ts.3)(@rbxts/types@1.0.708)
+    version: 0.2.2-ts.8(@rbxts/react-ts@1.0.1)(@rbxts/rodux@3.0.0-ts.3)(@rbxts/types@1.0.708)
+  '@rbxts/roact-spring':
+    specifier: git://github.com/howmanysmall/rbx-react-spring.git
+    version: github.com/howmanysmall/rbx-react-spring/9e78c36cf8be79751d6040a26a82dd9f25e46fd0
   '@rbxts/rodux':
     specifier: 3.0.0-ts.3
     version: 3.0.0-ts.3
@@ -329,6 +335,10 @@ packages:
       '@rbxts/message-templates': 0.3.2
     dev: false
 
+  /@rbxts/luau-polyfill-internal@1.2.3-ts.0:
+    resolution: {integrity: sha512-LG1h4uf+MpMxu6RfOLowRe+NOs2SWXzCmYd49WvfR8ZKVUNHvT0BeVIL9rS9q//mTlz8BXDyl5EVIyjnKgsekA==}
+    dev: false
+
   /@rbxts/maid@1.1.0:
     resolution: {integrity: sha512-bVWXZ0p2M3OJzPzvN5fY0T4s37ezUMY7EX31Xspp7Ds4C/K9yE4MHMRXjtlNvsYVPmoc5tdhAbpZY02Veix5lg==}
     dev: false
@@ -388,7 +398,7 @@ packages:
       '@rbxts/testez': 0.3.1-ts.7
     dev: false
 
-  /@rbxts/pretty-roact-hooks@3.1.1(@rbxts/flipper@2.0.1)(@rbxts/roact-hooked@2.6.0)(@rbxts/roact@1.4.4-ts.0):
+  /@rbxts/pretty-roact-hooks@3.1.1(@rbxts/flipper@2.0.1)(@rbxts/react-ts@1.0.1)(@rbxts/roact-hooked@2.6.0):
     resolution: {integrity: sha512-eve1L7GWKZVo6ZLgcmk6c95SDvhTRIjWwR8notAz7g+CQ/jdtOoX+5fVHOQLMYE6HbQ79Bth+LO13WOM4T3WKg==}
     peerDependencies:
       '@rbxts/flipper': ^2.0.1
@@ -396,8 +406,8 @@ packages:
       '@rbxts/roact-hooked': ^2.3.3
     dependencies:
       '@rbxts/flipper': 2.0.1
-      '@rbxts/roact': 1.4.4-ts.0
-      '@rbxts/roact-hooked': 2.6.0(@rbxts/roact@1.4.4-ts.0)
+      '@rbxts/roact': /@rbxts/react-ts@1.0.1
+      '@rbxts/roact-hooked': 2.6.0(@rbxts/react-ts@1.0.1)
       '@rbxts/services': 1.5.1
       '@rbxts/set-timeout': 1.1.2
     dev: false
@@ -414,11 +424,56 @@ packages:
       '@rbxts/validate-tree': 2.0.2
     dev: false
 
+  /@rbxts/promise-forward@1.0.5:
+    resolution: {integrity: sha512-FrL3pIQDbRD1hKsUNH1Fwwd5jOuqU0vzKQI4Xo96AqzizYc4fb6vDkUg9Iq+IFki6FVlFvPN+YnvkCxGMjJw4Q==}
+    dev: false
+
   /@rbxts/proton@0.7.0:
     resolution: {integrity: sha512-7x9hrFpWZybbutgfV3g0se3MkyjjIrE1ev4AWtTido1ZdVzPExKdO6KzMZ49QjOHihlzsXqUVPi+AYZl5ljddg==}
     dependencies:
       '@rbxts/beacon': 2.1.1
       '@rbxts/services': 1.5.1
+    dev: false
+
+  /@rbxts/react-internal@0.2.2:
+    resolution: {integrity: sha512-/34bcOntTzucAwMvo2OtSJT05zfH88kjR0UKyBcADbbZ71KgMKai2Q8ccKKt7IuoPJDzP14dCHd5pXL44M2rkw==}
+    dependencies:
+      '@rbxts/luau-polyfill-internal': 1.2.3-ts.0
+      '@rbxts/shared-internal': 0.2.1
+    dev: false
+
+  /@rbxts/react-reconciler-internal@0.2.1:
+    resolution: {integrity: sha512-+1iF6id3YuhChfJguBFqzDtYvruGFhkLz9Wr8T0ekp7RlGe4l7d7KLUg5l8GRPj9FbmjQFc0UufBHWmKkrJ2qQ==}
+    dependencies:
+      '@rbxts/luau-polyfill-internal': 1.2.3-ts.0
+      '@rbxts/promise-forward': 1.0.5
+      '@rbxts/react-internal': 0.2.2
+      '@rbxts/scheduler-internal': 0.2.1
+      '@rbxts/shared-internal': 0.2.1
+    dev: false
+
+  /@rbxts/react-roblox@0.1.2:
+    resolution: {integrity: sha512-74R0iemEWSgrE8f98JMfdQFSE+VpJTqo91aaZoBbskqHdeWX+kvVxjkiE5nMOkjIfptVHlZvD7P18hOTe2lwog==}
+    dependencies:
+      '@rbxts/luau-polyfill-internal': 1.2.3-ts.0
+      '@rbxts/react-internal': 0.2.2
+      '@rbxts/react-reconciler-internal': 0.2.1
+      '@rbxts/scheduler-internal': 0.2.1
+      '@rbxts/shared-internal': 0.2.1
+    dev: false
+
+  /@rbxts/react-ts@0.9.0:
+    resolution: {integrity: sha512-u8sSmEpGio+udmXPnfHMoTENgI/PkAPeqs4qwagkntiMiqo/EbTSh7HJHaYh5pFcRgdaTxOvtcZyfjfr4lhgiA==}
+    dependencies:
+      '@rbxts/react-internal': 0.2.2
+      '@rbxts/roact-compat-internal': 0.3.1
+    dev: false
+
+  /@rbxts/react-ts@1.0.1:
+    resolution: {integrity: sha512-u/QsFkjWwEbr502xRfCNGjtMfOjqRiVGF5gb3Ox9Z94ymHPXniVsopmT582QpTZLuEcfB5TKvsvpFzFSQ14edg==}
+    dependencies:
+      '@rbxts/react-internal': 0.2.2
+      '@rbxts/roact-compat-internal': 0.3.1
     dev: false
 
   /@rbxts/reward-containers@0.0.1-beta.9:
@@ -443,6 +498,23 @@ packages:
 
   /@rbxts/rewire@0.3.0:
     resolution: {integrity: sha512-wChhGZ3kEkEsMK9ZuwKpwRsC7OGVZlvxrYMR3beFgCIPXE58JKLziBLkDACmd709XCCEmsMAqv9HMCMhSTD08Q==}
+    dev: false
+
+  /@rbxts/roact-compat-internal@0.3.1:
+    resolution: {integrity: sha512-euje2jF3S83VNMtNvrjDgO3XpMibyIYcstCKsvLfIDASfCArtltwQRnjk3ewq20b2hOfy4wneQ8iXu2Di7J8rw==}
+    dependencies:
+      '@rbxts/luau-polyfill-internal': 1.2.3-ts.0
+      '@rbxts/react-internal': 0.2.2
+      '@rbxts/react-roblox': 0.1.2
+      '@rbxts/shared-internal': 0.2.1
+    dev: false
+
+  /@rbxts/roact-hooked@2.6.0(@rbxts/react-ts@1.0.1):
+    resolution: {integrity: sha512-2lVbmKVregnXjshCDWuU05mv7XphxBPzeqSXDZmGh9cLqR+9DihEzsGGQrorU5VbsoL//4cOhYEAt3lTyo3dAw==}
+    peerDependencies:
+      '@rbxts/roact': '*'
+    dependencies:
+      '@rbxts/roact': /@rbxts/react-ts@1.0.1
     dev: false
 
   /@rbxts/roact-hooked@2.6.0(@rbxts/roact@1.4.4-ts.0):
@@ -473,14 +545,14 @@ packages:
       '@rbxts/types': 1.0.708
     dev: false
 
-  /@rbxts/roact-rodux@0.2.2-ts.8(@rbxts/roact@1.4.4-ts.0)(@rbxts/rodux@3.0.0-ts.3)(@rbxts/types@1.0.708):
+  /@rbxts/roact-rodux@0.2.2-ts.8(@rbxts/react-ts@1.0.1)(@rbxts/rodux@3.0.0-ts.3)(@rbxts/types@1.0.708):
     resolution: {integrity: sha512-qeVAOtIYvU3HhCqILZHDn1VAcat6XMJ/CdAEq/2jqNd15lxtuqSso07BapVfmP8qmRnznwWlGJ9eDOhOpr9xPA==}
     peerDependencies:
       '@rbxts/roact': ^1.4.4-ts.0
       '@rbxts/rodux': ^3.0.0-ts.3
       '@rbxts/types': ^1.0.627
     dependencies:
-      '@rbxts/roact': 1.4.4-ts.0
+      '@rbxts/roact': /@rbxts/react-ts@1.0.1
       '@rbxts/rodux': 3.0.0-ts.3
       '@rbxts/types': 1.0.708
     dev: false
@@ -517,6 +589,13 @@ packages:
     resolution: {integrity: sha512-Ibk532/9tHswqU9AdJlLGDjb3fD+tisI0WzTvzsbFcndcdRfEmpBqXC0JZ+4+lIfSERJmL4zRXZQNN//nJ4rmw==}
     dev: false
 
+  /@rbxts/scheduler-internal@0.2.1:
+    resolution: {integrity: sha512-9CVi2ZJMH+T4blfDd0t7bScBLWi49eD99eJ3Ie/Cv3WxQ5iYsZLSeSxzut5Yzkb83cYGb/alUGM/gzx0B19KQw==}
+    dependencies:
+      '@rbxts/luau-polyfill-internal': 1.2.3-ts.0
+      '@rbxts/shared-internal': 0.2.1
+    dev: false
+
   /@rbxts/services@1.5.1:
     resolution: {integrity: sha512-SRtfIjga0K4YYSXRpK+eH3kcTq7ZXo9OHOt0jszaOOoEOIJloMGlyuRPqesPHyhveh2AMXAZr3TYbRMSD+u+kQ==}
     dev: false
@@ -525,6 +604,12 @@ packages:
     resolution: {integrity: sha512-P/A0IiH9wuZdSJYr4Us0MDFm61nvIFR0acfKFHLkcOsgvIgELC90Up9ugiSsaMEHRIcIcO5UjE39LuS3xTzQHw==}
     dependencies:
       '@rbxts/services': 1.5.1
+    dev: false
+
+  /@rbxts/shared-internal@0.2.1:
+    resolution: {integrity: sha512-HWLFesx5u8NTyDMTNXEkskGT6nE5VLaEnnnq852ixiBtdfIdN/sGCgNnkwbHAq9P9cgX52V3EB5GdVeWcwJzkA==}
+    dependencies:
+      '@rbxts/luau-polyfill-internal': 1.2.3-ts.0
     dev: false
 
   /@rbxts/signal@1.1.1:
@@ -1856,3 +1941,11 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
+
+  github.com/howmanysmall/rbx-react-spring/9e78c36cf8be79751d6040a26a82dd9f25e46fd0:
+    resolution: {tarball: https://codeload.github.com/howmanysmall/rbx-react-spring/tar.gz/9e78c36cf8be79751d6040a26a82dd9f25e46fd0}
+    name: '@rbxts/rbx-react-spring'
+    version: 1.1.1
+    dependencies:
+      '@rbxts/roact': /@rbxts/react-ts@0.9.0
+    dev: false

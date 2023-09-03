@@ -1,5 +1,6 @@
 import { IRoactStoryWithControls } from "client/flipbook";
 import { withHookDetection } from "@rbxts/roact-hooked";
+import * as ReactRoblox from "@rbxts/react-roblox";
 import Button from "client/components/button";
 import Roact from "@rbxts/roact";
 
@@ -31,7 +32,7 @@ const story: IRoactStoryWithControls<IControls> = {
 		buttonType: "Default",
 		useBoldFont: false,
 	},
-
+	reactRoblox: ReactRoblox,
 	name: "Button.story",
 	roact: Roact,
 	story: ({ controls }) => {

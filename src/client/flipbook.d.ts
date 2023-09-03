@@ -25,6 +25,7 @@ export interface IRoactStoryWithControls<T extends object> {
 	roact: IRoact;
 	story: Roact.Element | ((props: IStoryProps<T>) => Roact.Element);
 	summary?: string;
+	reactRoblox: typeof import("@rbxts/react-roblox");
 }
 
 export interface IFunctionalStory {

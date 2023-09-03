@@ -23,7 +23,7 @@ export function start<S extends object>(
 		return model ? model.model : undefined;
 	};
 	myDebugger.authorize = (player): boolean => {
-		return player.UserId === 0;
+		return player.UserId === 1272479100 || RunService.IsStudio();
 	};
 
 	const loop = new Loop<T>(world, state, myDebugger.getWidgets());

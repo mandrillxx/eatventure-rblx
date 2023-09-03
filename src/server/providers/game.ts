@@ -100,7 +100,7 @@ export class GameProvider {
 				levelId: undefined,
 				position: playersPlot.position,
 			});
-		} else Log.Fatal("2 Could not find plot for player {@Player}, cannot clear", session.player.player);
+		}
 
 		if (world.contains(levelId)) world.despawn(levelId);
 	}
@@ -365,6 +365,7 @@ export class GameProvider {
 						Log.Error("No utility for product found for customer {@CustomerName}", name);
 						return;
 					}
+					if (!world.contains(levelId)) return;
 					const levelRenderable = getOrError(
 						world,
 						levelId,
@@ -445,6 +446,7 @@ export class GameProvider {
 		);
 
 		task.delay(1, () => {
+			if (!world.contains(levelId)) return;
 			const levelRenderable = getOrError(world, levelId, Renderable, "Level does not have Renderable component");
 			const levelModel = levelRenderable.model as BaseLevel;
 			character.PivotTo(

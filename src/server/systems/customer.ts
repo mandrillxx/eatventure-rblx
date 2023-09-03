@@ -31,6 +31,7 @@ const getNextDestination = (world: World, player: AnyEntity, fallbackWait: boole
 };
 
 const isCustomerOccupying = (world: World, levelId: AnyEntity, customer: AnyEntity) => {
+	if (!world.contains(customer) || !world.contains(levelId)) return false;
 	const level = getOrError(world, levelId, Level, "Level does not have Level component");
 	const destinations = level.destinations;
 	for (const dest of destinations) {

@@ -21,10 +21,9 @@ function state(world: World, state: ClientState) {
 		}
 	}
 	for (const [id, utility] of world.queryChanged(Utility)) {
-		const belongsTo = getOrError(world, id, BelongsTo, "Utility does not have BelongsTo component");
-		if (ServerEntityIdToClient(state, belongsTo.playerId) !== state.playerId) continue;
-
 		if (utility.new) {
+			const belongsTo = getOrError(world, id, BelongsTo, "Utility does not have BelongsTo component");
+			if (ServerEntityIdToClient(state, belongsTo.playerId) !== state.playerId) continue;
 			if (!world.contains(ServerEntityIdToClient(state, belongsTo.levelId)!)) continue;
 			const ownedBy = getOrError(
 				world,
@@ -36,7 +35,7 @@ function state(world: World, state: ClientState) {
 			const utilityInfo = player
 				.FindFirstChildOfClass("PlayerGui")!
 				.FindFirstChild("UtilityInfo")! as UtilityInfoInstance;
-			if (!utilityInfo.Enabled || utilityInfo.Adornee?.Name !== utility.new.type) continue;
+			if (!utilityInfo || !utilityInfo.Enabled || utilityInfo.Adornee?.Name !== utility.new.type) continue;
 			if (!world.contains(id) || !world.contains(state.playerId!)) continue;
 			const newUtility = getOrError(world, id, Utility, "Utility no longer exists");
 			const nextLevelCost = getNextLevelCost(world, id, newUtility);
@@ -134,7 +133,13 @@ function state(world: World, state: ClientState) {
 			const utilityInfo = playerGui.FindFirstChild("UtilityInfo")! as UtilityInfoInstance;
 			const utilityUnlock = playerGui.FindFirstChild("UnlockGui")! as UnlockGuiInstance;
 			const utility = state.utilityUpgrade;
-			if (!utility || !utilityInfo.Enabled || utilityInfo.Adornee?.Name !== utility.component.type) continue;
+			if (
+				!utility ||
+				!utilityInfo ||
+				!utilityInfo.Enabled ||
+				utilityInfo.Adornee?.Name !== utility.component.type
+			)
+				continue;
 			const nextLevelCost = getNextLevelCost(world, utility.componentId);
 			utilityInfo.Background.Upgrade.BackgroundColor3 =
 				balance.new.balance >= nextLevelCost && utility.component.xpLevel < 150
@@ -196,8 +201,10 @@ function state(world: World, state: ClientState) {
 				}
 				const utility = getOrError(world, utilityId, Utility, "cannot find utility component");
 				const { baseUpgradeCost, xpLevel } = utility;
+				const utilityModel = _utility as BaseUtility;
+				if (!utilityModel || !utilityModel.UpgradeGui) continue;
 				if (xpLevel + 1 > 150) {
-					(_utility as BaseUtility).UpgradeGui.Enabled = false;
+					utilityModel.UpgradeGui.Enabled = false;
 					continue;
 				}
 				const xpBias = xpLevel > 100 ? 1.2025 : 1.2;
@@ -207,9 +214,9 @@ function state(world: World, state: ClientState) {
 					(!utility.unlocked && balance.new.balance >= utility.unlockCost) ||
 					(balance.new.balance >= nextLevelCost && utility.xpLevel < 150 && utility.unlocked)
 				) {
-					(_utility as BaseUtility).UpgradeGui.Enabled = true;
+					utilityModel.UpgradeGui.Enabled = true;
 				} else if (balance.new.balance < nextLevelCost && (_utility as BaseUtility).UpgradeGui.Enabled) {
-					(_utility as BaseUtility).UpgradeGui.Enabled = false;
+					utilityModel.UpgradeGui.Enabled = false;
 				}
 			}
 		}

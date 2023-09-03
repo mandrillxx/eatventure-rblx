@@ -20,6 +20,8 @@ import { Proton } from "@rbxts/proton";
 import { start } from "shared/start";
 import Log, { Logger } from "@rbxts/log";
 import Roact from "@rbxts/roact";
+import { createRoot } from "@rbxts/react-roblox";
+import ReactRoblox from "@rbxts/react-roblox";
 
 Proton.awaitStart();
 
@@ -440,6 +442,8 @@ function bootstrap() {
 	});
 
 	setupGuiFunctions(soundtrack);
+
+	const root = createRoot(new Instance("Folder"));
 
 	Network.setState.client.connect((state) => {
 		state = { ...state };

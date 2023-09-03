@@ -147,7 +147,7 @@ async function bootstrap() {
 		}
 		const playersPlot = getPlayerPlot(player);
 		if (!playersPlot && state.verbose) {
-			Log.Warn("1 Could not find plot for player {@Player}, cannot clear", player);
+			Log.Warn("Could not find plot for player {@Player}, cannot clear", player);
 		} else if (playersPlot) {
 			state.plots.set(playersPlot.position, {
 				playerId: undefined,
@@ -218,10 +218,10 @@ async function bootstrap() {
 				if (balance.balance >= level.prestigeCost) {
 					Log.Info("Prestiging player {@Player}", player.Name);
 					world.insert(playerId, Balance({ balance: 0 }));
-					(player as BasePlayer).leaderstats.Money.Value = "0";
 					const profile = state.profiles.get(player)!;
 					profile.Data.level += 1;
 					gameProvider.switchLevel(player, state, 2, true);
+					task.delay(0.3, () => ((player as BasePlayer).leaderstats.Money.Value = "0"));
 				} else Log.Info("Player {@Player} cannot afford level", player);
 			});
 		}

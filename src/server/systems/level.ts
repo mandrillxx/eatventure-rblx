@@ -230,7 +230,7 @@ function level(world: World, state: ServerState) {
 			if (!world.contains(id)) continue;
 			const belongsTo = getOrError(world, id, BelongsTo, "NPC does not have BelongsTo component");
 			if (!world.contains(belongsTo.levelId)) continue;
-			const level = getOrError(world, belongsTo.levelId, Level);
+			const level = getOrError(world, belongsTo.levelId, Level, "Level no longer exists");
 			const { spawnRate, maxCustomers, maxEmployees } = level;
 			const npcType = npc.new.type;
 			let customers = 0,

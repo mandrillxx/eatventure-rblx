@@ -18,7 +18,13 @@ function getProfile(state: ServerState, player: Player) {
 function getAllUpgradesForPlayer(world: World, playerId: AnyEntity) {
 	const upgrades: ComponentInfo<typeof Upgrade>[] = [];
 	for (const [id, upgrade, belongsTo] of world.query(Upgrade, BelongsTo)) {
-		const level = getOrError(world, belongsTo.levelId, Level);
+		if (!world.contains(belongsTo.levelId)) continue;
+		const level = getOrError(
+			world,
+			belongsTo.levelId,
+			Level,
+			"Could not find level based on players upgrade BelongsTo",
+		);
 		if (belongsTo.playerId === playerId && upgrade.forLevel === tonumber(level.name.sub(-1, -1))) {
 			upgrades.push({ componentId: id, component: upgrade });
 		}
@@ -197,7 +203,7 @@ export function handleUpgrade(
 	world: World,
 	state: ServerState,
 ) {
-	if (!world.contains(levelId)) return;
+	if (!world.contains(levelId) || !world.contains(playerId)) return;
 	const profile = getProfile(state, player);
 	const ownsUpgrade = has(profile.Data.purchasedUpgrades, upgrade.identifier);
 	world.spawn(upgrade.patch({ purchased: ownsUpgrade }), BelongsTo({ playerId, levelId }));
