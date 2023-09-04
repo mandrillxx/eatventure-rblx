@@ -1,16 +1,20 @@
 import type { ReactStory } from "client/flipbook";
 import * as ReactRoblox from "@rbxts/react-roblox";
+import Overlay from "client/components/overlay";
 import Roact from "@rbxts/roact";
 
-const OverlayStoryComponent = Roact.memo(() => {
-	return <textbutton Text="Overlay" />;
+Roact.setGlobalConfig({
+	elementTracing: true,
+	internalTypeChecks: true,
+	propValidation: true,
+	typeChecks: true,
 });
 
 const OverlayStory: ReactStory = {
 	name: "OverlayStory.story",
 	react: Roact,
 	reactRoblox: ReactRoblox,
-	story: <OverlayStoryComponent />,
+	story: <Overlay />,
 	summary: `OverlayStory story.`,
 };
 

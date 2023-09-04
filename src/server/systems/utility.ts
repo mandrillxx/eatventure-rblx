@@ -13,11 +13,12 @@ const handleUnlock = (world: World, player: Player, state: ServerState, id: AnyE
 	if (newUtility.unlocked) return;
 	if (balance.balance < newUtility.unlockCost) {
 		world.spawn(SoundEffect({ sound: "Fail", meantFor: player }));
-		Log.Warn(
-			"{@Player} tried to unlock utility {@Utility} but doesn't have enough money",
-			player.Name,
-			newUtility.type,
-		);
+		if (state.debug)
+			Log.Warn(
+				"{@Player} tried to unlock utility {@Utility} but doesn't have enough money",
+				player.Name,
+				newUtility.type,
+			);
 		return;
 	}
 	world.insert(playerId, balance.patch({ balance: balance.balance - newUtility.unlockCost }));
