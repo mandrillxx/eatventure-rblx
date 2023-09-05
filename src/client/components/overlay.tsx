@@ -1,65 +1,74 @@
-import { useSpring } from "@rbxts/rbx-react-spring";
-import { UIFrame, UIIButton, UIList, UIPadding, UIRatio, UIRound } from "./ui";
-import Roact, { useEffect, useState } from "@rbxts/roact";
-
-interface ModalProps {
-	Visible: boolean;
-	Closed: () => void;
-}
-
-interface IModal extends ModalProps {
-	BackgroundColor3: Color3;
-}
-
-function BaseModal({ Visible, BackgroundColor3, Closed }: IModal) {
-	const { position } = useSpring(
-		{
-			config: {
-				mass: 1,
-				friction: 20,
-				tension: 150,
-			},
-			position: Visible ? UDim2.fromScale(0.5, 0.5) : UDim2.fromScale(0.5, 1.5),
-		},
-		[Visible],
-	);
-
-	return (
-		<frame
-			AnchorPoint={new Vector2(0.5, 0.5)}
-			BackgroundColor3={BackgroundColor3}
-			Position={position}
-			Size={UDim2.fromScale(0.5, 0.5)}
-			Visible={Visible}
-		>
-			<UIRound />
-			<UIRatio />
-			<UIIButton
-				Animate={true}
-				Image="rbxassetid://14567531239"
-				Clicked={Closed}
-				Position={UDim2.fromScale(0.97, 0.03)}
-				Size={UDim2.fromScale(0.2, 0.2)}
-				BackgroundTransparency={1}
-			/>
-		</frame>
-	);
-}
+import { ModalProps, UIButton, UIFrame, UIIButton, UIList, UIModal, UIPadding, UIText, UITextBox } from "./ui";
+import { RunService } from "@rbxts/services";
+import Roact, { useState } from "@rbxts/roact";
 
 function Gamepasses({ Visible, Closed }: ModalProps) {
-	return <BaseModal Visible={Visible} Closed={Closed} BackgroundColor3={Color3.fromRGB(43, 43, 43)} />;
+	return (
+		<UIModal Title="Gamepasses" Visible={Visible} Closed={Closed} BackgroundColor3={Color3.fromRGB(43, 43, 43)} />
+	);
 }
 
 function DevProducts({ Visible, Closed }: ModalProps) {
-	return <BaseModal Visible={Visible} Closed={Closed} BackgroundColor3={Color3.fromRGB(12, 143, 43)} />;
+	return (
+		<UIModal
+			Title="Dev Products"
+			Visible={Visible}
+			Closed={Closed}
+			BackgroundColor3={Color3.fromRGB(12, 143, 43)}
+		/>
+	);
 }
 
 function Settings({ Visible, Closed }: ModalProps) {
-	return <BaseModal Visible={Visible} Closed={Closed} BackgroundColor3={Color3.fromRGB(26, 115, 5)} />;
+	return <UIModal Title="Settings" Visible={Visible} Closed={Closed} BackgroundColor3={Color3.fromRGB(26, 115, 5)} />;
 }
 
 function Codes({ Visible, Closed }: ModalProps) {
-	return <BaseModal Visible={Visible} Closed={Closed} BackgroundColor3={Color3.fromRGB(184, 13, 13)} />;
+	const [code, setCode] = useState("");
+
+	const SubmitCode = () => {
+		if (RunService.IsRunning()) {
+			// task.spawn(() => {
+			// 	const status = Network.testFunction.client.invoke(code).expect();
+			// 	print(status);
+			// });
+		}
+	};
+
+	return (
+		<UIModal Title="Codes" Visible={Visible} Closed={Closed} BackgroundColor3={Color3.fromRGB(66, 66, 66)}>
+			<UIFrame Size={UDim2.fromScale(1, 1)} Position={UDim2.fromScale(0.5, 0.5)} BackgroundTransparency={1}>
+				<UIPadding left={0.01} right={0.01} top={0.01} bottom={0.01} />
+				<UIText
+					Size={UDim2.fromScale(0.75, 0.4)}
+					Position={UDim2.fromScale(0.5, 0.3)}
+					TextWrapped={true}
+					TextScaled={true}
+					Text="Join our group or follow us on Twitter @sunbear_studio to get access to exclusive codes & game updates!"
+				/>
+				<UITextBox
+					BackgroundColor3={Color3.fromRGB(43, 43, 43)}
+					TextColor3={Color3.fromRGB(255, 255, 255)}
+					Size={UDim2.fromScale(0.4, 0.15)}
+					PlaceholderText="Enter Code"
+					TextScaled={true}
+					Position={UDim2.fromScale(0.5, 0.65)}
+					Changed={(newText) => setCode(newText)}
+				/>
+				<UIButton
+					Text="Submit"
+					TextColor3={Color3.fromRGB(255, 255, 255)}
+					TextScaled={true}
+					Font={Enum.Font.Gotham}
+					BackgroundColor3={Color3.fromRGB(0, 176, 77)}
+					Position={UDim2.fromScale(0.5, 0.85)}
+					Size={UDim2.fromScale(0.5, 0.15)}
+					Clicked={SubmitCode}
+					Animate={true}
+				/>
+			</UIFrame>
+		</UIModal>
+	);
 }
 
 interface IButton {
@@ -70,7 +79,7 @@ interface UIButtonProps extends IButton {
 	Image: string;
 }
 
-function UIButton({ Clicked, Image }: UIButtonProps) {
+function UISideButton({ Clicked, Image }: UIButtonProps) {
 	return (
 		<UIIButton
 			Animate={true}
@@ -86,21 +95,21 @@ function UIButton({ Clicked, Image }: UIButtonProps) {
 }
 
 function OpenSettings({ Clicked }: IButton) {
-	return <UIButton Clicked={Clicked} Image="rbxassetid://14567395815" />;
+	return <UISideButton Clicked={Clicked} Image="rbxassetid://14567395815" />;
 }
 
 function OpenGamepasses({ Clicked }: IButton) {
-	return <UIButton Clicked={Clicked} Image="rbxassetid://14585356466" />;
+	return <UISideButton Clicked={Clicked} Image="rbxassetid://14585356466" />;
 }
 
 function OpenDevProducts({ Clicked }: IButton) {
-	return <UIButton Clicked={Clicked} Image="rbxassetid://14567386315" />;
+	return <UISideButton Clicked={Clicked} Image="rbxassetid://14567386315" />;
 }
 
 type Modal = "settings" | "gamepasses" | "devproducts" | "codes" | "upgrades" | undefined;
 
 function UIOverlay() {
-	const [openModal, setOpenModal] = useState<Modal>();
+	const [openModal, setOpenModal] = useState<Modal>("codes");
 
 	return (
 		<UIFrame BackgroundTransparency={0.75} Size={UDim2.fromScale(1, 1)} Position={UDim2.fromScale(0.5, 0.5)}>

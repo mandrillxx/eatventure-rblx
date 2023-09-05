@@ -324,6 +324,11 @@ async function bootstrap() {
 	collision();
 	setupPurchases(state, world);
 
+	Network.testFunction.server.handle((player, code) => {
+		Log.Info("Player {@Player} ran test function with code {@Code}", player, code);
+		return "success";
+	});
+
 	Network.redeemCode.server.handle((player, code) => {
 		const redeem = (amount: number) => {
 			const playerId = state.clients.get(player.UserId);

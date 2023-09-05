@@ -12,4 +12,5 @@ export namespace Network {
 	export const purchaseUpgrade = new NetEvent<[upgradeId: AnyEntity], NetEventType.ClientToServer>();
 	export const retrieveStatistics = new NetFunction<[], [statistics: StatisticsSnapshot<StatisticsDefinition>]>();
 	export const redeemCode = new NetFunction<[code: string], [status: "success" | "fail" | "used"]>();
+	export const testFunction = new NetFunction<[code: string], [status: "success" | "fail" | "used"]>();
 }

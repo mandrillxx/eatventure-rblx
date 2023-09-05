@@ -1,5 +1,5 @@
 import { useSpring } from "@rbxts/rbx-react-spring";
-import Roact, { Binding, useState } from "@rbxts/roact";
+import Roact, { useState } from "@rbxts/roact";
 
 export type BaseProps<T extends GuiObject> = Partial<WritableInstanceProperties<T>> & {
 	Position: UDim2;
@@ -10,6 +10,28 @@ export type ButtonProps<T extends GuiButton> = BaseProps<T> & {
 	Clicked: (rbx: T) => void;
 	Animate: boolean;
 };
+
+export interface ModalProps {
+	Visible: boolean;
+	Closed: () => void;
+}
+
+interface TextBoxProps extends BaseProps<TextBox> {
+	Changed: (newText: string) => void;
+}
+
+type IModal = Roact.PropsWithChildren<
+	ModalProps & {
+		Title: string;
+		BackgroundColor3: Color3;
+	}
+>;
+
+type IText = Roact.PropsWithChildren<BaseProps<TextLabel>>;
+
+interface UIListProps {
+	FillDirection: Enum.FillDirection;
+}
 
 export function UIFrame(props: BaseProps<Frame>) {
 	return <frame AnchorPoint={new Vector2(0.5, 0.5)} {...props} />;
@@ -40,17 +62,110 @@ export function UIPadding({
 	);
 }
 
-export function UIButton(props: BaseProps<TextButton>) {
+export function UIButton(props: ButtonProps<TextButton>) {
+	const newProps = table.clone(props);
+	newProps.Clicked = undefined!;
+	newProps.Animate = undefined!;
+
 	return (
-		<textbutton AnchorPoint={new Vector2(0.5, 0.5)} {...props}>
+		<textbutton
+			AnchorPoint={new Vector2(0.5, 0.5)}
+			Event={{
+				MouseButton1Click: props.Clicked,
+			}}
+			{...newProps}
+		>
+			<UIPadding left={0.1} right={0.1} top={0.05} bottom={0.05} />
+			<uitextsizeconstraint MinTextSize={16} MaxTextSize={24} />
 			<UIRound multiplier={1.5} />
-			<UIRatio multiplier={0.75} />
 		</textbutton>
 	);
 }
 
-interface UIListProps {
-	FillDirection: Enum.FillDirection;
+export function UIText(props: IText) {
+	return (
+		<textlabel
+			AnchorPoint={new Vector2(0.5, 0.5)}
+			BackgroundTransparency={1}
+			TextColor3={Color3.fromRGB(255, 255, 255)}
+			Font={Enum.Font.Gotham}
+			TextSize={48}
+			{...props}
+		>
+			{props.children}
+		</textlabel>
+	);
+}
+
+export function UITextBox(props: TextBoxProps) {
+	const newProps = table.clone(props);
+	newProps.Changed = undefined!;
+
+	return (
+		<textbox
+			AnchorPoint={new Vector2(0.5, 0.5)}
+			Font={Enum.Font.Gotham}
+			FontSize={"Size24"}
+			Text=""
+			ClearTextOnFocus={false}
+			Event={{
+				InputEnded: (rbx) => props.Changed(rbx.Text),
+			}}
+			{...newProps}
+		>
+			<UIRound multiplier={1.5} />
+		</textbox>
+	);
+}
+
+export function UIModal({ Title, Visible, BackgroundColor3, Closed, children }: IModal) {
+	const { position } = useSpring(
+		{
+			config: {
+				mass: 1,
+				friction: 20,
+				tension: 150,
+			},
+			position: Visible ? UDim2.fromScale(0.5, 0.5) : UDim2.fromScale(0.5, 1.5),
+		},
+		[Visible],
+	);
+
+	const [h, s, v] = BackgroundColor3.ToHSV();
+
+	return (
+		<frame
+			AnchorPoint={new Vector2(0.5, 0.5)}
+			BackgroundColor3={BackgroundColor3}
+			Position={position}
+			Size={UDim2.fromScale(0.5, 0.5)}
+			Visible={Visible}
+		>
+			<UIRound />
+			<UIRatio />
+			<UIText
+				Size={UDim2.fromScale(0.5, 0.15)}
+				Position={UDim2.fromScale(0.5, 0)}
+				TextWrapped={true}
+				TextScaled={true}
+				Text={Title}
+				BackgroundColor3={Color3.fromHSV(h, s, v - 0.1)}
+				BackgroundTransparency={0.1}
+			>
+				<UIPadding top={0.1} bottom={0.1} left={0.15} right={0.15} />
+				<UIRound multiplier={5} />
+			</UIText>
+			<UIIButton
+				Animate={true}
+				Image="rbxassetid://14567531239"
+				Clicked={Closed}
+				Position={UDim2.fromScale(0.97, 0.03)}
+				Size={UDim2.fromScale(0.2, 0.2)}
+				BackgroundTransparency={1}
+			/>
+			{children}
+		</frame>
+	);
 }
 
 export function UIList({ FillDirection }: UIListProps) {
