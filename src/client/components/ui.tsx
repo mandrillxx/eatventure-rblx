@@ -11,6 +11,15 @@ export type ButtonProps<T extends GuiButton> = BaseProps<T> & {
 	Animate: boolean;
 };
 
+export interface IButton {
+	Clicked: (rbx: ImageButton) => void;
+}
+
+export interface UIButtonProps extends IButton {
+	Image: string;
+	Order?: number;
+}
+
 export interface ModalProps {
 	Visible: boolean;
 	Closed: () => void;
@@ -31,6 +40,22 @@ type IText = Roact.PropsWithChildren<BaseProps<TextLabel>>;
 
 interface UIListProps {
 	FillDirection: Enum.FillDirection;
+}
+
+export function UISideButton({ Clicked, Image, Order }: UIButtonProps) {
+	return (
+		<UIIButton
+			Animate={true}
+			LayoutOrder={Order}
+			BackgroundColor3={Color3.fromRGB(8, 160, 160)}
+			Position={UDim2.fromScale()}
+			Size={UDim2.fromScale(1, 1)}
+			Image={Image}
+			Clicked={Clicked}
+		>
+			<UIPadding top={0.1} bottom={0.1} />
+		</UIIButton>
+	);
 }
 
 export function UIFrame(props: BaseProps<Frame>) {
@@ -172,6 +197,7 @@ export function UIList({ FillDirection }: UIListProps) {
 	return (
 		<uilistlayout
 			FillDirection={FillDirection}
+			SortOrder={Enum.SortOrder.LayoutOrder}
 			VerticalAlignment={Enum.VerticalAlignment.Center}
 			HorizontalAlignment={Enum.HorizontalAlignment.Center}
 			Padding={new UDim(0.1, 0.1)}
