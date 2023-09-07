@@ -1,4 +1,4 @@
-import { ModalProps, UIFrame, UIIButton, UIList, UIModal, UIRatio } from "../ui";
+import { ModalProps, UIFrame, UIIButton, UIModal, UIPadding, UIRatio, UIRound, UISFrame, UIText } from "../ui";
 import { MarketplaceService, Players } from "@rbxts/services";
 import { useProducts } from "../hooks/useProducts";
 import { usePasses } from "../hooks/usePasses";
@@ -14,18 +14,32 @@ interface IPurchaseButton {
 
 function PurchasableButton({ ID, Text, Image }: IPurchaseButton) {
 	return (
-		<UIIButton
+		<UIFrame
 			Size={UDim2.fromScale(0.3, 0.3)}
 			Position={UDim2.fromScale(0.5, 0.5)}
-			Animate={true}
-			Image={Image}
-			BackgroundTransparency={1}
-			Clicked={() => {
-				MarketplaceService.PromptProductPurchase(player, ID);
-			}}
+			BackgroundColor3={Color3.fromRGB(43, 73, 73)}
 		>
-			<UIRatio />
-		</UIIButton>
+			<UIPadding bottom={0.05} />
+			<UIRatio multiplier={0.5} />
+			<UIRound />
+			<UIIButton
+				Size={UDim2.fromScale(1, 1)}
+				Position={UDim2.fromScale(0.5, 0.4)}
+				Animate={true}
+				Image={Image}
+				BackgroundTransparency={1}
+				Clicked={() => {
+					MarketplaceService.PromptProductPurchase(player, ID);
+				}}
+			/>
+			<UIText
+				TextWrapped={true}
+				TextSize={12}
+				Position={UDim2.fromScale(0.5, 0.9)}
+				Size={UDim2.fromScale(1, 0.5)}
+				Text={Text}
+			/>
+		</UIFrame>
 	);
 }
 
@@ -34,17 +48,22 @@ export function Gamepasses({ Visible, Closed }: ModalProps) {
 	const passes = usePasses();
 
 	return (
-		<UIModal Title="Gamepasses" Visible={Visible} Closed={Closed} BackgroundColor3={Color3.fromRGB(43, 43, 43)}>
-			<UIFrame Size={UDim2.fromScale(1, 0.6)} Position={UDim2.fromScale(0.5, 0.5)} BackgroundTransparency={1}>
-				<uitablelayout
+		<UIModal Title="Robux Shop" Visible={Visible} Closed={Closed} BackgroundColor3={Color3.fromRGB(43, 43, 43)}>
+			<UISFrame
+				Size={UDim2.fromScale(1, 0.75)}
+				Position={UDim2.fromScale(0.5, 0.5)}
+				BackgroundTransparency={1}
+				CanvasSize={UDim2.fromScale(1, 1)}
+				ScrollingDirection={Enum.ScrollingDirection.Y}
+			>
+				<UIPadding top={0.5} bottom={0.5} />
+				<uigridlayout
 					FillDirection={Enum.FillDirection.Horizontal}
-					MajorAxis={Enum.TableMajorAxis.RowMajor}
+					FillDirectionMaxCells={6}
 					VerticalAlignment={Enum.VerticalAlignment.Center}
 					HorizontalAlignment={Enum.HorizontalAlignment.Center}
-					FillEmptySpaceRows={false}
-					FillEmptySpaceColumns={true}
 				/>
-				{products.map((product, index) => {
+				{products.map((product) => {
 					return (
 						<PurchasableButton
 							ID={product.ProductId}
@@ -53,7 +72,7 @@ export function Gamepasses({ Visible, Closed }: ModalProps) {
 						/>
 					);
 				})}
-			</UIFrame>
+			</UISFrame>
 		</UIModal>
 	);
 }

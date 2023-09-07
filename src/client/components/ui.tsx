@@ -62,6 +62,10 @@ export function UIFrame(props: BaseProps<Frame>) {
 	return <frame AnchorPoint={new Vector2(0.5, 0.5)} {...props} />;
 }
 
+export function UISFrame(props: BaseProps<ScrollingFrame>) {
+	return <scrollingframe AnchorPoint={new Vector2(0.5, 0.5)} {...props} />;
+}
+
 export function UIRatio({ multiplier = 1 }: { multiplier?: number }) {
 	return <uiaspectratioconstraint AspectRatio={1.5 * multiplier} />;
 }
