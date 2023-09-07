@@ -1,4 +1,15 @@
-import { ModalProps, UIFrame, UIIButton, UIModal, UIPadding, UIRatio, UIRound, UISFrame, UIText } from "../ui";
+import {
+	ModalContextProps,
+	UIButton,
+	UIFrame,
+	UIIButton,
+	UIModal,
+	UIPadding,
+	UIRatio,
+	UIRound,
+	UISFrame,
+	UIText,
+} from "../ui";
 import { MarketplaceService, Players } from "@rbxts/services";
 import { useProducts } from "../hooks/useProducts";
 import { usePasses } from "../hooks/usePasses";
@@ -43,17 +54,17 @@ function PurchasableButton({ ID, Text, Image }: IPurchaseButton) {
 	);
 }
 
-export function Gamepasses({ Visible, Closed }: ModalProps) {
+export function Gamepasses({ Visible, Closed, setOpenModal }: ModalContextProps) {
 	const products = useProducts();
 	const passes = usePasses();
 
 	return (
 		<UIModal Title="Robux Shop" Visible={Visible} Closed={Closed} BackgroundColor3={Color3.fromRGB(43, 43, 43)}>
 			<UISFrame
-				Size={UDim2.fromScale(1, 0.75)}
+				Size={UDim2.fromScale(1, 0.7)}
 				Position={UDim2.fromScale(0.5, 0.5)}
 				BackgroundTransparency={1}
-				CanvasSize={UDim2.fromScale(1, 1)}
+				CanvasSize={UDim2.fromScale(1, 0.5)}
 				ScrollingDirection={Enum.ScrollingDirection.Y}
 			>
 				<UIPadding top={0.5} bottom={0.5} />
@@ -73,6 +84,15 @@ export function Gamepasses({ Visible, Closed }: ModalProps) {
 					);
 				})}
 			</UISFrame>
+			<UIButton
+				Position={UDim2.fromScale(0.5, 0.9)}
+				Animate={true}
+				Clicked={() => setOpenModal("rewards")}
+				Size={UDim2.fromScale(0.3, 0.1)}
+				BackgroundColor3={Color3.fromRGB(48, 222, 10)}
+				TextColor3={Color3.fromRGB(255, 255, 255)}
+				Text="Rewards"
+			/>
 		</UIModal>
 	);
 }

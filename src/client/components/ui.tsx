@@ -1,5 +1,6 @@
 import { useSpring } from "@rbxts/rbx-react-spring";
 import Roact, { useState } from "@rbxts/roact";
+import { Modal } from "./context/modal";
 
 export type BaseProps<T extends GuiObject> = Partial<WritableInstanceProperties<T>> & {
 	Position: UDim2;
@@ -23,6 +24,10 @@ export interface UIButtonProps extends IButton {
 export interface ModalProps {
 	Visible: boolean;
 	Closed: () => void;
+}
+
+export interface ModalContextProps extends ModalProps {
+	setOpenModal: (modal: Modal | undefined) => void;
 }
 
 interface TextBoxProps extends BaseProps<TextBox> {
@@ -145,6 +150,17 @@ export function UITextBox(props: TextBoxProps) {
 			<UIRound multiplier={1.5} />
 		</textbox>
 	);
+}
+
+export interface OverlayButtonProps {
+	Clicked: () => void;
+	Image: string;
+	Name: string;
+	Order?: number;
+}
+
+export function OverlayButton({ Clicked, Image, Name, Order }: OverlayButtonProps) {
+	return <UISideButton key={Name} Clicked={Clicked} Image={Image} Order={Order} />;
 }
 
 export function UIModal({ Title, Visible, BackgroundColor3, Closed, children }: IModal) {

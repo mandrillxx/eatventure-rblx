@@ -1,6 +1,6 @@
 import type { ReactStory } from "client/flipbook";
 import * as ReactRoblox from "@rbxts/react-roblox";
-import Overlay from "client/components/overlay";
+import { App } from "client/components/app";
 import Roact from "@rbxts/roact";
 
 Roact.setGlobalConfig({
@@ -14,7 +14,7 @@ const OverlayStory: ReactStory = {
 	name: "OverlayStory.story",
 	react: Roact,
 	reactRoblox: ReactRoblox,
-	story: <Overlay />,
+	story: <App />,
 	summary: `OverlayStory story.`,
 };
 
