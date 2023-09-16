@@ -5,7 +5,7 @@ import { AchievementDescription } from "@rbxts/player-statistic-achievements";
 
 export const served10Customers = identity<AchievementDescription<typeof PlayerStatisticsDefinition>>({
 	getProgress: (statisticsSnapshot: StatisticsSnapshot<StatisticsDefinition>) =>
-		statisticsSnapshot.customersServed >= 10 ? 1 : 0,
+		statisticsSnapshot.customersServed >= 2 ? 1 : 0,
 	relevantStatisticNames: ["customersServed"],
 	rewardsSelector: ConstantRewardsSelector.create([
 		identity<BadgeReward>({

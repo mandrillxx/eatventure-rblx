@@ -147,8 +147,7 @@ function customer(world: World, state: ServerState) {
 
 			world.insert(id, Speech({ text: ":)" }));
 			const client = getOrError(world, belongsTo.playerId, Client, "Player does not have Client component");
-			if (state.playerStatisticsProvider.areStatisticsLoadedForPlayer(client.player))
-				state.playerStatisticsProvider.recordEvent(client.player, "customersServed", 1);
+			state.playerStatisticsProvider.recordEvent(client.player, "customersServed", 1);
 			task.delay(2, () => {
 				if (world.contains(id)) world.despawn(id);
 			});

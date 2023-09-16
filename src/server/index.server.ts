@@ -16,7 +16,6 @@ import { BadgeRewardGranter, RecurringTimeLockedRewardContainer } from "@rbxts/r
 import { getLevelUtilityAmount, getPlayerMaxedUtilities } from "shared/methods";
 import { Client, Level, Renderable, SoundEffect } from "shared/components";
 import { PlayerStatisticAchievementsDefinition } from "./data/BadgeHandler";
-import { rewardsOpeningCoordinator } from "./data/RewardHandler";
 import { IProfile, setupPurchases } from "./data/PurchaseHandler";
 import { GameProvider } from "./providers/game";
 import { getOrError } from "shared/util";
@@ -31,6 +30,7 @@ import { New } from "@rbxts/fusion";
 import Log, { Logger } from "@rbxts/log";
 import ProfileService from "@rbxts/profileservice";
 import promiseR15 from "@rbxts/promise-character";
+import { RewardProvider } from "./providers/container";
 
 Proton.awaitStart();
 
@@ -108,6 +108,7 @@ const state: ServerState = {
 
 const world = start([script.systems, ReplicatedStorage.Shared.systems], state)(setupTags);
 const gameProvider = Proton.get(GameProvider);
+const container = Proton.get(RewardProvider);
 
 const GameProfileStore = ProfileService.GetProfileStore("PlayerData", ProfileTemplate);
 
@@ -227,13 +228,13 @@ async function bootstrap() {
 		}
 
 		function handleRewards() {
-			const _rewardsOpeningCoordinator = rewardsOpeningCoordinator();
+			const rewardsOpeningCoordinator = container.coordinator;
 
 			const rewardContainerForPlayer = RecurringTimeLockedRewardContainer.create(
 				"DailyRewardContainer",
 				3 * 60 * 60,
 				player,
-				_rewardsOpeningCoordinator,
+				rewardsOpeningCoordinator,
 			);
 			state.rewardContainers.set(player.UserId, rewardContainerForPlayer);
 		}
@@ -323,11 +324,6 @@ async function bootstrap() {
 	statistics();
 	collision();
 	setupPurchases(state, world);
-
-	Network.testFunction.server.handle((player, code) => {
-		Log.Info("Player {@Player} ran test function with code {@Code}", player, code);
-		return "success";
-	});
 
 	Network.redeemCode.server.handle((player, code) => {
 		const redeem = (amount: number) => {

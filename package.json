@@ -39,7 +39,6 @@
     "@rbxts/plasma": "0.4.1-ts.1",
     "@rbxts/player-statistic-achievements": "^1.0.2",
     "@rbxts/player-statistics": "^1.0.4",
-    "@rbxts/pretty-roact-hooks": "^3.1.1",
     "@rbxts/profileservice": "^1.4.1",
     "@rbxts/promise-character": "^1.0.3",
     "@rbxts/proton": "^0.7.0",

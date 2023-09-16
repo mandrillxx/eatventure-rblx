@@ -77,8 +77,7 @@ export function giveItem({ player, entity, world, maid, id, wants, state, utilit
 			utility.xpLevel,
 			client.document.coinMultiplier,
 		);
-	if (state.playerStatisticsProvider.areStatisticsLoadedForPlayer(client.player))
-		state.playerStatisticsProvider.recordEvent(client.player, "moneyEarned", reward * rewardMultiplier);
+	state.playerStatisticsProvider.recordEvent(client.player, "moneyEarned", reward * rewardMultiplier);
 	world.insert(benefitingPlayer, balance.patch({ balance: balance.balance + reward * rewardMultiplier }));
 	if (currentWants.product.amount === 1) {
 		if (state.verbose) Log.Info("NPC {@NPC} got what they wanted", id);
